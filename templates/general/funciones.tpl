@@ -2,7 +2,115 @@
 
 	{literal}
 
-/*Implemetación Osscar 19.08.2019 para impresión de la credencial*/
+/* Implementacion Oscar 24-09-2010 para validar las fechas de la seccion de venta en linea*/
+	function valida_fecha_tienda_linea(){
+	//obtiene los valores de las fechas
+		var pe_del = $("#pe_del").val();
+    	var pe_al =	$("#pe_al").val();
+    	var pn_del = $("#pn_del").val();
+    	var pn_al = $("#pn_al").val();
+    //valida
+    	if(pe_del != '' && pe_al == ''){
+    		alert("La fecha de precio especial 'hasta' no puede ir vacia si la fecha 'desde' tiene un valor"); return false;
+    	}
+    	if(pe_al != '' && pe_del == ''){
+    		alert("La fecha de precio especial 'desde' no puede ir vacia si la fecha 'hasta' tiene un valor"); return false;
+    	}
+    	if(pn_del != '' && pn_al == ''){
+    		alert("La fecha de precio nuevo 'hasta' no puede ir vacia si la fecha 'desde' tiene un valor"); return false;
+    	}
+    	if(pn_al != '' && pn_del == ''){
+    		alert("La fecha de precio nuevo 'desde' no puede ir vacia si la fecha 'hasta' tiene un valor"); return false;
+    	}
+    	return true;
+	}
+
+/* Implementacion Oscar 23-09-2020 para validar catalogo de atributo*/
+	function decide_usuario_elimina_atributo(pos){
+		if(!(confirm("Si elimina un catalogo del atributo, en automático elimianará el atributo de los productos que lo contengan "  +
+			"\nRealmente desea eliminarlo?"))){
+			return false;
+		}else{
+			return true;
+		}
+	}
+
+/*Implementacion Oscar 22-09-2020 para validar el tipo de producto*/
+	function validacion_tipo_producto(){
+		var valor_tipo_prod = $("#id_tipo_producto").val();
+		var registros_maquila = NumFilas('productosDetalle');
+		var registros_relacionados = NumFilas('productosConfigurables');
+		var mensaje = "El tipo de producto es '" + $("#id_tipo_producto option:selected").text().trim() + "' y no permite ";
+		var invalido = 0;
+		if( valor_tipo_prod == 1){//simple
+			mensaje += " que existan productos en maquila ni productos Configurables";
+			
+			if(registros_maquila > 0){
+				mensaje += "\n- > El producto tiene : " + registros_maquila + " productos en Maquila" ;
+				invalido = 1;
+			}
+
+			if(registros_relacionados > 0){
+				mensaje += "\n- > El producto tiene : " + registros_relacionados + " productos Configurables" ;
+				invalido = 1;
+			}
+			mensaje += "\n *Elimine los registros para poder guardar o cambie el tipo de producto y vuelva a intentar!";
+		}
+
+		if( valor_tipo_prod == 2){//configurable
+			mensaje += " que existan productos en Maquila y debe de contener por lo menos un producto en la seccion (Producto configurable - Relacion de productos)";
+			
+			if(registros_maquila > 0){
+				mensaje += "\n- > El producto tiene : " + registros_maquila + " productos en maquila, eliminelos si desea continuar o cambie el tipo de producto" ;
+				invalido = 1;
+			}
+
+			if(registros_relacionados <= 0){
+				mensaje += "\n - > El producto debe contener al menos un producto Relacionado" ;
+				invalido = 1;
+			}
+		}
+
+		if( valor_tipo_prod == 3){//maquila
+			mensaje += " que existan productos Relacionados y debe de contener por lo menos un producto en la seccion (Maquila)";
+			
+			if(registros_relacionados > 0){
+				mensaje += "\n- > El producto tiene : " + registros_relacionados + " productos Relacionado, eliminelos si desea continuar o cambie el tipo de producto" ;
+				invalido = 1;
+			}
+
+			if(registros_maquila <= 0){
+				mensaje += "\n- > El producto debe contener al menos un producto en Maquila" ;
+				invalido = 1;
+			}
+		}
+
+		if(invalido == 1){
+			alert(mensaje);
+			return false;
+		}else{
+			return true;
+		}
+	}
+
+/*Implementacion Oscar 22-09-2020 para actualizar el nombre completo de las imagenes adicionales */
+	function cambia_nombre_completo_img(pos){
+		var nomb_imagen = celdaValorXY('imagenesAdicionales', 2, pos).trim();
+		var format_imagen = $('#imagenesAdicionales_3_' + pos).html().trim();
+		valorXY('imagenesAdicionales', 4, pos, (nomb_imagen + '.' + format_imagen) );
+		//alert(nomb_imagen);
+	}
+
+/*Implementacion Oscar 2020 para actualizar el combo de valores de atributo*/
+	function cambia_valor_atributo(pos){
+		setTimeout(function(){ valorXY('atributosProducto', 3, pos, '');} , '100');
+	//asignamos el valor de la categoria
+		setTimeout(function(){ valorXY('atributosProducto', 4, pos, $("#id_categoria").val());} , '100');
+		$("#atributosProducto_3_" + pos).click();
+			
+	}
+
+/*Implemetacion Osscar 19.08.2019 para impresión de la credencial*/
 	function imprimeCredencial(){//capturamos el id del usuario 
 		var id=$("#id_usuario").val();
 	//mandamos a hacer la imagen del codigo de barras si no existe
@@ -214,34 +322,68 @@
 
 			return true;
 		}	
+/*Implementacion Oscar 16-09-2020 para validar que no se repitan registros en el grid*/
+		
+		function validaRegistrosRespetidos(grid, celda_valida_repetidos, valor_comparacion){
+			var elementos_existentes = new Array();
+			var tmp;
+		//recorre grid
+			for(var i_g = 0; i_g <= NumFilas(grid); i_g++){
+				tmp = celdaValorXY(grid, celda_valida_repetidos, i_g);
 
-		function cambiaDesc(pos, grid, posOri, posFin,dt,num_div,enf)//dt agregado por Oscar 13/02/2017 (por implementación de buscador)
+				for(var e_e = 0; e_e < elementos_existentes.length; e_e++){
+					if(valor_comparacion == elementos_existentes[e_e] && elementos_existentes[e_e] != null){
+						return 1;
+					}
+				}
+				elementos_existentes.push(tmp);
+			}
+			return 0;
+		}
+
+		function cambiaDesc(pos, grid, posOri, posFin,dt,num_div,enf,celda_valida_repetidos)//dt agregado por Oscar 13/02/2017 (por implementacion de buscador)
+		/*variable valida_repetidos implementada por Oscar 16-09-2020 */
 		{
+			//alert(pos + ' -- ' + grid + ' -- ' + posOri + ' -- ' + posFin + ' -- ' + dt + ' -- ' + num_div + ' -- ' + enf);
+			
 			var val_cant=document.getElementById("cantidad_"+num_div).value;//obtenemos la cantidad
 			var val_busc=document.getElementById("b_g_"+num_div).value;
 			if(val_busc==''||val_busc==null){
-								alert("Debe seleccionar una opción antes de agregar el registro al Grid!!!");
-								$("#b_g_"+num_div).select();
-								return false;
-							}
-							if(val_cant==''||val_cant==null){
-								alert("Debe introducir un valor númerico antes de agregar el registro al Grid!!!");
-								$("#cantidad_"+num_div).select();
-								return false;
-							}
-			document.getElementById('aux_1_'+num_div).value=parseFloat(document.getElementById("cantidad_"+num_div).value);
-			var xD=InsertaFila(grid,dt);
+				alert("Debe seleccionar una opción antes de agregar el registro al Grid!!!");
+				$("#b_g_"+num_div).select();
+				return false;
+			}
+			if(val_cant==''||val_cant==null){
+				alert("Debe introducir un valor númerico antes de agregar el registro al Grid!!!");
+				$("#cantidad_"+num_div).select();
+				return false;
+			}
 			//alert('OK'+' pos:'+pos+', grid:'+grid+', posOri:'+posOri+', posFin:'+posFin);
 		
 			var val=celdaValorXY(grid, posOri, pos);
 			var aux=dt.split("°");
+			var repetido = 0;
+		/*implementacion Oscar 2020 para validacion de repetidos*/
+			if(celda_valida_repetidos){
+				repetido = validaRegistrosRespetidos(grid, celda_valida_repetidos, aux[1]);
+				if(repetido == 1){
+					alert("El registro ya se encuentra en este grid, pruebe con un registro diferente!");
+					$("#b_g_"+num_div).select();
+					return false;
+				}
+			}
 			
+			document.getElementById('aux_1_'+num_div).value=parseFloat(document.getElementById("cantidad_"+num_div).value);
+			var xD=InsertaFila(grid,dt);
+			
+
 			if(!aux[1])
 				aux[1]='';
-			
+			//alert(grid);
 			valorXY(grid, posFin, pos, aux[1]);
 			valorXYNoOnChange(grid, posOri, pos, aux[0]);
 
+		
 			//alert("cantidad_"+num_div+"\n"+grid+"_"+enf+"_"+pos);
 			
 			document.getElementById(grid+"_"+enf+"_"+pos).innerHTML=document.getElementById("cantidad_"+num_div).value;
@@ -256,24 +398,11 @@
 			$("#img_add_"+num_div).attr("onclick","alert('Primero Seleccione un producto!!!');document.getElementById('b_g_"+num_div+"').select();");
 		//aumentmos 1a l fila
 			//num_fla+=1;
+/*implementacion Oscar 2020 */
+			if(aux[2]){
+				$("#" + grid + "_" + enf + "_" + pos).html(aux[2]);
+			}
 		}
-		
-		
-		
-	/*	function cambiaProProv()
-		{
-			var id_prov=document.getElementById('id_proveedor').value;
-			
-			
-			alert(id_prov);
-			
-			var aux='cambiaDesc("#", "ocproductos",2 ,3);actPreImp("#",'+id_prov+');';
-			
-			
-			setValueHeader('ocproductos', 2, 'on_change', aux);
-			
-		}*/
-		
 		
 	{/literal}
 	

@@ -1,7 +1,8 @@
 <?php
 	$fl=$_POST['flag'];
-/*Implementacion Oscar 20.12.2019*/
+//1. Insercion de procedures
 	if($fl=='procedures_inserta'){	
+	//1.1. Incluye archivo /conexionDoble.php
 		include('../../../../conexionDoble.php');
 		$s=$hostLocal;
 		$bd=$nombreLocal;
@@ -38,12 +39,13 @@
 	}
 /*Fin de cambio Oscar 20.12.2019*/
 
+//2. Incluye archivo /conectMin.php
 	include('../../../../conectMin.php');
 	$dato=$_POST['valor'];
 	$id_agrupacion=$_POST['tipo_agrupacion'];
 	$tipo_mantenimiento=$_POST['tipo'];
 
-/**/
+//3. Calculo de dias
 	if($fl=='obtener_dias'){
 		$fcha=$_POST['fecha'];
 		$sql="SELECT TIMESTAMPDIFF(DAY,'$fcha',CURRENT_DATE())";
@@ -51,8 +53,8 @@
 		$r=mysql_fetch_row($eje);
 		die($r[0]);
 	}
-/**/
 
+//4. Actualizacion de configuracion de agrupamiento
 		switch($fl){
 		case 'por_dia':
 			$sql="UPDATE sys_configuracion_sistema SET minimo_agrupar_ma_dia='$dato' WHERE id_configuracion_sistema=1";
@@ -75,10 +77,18 @@
 		case 'eliminar_sin_uso':
 			$sql="UPDATE sys_configuracion_sistema SET minimo_eliminar_reg_no_usados='$dato' WHERE id_configuracion_sistema=1";
 		break;
+
+/*Implementacion Oscar 20-09-2020 para recalcular inventarios de ec_almacen_producto por medio del boton*/
+		case "recalcula_inventario_almacen" : 
+			$sql = "CALL recalculaInventariosAlmacen()";
+		break;
+/*Fin de cambio*/
+
 	}
 //die($sql);
 /**/ 
 
+//5. Ejecucion de procedures
 	if($fl=='procedure'){
 		if($id_agrupacion==2){
 			$sql="CALL parametrosAgrupaMovimientosAlmacen($id_agrupacion,$dato);";//flag:'procedure',valor:dato_nvo,tipo_agrupacion:flag
@@ -118,6 +128,17 @@
 //		mysql_query("ROLLBACK");//cancemos transaccion
 		die($error);
 	}
+
+/*Implementacion Oscar 20-09-2020 para recalcular inventarios de ec_almacen_producto*/
+	if($fl=='procedure'){
+		$sql = "CALL recalculaInventariosAlmacen()";
+		$eje = mysql_query($sql);
+		if( !$eje ){
+			$error=mysql_error();
+			die("Error al recalcular el inventario de almacenes por producto : " . $error);
+		}
+	}
+/*Fin de cambio*/
 
 //	mysql_query("COMMIT");//autorizamos transaccion
 	die('ok');

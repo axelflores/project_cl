@@ -751,16 +751,27 @@ function EditarValor(event,celda)
 			Trs=Headers.getElementsByTagName('tr');
 			Tds=Trs[0].getElementsByTagName('td');
 			var depende=Tds[fila+1].depende?Tds[fila+1].depende:Tds[fila+1].getAttribute('depende');
-			//alert(depende);
+
 			if(depende == null || depende.length == 0 || depende == "null")
 			{			
 				var Tabla=document.getElementById(tabla);			
 				var aux=eval('document.getElementById("'+tabla+'").auxiliar_'+(fila+1)+'?document.getElementById("'+tabla+'").auxiliar_'+(fila+1)+':document.getElementById("'+tabla+'").getAttribute("auxiliar_'+(fila+1)+'")');
-				//alert('document.getElementById("'+tabla+'").auxiliar_'+(fila+1)+'?document.getElementById("'+tabla+'").auxiliar_'+(fila+1)+':document.getElementById("'+tabla+'").getAttribute("auxiliar_'+(fila+1)+'")');
+				//alert(document.getElementById(tabla).getAttribute("auxiliar_"+(fila+1)));
+
+			/*Implementacion Oscar 2020 para cargar combo de atributos de producto de acuerdo a la categoria */
+				if(tabla == 'atributosProducto')aux = null;//vuelve null el valor de aux p/reconsultar combo filtrado por categoria
+			/**/
+
 				if(aux == null)
 				{					
 					var file=Tds[fila+1].datosdb?Tds[fila+1].datosdb:Tds[fila+1].getAttribute('datosdb');
-										
+			/*Implementacion Oscar 2020 para cargar combo de atributos de producto de acuerdo a la categoria */
+				if(tabla == 'atributosProducto'){
+					file += '&categoria=' + document.getElementById('id_categoria').value;//concatena el id de categoria
+				}
+			/*Fin de cambio atributos de producto 2020*/
+
+				//alert(file);
 					var aux=ajaxR(file);
 					if(aux.split('|')[0] != 'exito')
 						alert(aux);
