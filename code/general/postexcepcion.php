@@ -1,5 +1,5 @@
 <?php
-
+//die('Llave : ' . $llave);
 	if($tabla == 'ec_sincronizacion')
 	{
 		if($accion == 'actualizar')
@@ -19,6 +19,117 @@
 				
 			
 		}
+	}
+	
+/*Implementacion Oscar 11-08-2020 para insertar productos en nuevo almacen*/
+	if($tabla=='ec_almacen' && $no_tabla==0 && $accion=='insertar' ){
+		$sql = "INSERT INTO ec_almacen_producto (id_almacen, id_producto) 
+					SELECT 
+						$llave,
+						id_productos
+					FROM ec_productos 
+					WHERE id_productos>0";
+		$res=mysql_query($sql);   
+        if(!$res){
+            mysql_query("ROLLBACK");
+            Muestraerror($smarty, "", "3", mysql_error(), $sql, "contenido.php");
+        }
+	}
+
+/*Implementacion Oscar 11-08-2020 para insertar productos en almacen*/
+	if( $tabla == 'ec_productos' && $no_tabla == 0 && ($accion=='insertar' || $accion == 'actualizar') ){
+		if( $accion == 'insertar'){	
+			$sql = "INSERT INTO ec_almacen_producto (id_almacen, id_producto) 
+					SELECT 
+						id_almacen,
+						$llave
+					FROM ec_almacen 
+					WHERE id_almacen>0";
+			$res=mysql_query($sql);   
+        	if(!$res){
+        	    mysql_query("ROLLBACK");
+            	Muestraerror($smarty, "", "3", mysql_error(), $sql, "contenido.php");
+        	}
+        }
+    
+    /*implementacion Oscarc 22-09-2020 para actualizar el campo es maquilado*/
+    	$sql = "UPDATE ec_productos SET es_maquilado = IF( '$id_tipo_producto' = '3', '1', '0') WHERE id_productos = '$llave'";
+    	$res=mysql_query($sql);   
+        if(!$res){
+        	    mysql_query("ROLLBACK");
+            	Muestraerror($smarty, "", "3", mysql_error(), $sql, "contenido.php");
+        }
+
+    /*Implementacion Oscar 21-09-2020 para insertar / actualizar tabla de ec_producto_venta_linea*/
+    	if( $pe_del != '' || $pe_al != '' || $monto_esp_product != '' || $pn_del != '' || $pn_al != '' ||
+    		$producto_tienda_web_habilitado != '' || $producto_tienda_web_stock_minimo ||  $nombre_img_principal != '' || 
+    		$producto_tienda_web_descripcion != '' || $producto_tienda_web_descripcion_breve != '' || $producto_tienda_web_palabras_clave != '' || 
+    		$producto_tienda_web_metatitulo != '' || $producto_tienda_web_metadescripcion != '' ){
+    	//consulta si el registro ya existe y si no lo inserta
+    		$sql = "SELECT id_producto FROM ec_producto_tienda_linea WHERE id_producto = '$llave' ";
+    		$res=mysql_query($sql);   
+        	if(!$res){
+        	    mysql_query("ROLLBACK");
+            	Muestraerror($smarty, "", "3", mysql_error(), $sql, "contenido.php");
+        	}
+        	
+        	$num = mysql_num_rows($res);
+        	
+        	if($num == 0){
+        		$sql = "INSERT INTO ec_producto_tienda_linea (id_producto, precio_especial_desde, precio_especial_hasta, 
+        			monto_precio_especial, producto_nuevo_desde, producto_nuevo_hasta, habilitado, stock_minimo, imagen_principal, 
+        			descripcion, breve_descripcion, palabras_clave_busqueda, metatitulo, metadescripcion)
+					VALUES(
+							'$llave' , 
+							IF('$pe_del' != '', '$pe_del', NULL),
+							IF('$pe_al' != '', '$pe_al', NULL),
+							IF('$monto_esp_producto' != '', '$monto_esp_producto', NULL),
+							IF('$pn_del' != '', '$pn_del', NULL),
+							IF('$pn_al' != '', '$pn_al', NULL),
+							IF('$producto_tienda_web_habilitado' = 'on', 1, 0),
+							IF('$producto_tienda_web_stock_minimo' != '', '$producto_tienda_web_stock_minimo', NULL),
+							IF('$nombre_img_principal' != '', '$nombre_img_principal', NULL),
+	        				IF('$producto_tienda_web_descripcion' != '', '$producto_tienda_web_descripcion', NULL),
+	        				IF('$producto_tienda_web_descripcion_breve' != '', '$producto_tienda_web_descripcion_breve', NULL),
+	        				IF('$producto_tienda_web_palabras_clave' != '', '$producto_tienda_web_palabras_clave', NULL),
+	        				IF('$producto_tienda_web_metatitulo' != '', '$producto_tienda_web_metatitulo', NULL),
+	        				IF('$producto_tienda_web_metadescripcion' != '', '$producto_tienda_web_metadescripcion', NULL)
+						)";
+        	}else{
+        		$sql = "UPDATE ec_producto_tienda_linea 
+        				SET 
+	        				precio_especial_desde = IF('$pe_del' != '', '$pe_del', NULL), 
+	        				precio_especial_hasta = IF('$pe_al' != '', '$pe_al', NULL), 
+	        				monto_precio_especial = IF('$monto_esp_producto' != '', '$monto_esp_producto', NULL), 
+	        				producto_nuevo_desde = IF('$pn_del' != '', '$pn_del', NULL),  
+	        				producto_nuevo_hasta = IF('$pn_al' != '', '$pn_al', NULL),
+	        				habilitado = IF('$producto_tienda_web_habilitado' = 'on', 1, 0),
+	        				stock_minimo = IF('$producto_tienda_web_stock_minimo' != '', '$producto_tienda_web_stock_minimo', NULL),
+	        				imagen_principal = IF('$nombre_img_principal' != '', '$nombre_img_principal', NULL),
+	        				descripcion = IF('$producto_tienda_web_descripcion' != '', '$producto_tienda_web_descripcion', NULL),
+	        				breve_descripcion = IF('$producto_tienda_web_descripcion_breve' != '', '$producto_tienda_web_descripcion_breve', NULL),
+	        				palabras_clave_busqueda = IF('$producto_tienda_web_palabras_clave' != '', '$producto_tienda_web_palabras_clave', NULL),
+	        				metatitulo = IF('$producto_tienda_web_metatitulo' != '', '$producto_tienda_web_metatitulo', NULL),
+	        				metadescripcion = IF('$producto_tienda_web_metadescripcion' != '', '$producto_tienda_web_metadescripcion', NULL)
+	        			WHERE id_producto = '$llave'";
+        	}
+        	
+        	$res=mysql_query($sql);   
+        	if(!$res){
+        	    mysql_query("ROLLBACK");
+            	Muestraerror($smarty, "", "3", mysql_error(), $sql, "contenido.php");
+        	}
+
+    	}else{
+    	//elimina el registro del producto en la tabla ec_producto_venta_linea
+    		$sql = "DELETE FROM ec_producto_tienda_linea WHERE id_producto = '$llave' ";
+    		$res=mysql_query($sql);   
+        	if(!$res){
+        	    mysql_query("ROLLBACK");
+            	Muestraerror($smarty, "", "3", mysql_error(), $sql, "contenido.php");
+        	}
+    	}
+
 	}
 
 /*implementacion de Oscar 30.08.2019*/
@@ -62,7 +173,7 @@
 	}
 /*Fin de cambio OScar 30.08.2019*/
 
-/*implementacion de Oscar 28.08.2019 para generar la clave única del usuario*/
+/*implementacion de Oscar 28.08.2019 para generar la clave unica del usuario*/
 	if($tabla == 'sys_users' && ($no_tabla == 0)){
         if($accion == 'insertar')
         {

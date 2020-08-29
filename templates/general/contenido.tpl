@@ -1,8 +1,10 @@
 <!--version 30.10.2019-->
+<!-- 1. Incluye archivo /templates/_header.tpl -->
 {include file="_header.tpl" pagetitle="$contentheader"}
 
+<!-- Excepcion 1: Implementacion para botones de exportacion de ubicaciones desde la configuracion de la sucursal -->
 {if $tabla eq 'ec_configuracion_sucursal' && $no_tabla eq '0'}
-	<table style="position:absolute;bottom:30%;">	
+	<table style="position:absolute;bottom:30%;">
 		<tr>
 			<td>
 				<button onclick="exporta_ubics_sucs();">
@@ -28,7 +30,7 @@
 	</form>
 	{literal}
 		<script type="text/javascript">
-			
+
 			var ventana_abierta_ubics;
 			function msg_importa_ubics(){
 				if(!confirm("Recuerde que no pueden ir comas en las ubicaciones y las ubicaciones deberán de ser menores a 10 caracteres!!!")){
@@ -47,9 +49,9 @@
 				$("#fl_ubic").val('exporta_ubicaciones');
 				$("#sucursal_ubic").val(id_suc_ubic);
 			//enviamos la descarga
-				ventana_abierta_ubics=window.open('', 'TheWindow');	
+				ventana_abierta_ubics=window.open('', 'TheWindow');
 				document.getElementById('formularioUbicaciones').submit();
-				setTimeout(cierra_pestana_ubic,10000);			
+				setTimeout(cierra_pestana_ubic,10000);
 			}
 
 			function cierra_pestana_ubic(){
@@ -89,7 +91,7 @@
 			function importaUbicacionesSucursales(results){
 				$("#contenido_emergente_global").html('<p align="center" style="color:white;font-size:30px;">Cargando datos<br><img src="../../img/img_casadelasluces/load.gif"></p>');
 					$("#ventana_emergente_global").css("display","block");
-					
+
 				var data = results.data;//guardamos en data los valores delarchivo CSV
 				var arr="";
 				var id_suc_ubic=$("#id_sucursal").val();
@@ -106,7 +108,7 @@
 							return false;
 						}
 						arr+=cells[0]+",";
-    					arr+=cells[5];//se cambia la posición  de 6 a 7 por la implementación de la clave de proveedor Oscar 26.02.2019 
+    					arr+=cells[5];//se cambia la posición  de 6 a 7 por la implementación de la clave de proveedor Oscar 26.02.2019
 						if(i<data.length-1){
 					 		arr+="|";
 						}
@@ -126,13 +128,16 @@
 					}
 				});
 			}
-	
+
 		</script>
 	{/literal}
 {/if}
 
 
+<!-- Excecpcion 2: Implementacion para exportar/ importar estacionalidades -->
 {literal}
+
+<!-- 2. Incluye archivo /js/papaparse.min.js -->
 <script language="JavaScript" type="text/javascript" src="../../js/papaparse.min.js"></script>
 				<script type="text/JavaScript">
 				$('#submit-file').on("click",function(e){
@@ -162,7 +167,7 @@
        				/* if(nombre_fichero_seleccionado==='') {
       			    $('#delCarta').addClass('invisible');
         			} else {
-        			   $('#delCarta').removeClass('invisible'); 
+        			   $('#delCarta').removeClass('invisible');
        				 }*/
        				if(nombre_fichero_seleccionado!=""){
         				$("#bot_imp_estac").css("display","none");//ocultamos botón de importación
@@ -183,7 +188,7 @@
 				function importaEstac(results){
 					$("#contenido_emergente_global").html('<p align="center" style="color:white;font-size:30px;">Cargando datos<br><img src="../../img/img_casadelasluces/load.gif"></p>');
 					$("#ventana_emergente_global").css("display","block");
-					
+
 					var id_estac=$("#id_estacionalidad").val();
 	  				var data = results.data;//guardamos en data los valores delarchivo CSV
 	    			var tam_grid=$("#estacionalidadProducto tr").length-3;
@@ -219,7 +224,7 @@
 	    				}
 	    			});
 	    		}
-				
+
 				function importa_exporta_estacionalidades(flag){
 					var est_id=$("#id_estacionalidad").val();//extraemos el id de la estacionalidad
 					if(flag==1){
@@ -234,14 +239,15 @@
 {/literal}
 
     <div id="campos">
+<!-- 3. Div de ventana emergente -->
 	<div id="emerge" style="position:fixed;top:0;height:100%;width:100%;background:rgba(0,0,0,.6);display:none;z-index:100;"><!--rgba(103, 161,13,.8);-->
 		<center>
 			<div id="mensajEmerge" style="width:50%;position:absolute;top:200px;left:25%;background:rgba(225,0,0,.5);border-radius:10px;">
-				
+
 			</div>
 		</center>
 	</div>
-<!--Implementación Oscar 19.08.2019 para impresion de credencial de usuario--> 
+<!--Excepcion 3: Implementacion Oscar 19.08.2019 para impresion de credencial de usuario-->
 		{if $tabla eq 'sys_users' && $no_tabla eq '0' && $tipo neq '0'}
 			<button id="impresion_cred_usuario" onclick="imprimeCredencial();" style="position:absolute;top:300px;left:42%;">
 				Imprimir credencial<img src="../../img/especiales/credencial_usuario.png"  width="50px">
@@ -249,7 +255,7 @@
 		{/if}
 <!--Fin de cambio Oscar 19.08.2019-->
 
-<!--Implementación Oscar 02.08.2019 para importación del detalle de ordenes de compra--> 
+<!--Excepcion 4: Implementacion Oscar 02.08.2019 para importacion del detalle de ordenes de compra-->
 		{if $tabla eq 'ec_ordenes_compra' && $no_tabla eq '1' && $tipo neq '0'}
 			<button style="position:fixed;right:1.6%;top:72%;border-radius:10px;font-size:10px;" onclick="descarga_formato_detalle_oc();">
 				<img src="../../img/especiales/fotmato_en_blanco.png" width="30px"><br>
@@ -281,8 +287,8 @@
 					</form>-->
 		{/if}
 <!--Fin de cambio Oscar 02.08.2019-->
-	
-	<!--Implementación de Oscar 25.07.2018 para exportar/importar lista de estacioonalidades-->
+
+	<!-- Excepcion 5: Implementacion de Oscar 25.07.2018 para exportar/importar lista de estacionalidades-->
 		{if $tabla eq 'ec_oc_recepcion'}
 		<div style="position:fixed;z-index:40;top:15px;right:15px;">
 			<button onclick="emerge_pagos();" id="pags_prv" style="background:white;border-radius:15px;">
@@ -345,19 +351,21 @@
 
 		{/if}
 	<!--Fin de cambio-->
-	<div id="titulo">{$titulo}</div>    
+
+<!-- 4. Div de titulo de la pantalla -->
+	<div id="titulo">{$titulo}</div>
+<!-- 5. Declaracion del formulario -->
 		<form action="" method="post" name="formaGral" enctype="multipart/form-data">
-			
-			<script>			
+			<script>
 				var ejecutar="";
-			</script>	
-							
+			</script>
+<!-- 6. Variables ocultas %tipo, accion, tabla, no_tabla, llave%% -->
 				<input type="hidden" name="tipo" value="{$tipo}" />
 				<input type="hidden" name="accion" value="" />
 				<input type="hidden" name="tabla" value="{$tabla}" />
 				<input type="hidden" name="no_tabla" value="{$no_tabla}" />
 				<input type="hidden" name="llave" value="{$llave}" />
-			<!--Aqui se mete boton de deshabilitar productos sin inventario-->
+		<!--Excepcion : Implementacion de botones especiales de la pantalla de sucursal-->
 				{if $tabla eq 'sys_sucursales' && $no_tabla eq 0 && ($tipo_perfil eq '1' or $tipo_perfil eq '5')}
 				{literal}
 					<style type="text/css">
@@ -369,6 +377,7 @@
 				{if $campos[0][10] eq '-1'}
 					{assign var="sucursal_informacion_tooltip" value="en todas las sucursales"}
 				{/if}
+
 				<table align="center" cellspacing="15px;" style="width:80%;">
 					<tr>
 						<td>
@@ -387,19 +396,19 @@
 							<button type="button" onclick="deshabilitaSinInventario(2,{$campos[0][10]});" class="btns_deshabilit"
 							title="Deshabilita todos los productos {$sucursal_informacion_tooltip}">
 								Deshabilitar todos los productos <br> en {$campos[1][10]}
-							</button>							
+							</button>
 						</td>
 						<td>
 							<button type="button" onclick="deshabilitaSinInventario(0,{$campos[0][10]});" class="btns_deshabilit"
 							title="Deshabilita todos los productos que no tienen inventario {$sucursal_informacion_tooltip}">
 								Deshabilitar Productos sin inventario <br> en {$campos[1][10]}
-							</button>	
+							</button>
 						</td>
 						<td>
 							<button type="button" onclick="deshabilitaSinInventario(4,{$campos[0][10]});" class="btns_deshabilit"
 							title="Habilita/deshabilita los productos maquilados de acuerdo al inventario del producto origen {$sucursal_informacion_tooltip}">
 								Actualizar Productos Maquilados <br>con inventario en {$campos[1][10]}
-							</button>	
+							</button>
 						</td>
 						<td>
 							<button type="button" onclick="deshabilitaSinInventario(5,{$campos[0][10]});" class="btns_deshabilit"
@@ -420,15 +429,15 @@
 							<!--<input type="button" value="Generar descarga de Precios" onclick="generaDescPrecio();" style="padding:10px;border-radius:5px;position:absolute;top:300px;right:30px;">-->
 							{literal}
 						<script type="text/javascript">
-							
+
 							function resetea_con_folios_vtas(){
 								if(!confirm("Si realiza esta accion de manera inadecuada se pueden repetir los folios.\nRealmente desea resetear el contador de folios de Venta?")){
 									return false;
 								}
 								var envia=ajaxR("../ajax/deshabilitaSinInventario.php?&fl=resetear_cont_fol");
-								alert(envia);								
+								alert(envia);
 							}
-							
+
 							function generaDescPrecio(id_sucu){
 								//var datos=<?php echo $user_sucursal?>;
 							{/literal}
@@ -458,7 +467,7 @@
 						<td>
 							<button type="button" onclick="deshabilitaSinInventario(7,{$campos[0][10]});" class="btns_deshabilit"
 							title="">
-								Habilitar productos con<br>esracionalidad en {$campos[1][10]}
+								Habilitar productos con<br>estacionalidad en {$campos[1][10]}
 							</button>
 						</td>
 					</tr>
@@ -466,49 +475,56 @@
 
 				{/if}
 				{if $no_tabs eq 1}
-					<div class="redondo" align="center" >			
+					<div class="redondo" align="center" >
 						<table width="87%" border="0" class="tabla-inputs" >
+	<!-- 7. Iteracion del arreglo %$campos%% para formar campos (catalogos) de la pantalla-->
 							{section loop=$campos name=indice max=$no_filas}
-								<tr height="47">
+		<!-- 7.1. Condicion si son tres o menos campos-->
 									{if $no_campos <= 3}
 										<td width="69" class="texto_form">{$campos[indice][3]}</td>
 										<td width="175">
+			<!-- 7.1.1. Condicion si el tipo de campo es CHAR -->
 										{if $campos[indice][5] eq 'CHAR'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}   
+                                            {/if}
 											{if $campos[indice][12] > 60}
 												<textarea name="{$campos[indice][2]}" id="{$campos[indice][2]}" class="{$campos[indice][11]}" {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if}>{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}</textarea>
 											{else}
 												<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if}/>
 											{/if}
+			<!-- 7.1.2. Condicion si el tipo de campo es DATE -->
 										{elseif $campos[indice][5] eq 'DATE'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}	
-											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="10" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} />		
+                                            {/if}
+											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="10" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} />
 											<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.1.3. Condicion si el tipo de campo es TIME -->
 										{elseif $campos[indice][5] eq 'TIME'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
                                             {/if}
 											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="8" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else} onkeypress="return validaTime(event, this.id)"{/if} />
-											<span class="text_legend">hh:mm:ss</span>		
+											<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.1.4. Condicion si el tipo de campo es INT o FLOAT -->
 										{elseif $campos[indice][5] eq 'INT' or $campos[indice][5] eq 'FLOAT'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}	
+                                            {/if}
 											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} onkeypress="return validarNumero(event,{if $campos[indice][5] eq 'FLOAT'}1{else}0{/if},id);" onblur="{$campos[indice][15]}"/>
+			<!-- 7.1.5. Condicion si el tipo de campo es PASSWORD -->
 										{elseif $campos[indice][5] eq 'PASSWORD'}
                                             {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}   
-                                            <input type="password" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if}/>	
+                                            {/if}
+                                            <input type="password" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if}/>
+			<!-- 7.1.6. Condicion si el tipo de campo es BINARY -->
 										{elseif $campos[indice][5] eq 'BINARY'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
@@ -520,6 +536,7 @@
 											{else}
 												<input type="checkbox" value="1" name="{$campos[indice][2]}" id="{$campos[indice][2]}" class="{$campos[indice][11]}" {if $tipo eq 0} {if $campos[indice][9] neq 0} checked="checked" {/if} {else} {if $campos[indice][10] neq 0} checked="checked" {/if} {/if} onclick="{$campos[indice][16]}"/>
 											{/if}
+			<!-- 7.1.7. Condicion si el tipo de campo es COMBO-->
 										{elseif $campos[indice][5] eq 'COMBO'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
@@ -531,7 +548,7 @@
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][9]}
 													{else}
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][10]}
-													{/if}	
+													{/if}
 												</select>
 												<input type="hidden" name="{$campos[indice][2]}" id="{$campos[indice][2]}" value="{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}"/>
 											{else}
@@ -540,10 +557,11 @@
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][9]}
 													{else}
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][10]}
-													{/if}	
+													{/if}
 												</select>
-																								
+
 											{/if}
+			<!-- 7.1.8. Condicion si el tipo de campo es BUSCADOR-->
 										{elseif $campos[indice][5] eq 'BUSCADOR'}
 											{if $campos[indice][8] eq 1 && $tipo neq 2 && $tipo neq 3}
 												<table>
@@ -554,7 +572,7 @@
 														<td>
 												<!--<img onclick="botonBuscador('{$campos[indice][2]}')" src="{$rooturl}img/flecha_abajo.gif" style="height:12px;" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" />-->
 														</td>
-													</tr>	
+													</tr>
 												</table>
 												<div id="{$campos[indice][2]}_div" style="visibility:hidden; display:none; position:absolute; z-index:3;">
 													<select id="{$campos[indice][2]}_sel" size="4" onclick="asignavalorbusc('{$campos[indice][2]}');{if $campos[indice][29] neq ''}actualizaDependiente('{$campos[indice][29]}', '{$campos[indice][30]}', this.value, 'NO');{/if}" onkeydown="teclaCombo('{$campos[indice][2]}',event)" datosDB="getBuscador.php?id={$campos[indice][0]}">
@@ -565,7 +583,8 @@
 											{else}
 												<input type="text" name="{$campos[indice][2]}_txt" id="{$campos[indice][2]}_txt" size="{$campos[indice][12]}" class="{$campos[indice][11]}" value="{$campos[indice][25]}" />
 												<input type="hidden" name="{$campos[indice][2]}" id="{$campos[indice][2]}" value="{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}">
-											{/if}	
+											{/if}
+			<!-- 7.1.9. Condicion si el tipo de campo es FILE-->
 										{elseif $campos[indice][5] eq 'FILE'}
 											{if $campos[indice][10] neq ''}
 												<a href="{$campos[indice][10]}" target="_blank" class="texto_form">Ver documento</a>
@@ -577,13 +596,15 @@
 											{/if}
 											{if $campos[indice][27] neq ''}
 											    <br>
-                                                <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>                                                
+                                                <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                             {/if}
 										{/if}
 										</td>
+		<!-- 7.2. Condicion si son 4 campos-->
 									{elseif $no_campos eq 4}
 										<td width="69"  class="texto_form">{$campos[indice][3]}</td>
 										<td width="175">
+			<!-- 7.2.1. Condicion si el tipo de campo es CHAR-->
 										{if $campos[indice][5] eq 'CHAR'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
@@ -595,31 +616,36 @@
 												<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if}/>
 											{/if}
 										{elseif $campos[indice][5] eq 'DATE'}
+			<!-- 7.2.2. Condicion si el tipo de campo es DATE-->
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}	
-											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="10" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} />		
+                                            {/if}
+											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="10" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} />
 											<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.2.3. Condicion si el tipo de campo es TIME-->
 										{elseif $campos[indice][5] eq 'TIME'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
                                             {/if}
 											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="8" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else} onkeypress="return validaTime(event, this.id)"{/if} />
-											<span class="text_legend">hh:mm:ss</span>		
+											<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.2.4. Condicion si el tipo de campo es INT o FLOAT-->
 										{elseif $campos[indice][5] eq 'INT' or $campos[indice][5] eq 'FLOAT'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}	
+                                            {/if}
 											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} onkeypress="return validarNumero(event,{if $campos[indice][5] eq 'FLOAT'}1{else}0{/if},id);" onblur="{$campos[indice][15]}"/>
+			<!-- 7.2.5. Condicion si el tipo de campo es PASSWORD-->
 										{elseif $campos[indice][5] eq 'PASSWORD'}
                                             {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}   
-                                            <input type="password" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} />	
+                                            {/if}
+                                            <input type="password" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} />
+			<!-- 7.2.6. Condicion si el tipo de campo es BINARY-->
 										{elseif $campos[indice][5] eq 'BINARY'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
@@ -631,6 +657,7 @@
 											{else}
 												<input type="checkbox" value="1" name="{$campos[indice][2]}" id="{$campos[indice][2]}" class="{$campos[indice][11]}" {if $tipo eq 0} {if $campos[indice][9] neq 0} checked="checked" {/if} {else} {if $campos[indice][10] neq 0} checked="checked" {/if} {/if} onclick="{$campos[indice][16]}"/>
 											{/if}
+			<!-- 7.2.7. Condicion si el tipo de campo es COMBO-->
 										{elseif $campos[indice][5] eq 'COMBO'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
@@ -642,7 +669,7 @@
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][9]}
 													{else}
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][10]}
-													{/if}	
+													{/if}
 												</select>
 												<input type="hidden" name="{$campos[indice][2]}" id="{$campos[indice][2]}" value="{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}"/>
 											{else}
@@ -651,9 +678,10 @@
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][9]}
 													{else}
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][10]}
-													{/if}	
+													{/if}
 												</select>
 											{/if}
+			<!-- 7.2.8. Condicion si el tipo de campo es BUSCADOR-->
 										{elseif $campos[indice][5] eq 'BUSCADOR'}
 											{if $campos[indice][8] eq 1 && $tipo neq 2 && $tipo neq 3}
 												<table>
@@ -664,7 +692,7 @@
 														<td>
 												<!--<img onclick="botonBuscador('{$campos[indice][2]}')" src="{$rooturl}img/flecha_abajo.gif" style="height:12px;" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" />-->
 														</td>
-													</tr>	
+													</tr>
 												</table>
 												<div id="{$campos[indice][2]}_div" style="visibility:hidden; display:none; position:absolute; z-index:3;">
 													<select id="{$campos[indice][2]}_sel" size="4" onclick="asignavalorbusc('{$campos[indice][2]}');{if $campos[indice][29] neq ''}actualizaDependiente('{$campos[indice][29]}', '{$campos[indice][30]}', this.value, 'NO');{/if}" onkeydown="teclaCombo('{$campos[indice][2]}',event)" datosDB="getBuscador.php?id={$campos[indice][0]}">
@@ -675,7 +703,8 @@
 											{else}
 												<input type="text" name="{$campos[indice][2]}_txt" id="{$campos[indice][2]}_txt" size="{$campos[indice][12]}" class="{$campos[indice][11]}" value="{$campos[indice][25]}" />
 												<input type="hidden" name="{$campos[indice][2]}" id="{$campos[indice][2]}" value="{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}">
-											{/if}	
+											{/if}
+			<!-- 7.2.9. Condicion si el tipo de campo es FILE-->
 										{elseif $campos[indice][5] eq 'FILE'}
 											{if $campos[indice][10] neq ''}
 												<a href="{$campos[indice][10]}" target="_blank" class="texto_form">Ver documento</a>
@@ -684,17 +713,19 @@
 												&nbsp;
 											{else}
 												<input type="file" id="{$campos[indice][2]}" class="{$campos[indice][11]}" name="{$campos[indice][2]}" size="{$campos[indice][12]}"/>
-											{/if}		
+											{/if}
 											{if $campos[indice][27] neq ''}
 											    <br>
-                                                <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>                                                
+                                                <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                             {/if}
 										{/if}
 										</td>
+		<!-- 7.3. Condicion si existe la variable %$smarty.section.indice.first%%-->
 										{if $smarty.section.indice.first}
 											 <td width="158">&nbsp;</td>
 										     <td width="155" class="texto_form">{$campos2[indice][3]}</td>
 											 <td width="193">
+			<!-- 7.3.1. Condicion si el tipo de campo es CHAR-->
 											 {if $campos2[indice][5] eq 'CHAR'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
@@ -705,32 +736,37 @@
 												{else}
 													<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if}/>
 												{/if}
+			<!-- 7.3.2. Condicion si el tipo de campo es DATE-->
 											{elseif $campos2[indice][5] eq 'DATE'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
                                                     <br />
-                                                {/if}	
-												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="10" maxlength="10" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} />		
+                                                {/if}
+												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="10" maxlength="10" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} />
 												<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.3.3. Condicion si el tipo de campo es TIME-->
 											{elseif $campos2[indice][5] eq 'TIME'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
                                                     <br />
                                                 {/if}
 												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="10" maxlength="8" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}readonly=""{else} onkeypress="return validaTime(event, this.id)"{/if} />
-												<span class="text_legend">hh:mm:ss</span>		
+												<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.3.4. Condicion si el tipo de campo es INT O FLOAT-->
 											{elseif $campos2[indice][5] eq 'INT' or $campos2[indice][5] eq 'FLOAT'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
                                                     <br />
-                                                {/if}	
+                                                {/if}
 												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} onkeypress="return validarNumero(event,{if $campos2[indice][5] eq 'FLOAT'}1{else}0{/if},id);" onblur="{$campos2[indice][15]}"/>
+			<!-- 7.3.5. Condicion si el tipo de campo es PASSWORD-->
 											{elseif $campos2[indice][5] eq 'PASSWORD'}
                                                 {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
                                                     <br />
-                                                {/if}   
-                                                <input type="password" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} />	
+                                                {/if}
+                                                <input type="password" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} />
+			<!-- 7.3.6. Condicion si el tipo de campo es BINARY-->
 											{elseif $campos2[indice][5] eq 'BINARY'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
@@ -742,31 +778,33 @@
 												{else}
 													<input type="checkbox" value="1" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" class="{$campos2[indice][11]}" {if $tipo eq 0} {if $campos2[indice][9] neq 0} checked="checked" {/if} {else} {if $campos2[indice][10] neq 0} checked="checked" {/if} {/if} onclick="{$campos2[indice][16]}"/>
 												{/if}
+			<!-- 7.3.7. Condicion si el tipo de campo es COMBO-->
 											{elseif $campos2[indice][5] eq 'COMBO'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
                                                     <br />
                                                 {/if}
 												{if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}
-													
+
 													<select  name="{$campos2[indice][2]}_1" id="{$campos2[indice][2]}_1" class="{$campos2[indice][11]}" disabled="disabled">
 														{if $tipo eq 0}
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][9]}
 														{else}
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][10]}
-														{/if}	
+														{/if}
 													</select>
 													<input type="hidden" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" value="{if $tipo eq 0}{$campos2[indice][9]}{else}{$campos2[indice][10]}{/if}"/>
 												{else}
-													
+
 													<select  name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" onclick="{$campos2[indice][16]}" class="{$campos2[indice][11]}" {if isset($campos[indice][29]) or isset($campos[indice][17])}onchange="{if isset($campos[indice][29])}actualizaDependiente('{$campos[indice][29]}', '{$campos[indice][30]}', this.value, 'NO');{/if}{if isset($campos[indice][17])}{$campos[indice][17]}{/if};"{/if}>
 														{if $tipo eq 0}
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][9]}
 														{else}
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][10]}
-														{/if}	
-													</select>												
+														{/if}
+													</select>
 												{/if}
+			<!-- 7.3.8. Condicion si el tipo de campo es BUSCADOR-->
 											{elseif $campos2[indice][5] eq 'BUSCADOR'}
 												{if $campos2[indice][8] eq 1 && $tipo neq 2 && $tipo neq 3}
 													<table>
@@ -788,7 +826,8 @@
 												{else}
 													<input type="text" name="{$campos2[indice][2]}_txt" id="{$campos2[indice][2]}_txt" size="{$campos2[indice][12]}" class="{$campos2[indice][11]}" value="{$campos2[indice][25]}" />
 													<input type="hidden" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" value="{if $tipo eq 0}{$campos2[indice][9]}{else}{$campos2[indice][10]}{/if}">
-												{/if}	
+												{/if}
+			<!-- 7.3.9. Condicion si el tipo de campo es FILE-->
 											{elseif $campos2[indice][5] eq 'FILE'}
 												{if $campos2[indice][10] neq ''}
 													<a href="{$campos2[indice][10]}" target="_blank" class="texto_form">Ver documento</a>
@@ -800,18 +839,20 @@
 												{/if}
 												{if $campos2[indice][27] neq ''}
 												    <br>
-                                                    <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>                                                    
-                                                {/if}		
+                                                    <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
+                                                {/if}
 											{/if}
 											 </td>
 										{/if}
+		<!-- 7.4. Condicion si son mas de 4 campos-->
 									{else}
 										<td width="69" class="texto_form">{$campos[indice][3]}</td>
 										<td width="175">
+			<!-- 7.4.1. Condicion si el tipo de campo es CHAR-->
 										{if $campos[indice][5] eq 'CHAR'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
-                                                <br />                                             
+                                                <br />
                                             {/if}
 											{if $campos[indice][12] > 60}
 												<textarea name="{$campos[indice][2]}" id="{$campos[indice][2]}" class="{$campos[indice][11]}" {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} tabindex="{$campos[indice][4]}">{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}</textarea>
@@ -824,37 +865,42 @@
 													height:100px;overflow:auto;display:none;" id="res_ord_lis"></div>
 												{/if}
 										<!--Fin de cambio-->
-											{/if}	
+											{/if}
+			<!-- 7.4.2. Condicion si el tipo de campo es DATE-->
 										{elseif $campos[indice][5] eq 'DATE'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
-                                                <br />                                             
-                                            {/if}	
+                                                <br />
+                                            {/if}
 											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="10" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} tabindex="{$campos[indice][4]}"/>
 											<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.4.3. Condicion si el tipo de campo es TIME-->
 										{elseif $campos[indice][5] eq 'TIME'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
-                                                <br />                                             
+                                                <br />
                                             {/if}
 											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="10" maxlength="8" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}readonly=""{else} onkeypress="return validaTime(event, this.id)"{/if} tabindex="{$campos[indice][4]}"/>
-											<span class="text_legend">hh:mm:ss</span>		
+											<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.4.4. Condicion si el tipo de campo es INT o FLOAT-->
 										{elseif $campos[indice][5] eq 'INT' or $campos[indice][5] eq 'FLOAT'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
-                                                <br />                                             
-                                            {/if}	
+                                                <br />
+                                            {/if}
 											<input type="text" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} onkeypress="return validarNumero(event,{if $campos[indice][5] eq 'FLOAT'}1{else}0{/if},id);" tabindex="{$campos[indice][4]}" onblur="{$campos[indice][15]}"/>
+			<!-- 7.4.5. Condicion si el tipo de campo es PASSWORD-->
 										{elseif $campos[indice][5] eq 'PASSWORD'}
                                             {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
                                                 <br />
-                                            {/if}   
-                                            <input type="password" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} />	
+                                            {/if}
+                                            <input type="password" name="{$campos[indice][2]}" id="{$campos[indice][2]}" size="{$campos[indice][12]}" maxlength="{$campos[indice][21]}" class="{$campos[indice][11]}" {if $tipo eq 0} value="{$campos[indice][9]}" {else} value="{$campos[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0} readonly="" {/if} />
+			<!-- 7.4.6. Condicion si el tipo de campo es BINARY-->
 										{elseif $campos[indice][5] eq 'BINARY'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
-                                                <br />                                             
+                                                <br />
                                             {/if}
 											{if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}
 												<input type="hidden" name="{$campos[indice][2]}" id="{$campos[indice][2]}" {if $tipo eq 0} {if $campos[indice][9] neq 0} value="1"{else} value="0"{/if} {else} {if $campos[indice][10] neq 0} value="1" {else} value="0" {/if} {/if}/>
@@ -862,10 +908,11 @@
 											{else}
 												<input type="checkbox" value="1" name="{$campos[indice][2]}" id="{$campos[indice][2]}" class="{$campos[indice][11]}" {if $tipo eq 0} {if $campos[indice][9] neq 0} checked="checked" {/if} {else} {if $campos[indice][10] neq 0} checked="checked" {/if} {/if} tabindex="{$campos[indice][4]}" onclick="{$campos[indice][16]}"/>
 											{/if}
+			<!-- 7.4.7. Condicion si el tipo de campo es COMBO-->
 										{elseif $campos[indice][5] eq 'COMBO'}
 										    {if $campos[indice][27] neq ''}
                                                 <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
-                                                <br />                                             
+                                                <br />
                                             {/if}
 											{if ($tipo eq 2 or $tipo eq 3) or $campos[indice][8] eq 0}
 												<select  name="{$campos[indice][2]}_1" id="{$campos[indice][2]}_1" class="{$campos[indice][11]}" disabled="disabled">
@@ -873,11 +920,11 @@
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][9]}
 													{else}
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][10]}
-													{/if}	
+													{/if}
 												</select>
 												<input type="hidden" name="{$campos[indice][2]}" id="{$campos[indice][2]}" value="{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}"/>
 											{else}
-										<!--Implementación Oscar 17.09.2019 para no poder editar el campo de proveedor en OC al ser edición-->
+										<!--EXCEPCION : Implementacion Oscar 17.09.2019 para no poder editar el campo de proveedor en OC al ser edicion-->
 												<select  name="{$campos[indice][2]}" id="{$campos[indice][2]}" onclick="{$campos[indice][16]}" class="{$campos[indice][11]}" tabindex="{$campos[indice][4]}" {if isset($campos[indice][29]) or isset($campos[indice][17])}onchange="{if isset($campos[indice][29])}actualizaDependiente('{$campos[indice][29]}', '{$campos[indice][30]}', this.value, 'NO');{/if}{if isset($campos[indice][17])}{$campos[indice][17]}{/if};"{/if}>
 													<!--
 												{if $campos[indice][0] eq '95' && ($tipo eq '1' or $tipo eq '2')} disabled="disabled"{/if}-->
@@ -885,11 +932,12 @@
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][9]}
 													{else}
 														{html_options values=$campos[indice][25][0] output=$campos[indice][25][1] selected=$campos[indice][10]}
-													{/if}	
+													{/if}
 												</select>
-										<!--Fin de cambio Oscar 17.09.2019-->			
+										<!--Fin de cambio Oscar 17.09.2019-->
 
 											{/if}
+			<!-- 7.4.8. Condicion si el tipo de campo es BUSCADOR-->
 										{elseif $campos[indice][5] eq 'BUSCADOR'}
 											{if $campos[indice][8] eq 1 && $tipo neq 2 && $tipo neq 3}
 												<table>
@@ -900,7 +948,7 @@
 														<td>
 												<!--<img onclick="botonBuscador('{$campos[indice][2]}')" src="{$rooturl}img/flecha_abajo.gif" style="height:12px;" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" />-->
 														</td>
-													</tr>	
+													</tr>
 												</table>
 												<div id="{$campos[indice][2]}_div" style="visibility:hidden; display:none; position:absolute; z-index:3;">
 													<select id="{$campos[indice][2]}_sel" size="4" onclick="asignavalorbusc('{$campos[indice][2]}');{if $campos[indice][29] neq ''}actualizaDependiente('{$campos[indice][29]}', '{$campos[indice][30]}', this.value, 'NO');{/if}" onkeydown="teclaCombo('{$campos[indice][2]}',event)" datosDB="getBuscador.php?id={$campos[indice][0]}">
@@ -912,7 +960,9 @@
 												<input type="text" name="{$campos[indice][2]}_txt" id="{$campos[indice][2]}_txt" size="{$campos[indice][12]}" class="{$campos[indice][11]}" value="{$campos[indice][25]}" readonly />
 												<input type="hidden" name="{$campos[indice][2]}" id="{$campos[indice][2]}" value="{if $tipo eq 0}{$campos[indice][9]}{else}{$campos[indice][10]}{/if}">
 											{/if}
+			<!-- 7.4.9. Condicion si el tipo de campo es FILE-->
 										{elseif $campos[indice][5] eq 'FILE'}
+
 											{if $campos[indice][10] neq ''}
 												<a href="{$campos[indice][10]}" target="_blank" class="texto_form">Ver documento</a>
 											{/if}
@@ -923,15 +973,17 @@
 											{/if}
 											{if $campos[indice][27] neq ''}
 											     <br>
-                                                <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>                                                                                             
-                                            {/if}	
+                                                <span class="{$campos[indice][28]}">({$campos[indice][27]})</span>
+                                            {/if}
 										{/if}
 										</td>
+		<!-- 7.5 Condiciones si el campo display es !='' -->
 										{if $campos2[indice][3] neq ''}
 											<td width="158">&nbsp;</td>
 										    <td width="155" class="texto_form">{$campos2[indice][3]}</td>
 											<td width="193" {if $campos2[indice][0] eq '466'}align="center"{/if}>
-											 {if $campos2[indice][5] eq 'CHAR'}											   
+											 {if $campos2[indice][5] eq 'CHAR'}
+			<!-- 7.5.1. Condicion si el tipo de campo es CHAR-->
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
                                                     <br />
@@ -941,10 +993,10 @@
 												{else}
 													<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} tabindex="{$campos2[indice][4]}" {if $campos2[indice][0] eq '466'}onkeyup="crea_previo_etiqueta();"{/if}/>
 												{/if}
-											<!--Implementación Oscar 19.02.2019 para previo de etiqueta-->
+											<!--Excepcion : Implementacion Oscar 19.02.2019 para previo de etiqueta de productos-->
 												{if $campos2[indice][0] eq '466'}
 													<div id="previo_etiqueta" style="position:relative;top: 0;border:4px solid blue;width:400px;background:white;
-													height:190px;overflow:none;margin:5px;display: none;"> 
+													height:190px;overflow:none;margin:5px;display: none;">
 													</div>
 													{literal}
 													<script type="text/javascript">
@@ -957,45 +1009,50 @@
 																"&ord_lsta="+$("#orden_lista").val()+"&id_prod="+$("#id_productos").val());
 															//var arr_mq=es_pd_mq.split("|");
 															$("#previo_etiqueta").html(ajax_previo_etq);
-															$("#previo_etiqueta").css("display","block");				
+															$("#previo_etiqueta").css("display","block");
 														}
 													</script>
 													{/literal}
 												{/if}
-											<!--Fin de Cambio Oscar 19.02.2018-->												
+											<!--Fin de Cambio Oscar 19.02.2018-->
+			<!-- 7.5.2. Condicion si el tipo de campo es DATE-->
 											{elseif $campos2[indice][5] eq 'DATE'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
-                                                    <br />                                             
-                                                {/if}	
+                                                    <br />
+                                                {/if}
 												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="10" maxlength="10" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}readonly=""{else}onfocus="calendario(this)"{/if} tabindex="{$campos2[indice][4]}"/>
-												<span class="text_legend">yy-mm-dd</span>	
+												<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.5.3. Condicion si el tipo de campo es TIME-->
 											{elseif $campos2[indice][5] eq 'TIME'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
-                                                    <br />                                             
+                                                    <br />
                                                 {/if}
 												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="10" maxlength="8" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}readonly=""{else} onkeypress="return validaTime(event, this.id)"{/if} tabindex="{$campos2[indice][4]}"/>
-												<span class="text_legend">hh:mm:ss</span>	
+												<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.5.4. Condicion si el tipo de campo es INT o FLOAT-->
 											{elseif $campos2[indice][5] eq 'INT' or $campos2[indice][5] eq 'FLOAT'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
-                                                    <br />                                             
-                                                {/if}	
-                                        <!--Implementación Oscar 27.02.2018 se agrega if id eq 615 or 617 para hacner cambio de tipo de pago de usuario-->
-												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} onkeypress="return validarNumero(event,{if $campos2[indice][5] eq 'FLOAT'}1{else}0{/if},id);" tabindex="{$campos2[indice][4]}" onblur="{$campos2[indice][15]}" 
+                                                    <br />
+                                                {/if}
+                                        <!-- Excepcion : Implementacion Oscar 27.02.2018 se agrega if id eq 615 or 617 para hacer cambio de tipo de pago de usuario-->
+												<input type="text" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} onkeypress="return validarNumero(event,{if $campos2[indice][5] eq 'FLOAT'}1{else}0{/if},id);" tabindex="{$campos2[indice][4]}" onblur="{$campos2[indice][15]}"
 												{if ($campos2[indice][0] eq '615' OR $campos2[indice][0] eq '617')} onclick="{$campos2[indice][16]}" {/if}/>
 										<!--fin de cambio 27.02.2018-->
+			<!-- 7.5.5. Condicion si el tipo de campo es PASSWORD-->
 											{elseif $campos2[indice][5] eq 'PASSWORD'}
                                                 {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
                                                     <br />
-                                                {/if}   
-                                                <input type="password" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} />	
+                                                {/if}
+                                                <input type="password" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" size="{$campos2[indice][12]}" maxlength="{$campos2[indice][21]}" class="{$campos2[indice][11]}" {if $tipo eq 0} value="{$campos2[indice][9]}" {else} value="{$campos2[indice][10]}" {/if} {if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0} readonly="" {/if} />
+			<!-- 7.5.6. Condicion si el tipo de campo es BINARY-->
 											{elseif $campos2[indice][5] eq 'BINARY'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
-                                                    <br />                                             
+                                                    <br />
                                                 {/if}
 												{if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}
 													<input type="hidden" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" {if $tipo eq 0} {if $campos2[indice][9] neq 0} value="1"{else} value="0"{/if} {else} {if $campos2[indice][10] neq 0} value="1" {else} value="0" {/if} {/if}/>
@@ -1003,10 +1060,11 @@
 												{else}
 													<input type="checkbox" value="1" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" class="{$campos2[indice][11]}" {if $tipo eq 0} {if $campos2[indice][9] neq 0} checked="checked" {/if} {else} {if $campos2[indice][10] neq 0} checked="checked" {/if} {/if} tabindex="{$campos2[indice][4]}" onclick="{$campos2[indice][16]}"/>
 												{/if}
+			<!-- 7.5.7. Condicion si el tipo de campo es COMBO-->
 											{elseif $campos2[indice][5] eq 'COMBO'}
 											    {if $campos2[indice][27] neq ''}
                                                     <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
-                                                    <br />                                             
+                                                    <br />
                                                 {/if}
 												{if ($tipo eq 2 or $tipo eq 3) or $campos2[indice][8] eq 0}
 													<select  name="{$campos2[indice][2]}_1" id="{$campos2[indice][2]}_1" class="{$campos2[indice][11]}" disabled="disabled">
@@ -1014,7 +1072,7 @@
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][9]}
 														{else}
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][10]}
-														{/if}	
+														{/if}
 													</select>
 													<input type="hidden" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" value="{if $tipo eq 0}{$campos2[indice][9]}{else}{$campos2[indice][10]}{/if}"/>
 												{else}
@@ -1024,9 +1082,10 @@
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][9]}
 														{else}
 															{html_options values=$campos2[indice][25][0] output=$campos2[indice][25][1] selected=$campos2[indice][10]}
-														{/if}	
-													</select>													
+														{/if}
+													</select>
 												{/if}
+			<!-- 7.5.8. Condicion si el tipo de campo es BUSCADOR-->
 											{elseif $campos2[indice][5] eq 'BUSCADOR'}
 												{if $campos2[indice][8] eq 1 && $tipo neq 2 && $tipo neq 3}
 													<table>
@@ -1048,7 +1107,8 @@
 												{else}
 													<input type="text" name="{$campos2[indice][2]}_txt" id="{$campos2[indice][2]}_txt" size="{$campos2[indice][12]}" class="{$campos2[indice][11]}" value="{$campos2[indice][25]}" />
 													<input type="hidden" name="{$campos2[indice][2]}" id="{$campos2[indice][2]}" value="{if $tipo eq 0}{$campos2[indice][9]}{else}{$campos2[indice][10]}{/if}">
-												{/if}	
+												{/if}
+			<!-- 7.5.9. Condicion si el tipo de campo es FILE-->
 											{elseif $campos2[indice][5] eq 'FILE'}
 												{if $campos2[indice][10] neq ''}
 													<a href="{$campos2[indice][10]}" target="_blank" class="texto_form">Ver documento</a>
@@ -1060,79 +1120,88 @@
 												{/if}
 												{if $campos2[indice][27] neq ''}
 												    <br>
-                                                    <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>                                                                                                 
-                                                {/if}	
+                                                    <span class="{$campos2[indice][28]}">({$campos2[indice][27]})</span>
+                                                {/if}
 											{/if}
 											 </td>
 										{/if}
-									{/if}	
+									{/if}
 								</tr>
+	<!-- 8. Fin de iteracion de campos visibles -->
 							{/section}
-							
-							
-							
-								
-							
-							
-							
 						</table>
+	<!-- 9. Iteracion de campos no visibles -->
 						{section loop=$datosInvisibles name=indice}
 							<input type="hidden" name="{$datosInvisibles[indice][1]}" id="{$datosInvisibles[indice][1]}" value="{if $tipo eq 0}{$datosInvisibles[indice][3]}{else}{$datosInvisibles[indice][4]}{/if}"/>
 						{/section}
                  	</div>
 				{/if}
+	<!-- 10. Seccion de botones de opciones-->
                <div class="Botones">
-               
+               	<!-- Excepcion : Implementacion para exportar/importar lista de precios -->
                		{if $tabla eq 'ec_precios'}
                			<a href="#" class="fl" title="Exportar" onclick="window.open('../especiales/listaCSV.php?id_precio={$llave}')">Exportar </a>
                			<a href="#" class="fr" title="Importar" onclick="location.href='../especiales/importaCSV.php?id_precio={$llave}'">Importar </a>
-               			<a href="#" class="fl" title="Exportar para mayoreo" 
+               			<a href="#" class="fl" title="Exportar para mayoreo"
                			onclick='window.open("../especiales/listaCSV.php?id_precio={$llave}&#x26para_mayoreo=1")'>Exportar<br>Mayoreo</a>
                		{/if}
-               		
+
+               	<!-- Excepcion : Implementacion para exportar/importar estacionalidades -->
                		{if $tabla eq 'ec_estacionalidad'}
                			<a href="#" class="fl" title="Exportar" onclick="window.open('../especiales/listaEstCSV.php?id_estacionalidad={$llave}')">Exportar </a>
                			<a href="#" class="fr" title="Importar" onclick="location.href='../especiales/importaEstCSV.php?id_estacionalidad={$llave}'">Importar </a>
                		{/if}
-               
+
+               	<!-- No se usa -->
                     {if $tabla eq 'ec_autorizacion' && $tipo == 1}
-                    	
+
 						<a href="#"  class="fr b" title="Rechazar"  onclick="document.getElementById('autorizado').checked=false;valida()">Rechazar</a>
                     	<a href="#"  class="fr b" title="Autorizar"  onclick="document.getElementById('autorizado').checked=true;valida()">Autorizar</a>
 
-                    {/if}                   
-               
-               </div>  
+                    {/if}
 
-<!--Implementación de ventana emergente para avisos Oscar 11.04.2018-->
+               </div>
+
+<!-- 11. Implementacion de ventana emergente para avisos Oscar 11.04.2018-->
 	<div id="ventana_emergente_global" style="position:absolute;z-index:1000;width:100%;height:250%;background:rgba(0,0,0,.8);top:0;left:0;display:none;">
 		<p align="right"><img src="../../img/especiales/cierra.png" height="50px" onclick="document.getElementById('ventana_emergente_global').style.display='none';"></p>
 		<p id="contenido_emergente_global"></p><!--En este div se cargan los datos o avisos que se quieren mostrar en pantalla-->
 	</div>
 
-<!--Fin de implementación de ventana emergenete-->
-	
-	
+<!--Fin de implementacion de ventana emergenete-->
+
+
+<!-- 12. Seccion de grids-->
 	{section loop=$gridArray name=x}
-	
 		<input type="hidden" name="file{$gridArray[x][1]}" value="">
-		
+	<!-- Impementacion Oscar 17-09-2020 para insertar separarador de venta en linea productos-->
+    		{if $gridArray[x][0] eq '60'}
+		<div id="bg_seccion" style="">
+
+    			{include file="general/seccionProductosLinea.tpl"}
+   
+		</div>
+			{/if}
+    <!-- Fin de cambio Oscar 17-09-2020 -->
 		<div id="bg_seccion">
+    		
     		<div class="name_module" align="center">
+	
+    
 
     			<table>
 					<tr valign="middle">
 						<td><p class="margen">{$gridArray[x][2]}<img src="../../img/especiales/add.png" id="desp_{$smarty.section.x.index}" width="35px" style="top:20px;position:relative;padding:10px;" onClick="despliega(1,{$smarty.section.x.index});"></p></td>
-                       
+
 					</tr>
 				</table><br>
     		</div>
-    <!--implementación de Oscar 12/02/2018-->
+    <!-- 12.1. Implementacion de Oscar 12/02/2018 Para buscador de grids-->
     	{if $gridArray[x][21] eq '1'}<!--condicionamos que solo muestre buscador si el grid asi lo marca en la BD  && ($tipo eq '0' || $tipo eq '1')-->
     		<br><br>
-			<div style="border:1px solid;display:none;" id="div_busc_grid_{$smarty.section.x.index}">
-				<p align="left" style="position:absolute;"><b>Buscador:</b></p>
-				<input type="text" id="b_g_{$smarty.section.x.index}" style="width:50%;" onkeyup="activa_buscador_general(this,'{$smarty.section.x.index}','{$tabla}','{$no_tabla}',event);">
+			<div style="border:0;display:none;" id="div_busc_grid_{$smarty.section.x.index}">
+				<span align="left" style="position:absolute;padding:0; font-size:15px; width : 300px;"><b>Buscador:</b></span>
+				<input type="text" id="b_g_{$smarty.section.x.index}" style="width:50%;" onkeyup="activa_buscador_general(this,'{$smarty.section.x.index}','{$tabla}','{$no_tabla}',event ,'{$gridArray[x][0]}', '{$gridArray[x][1]}');">
 				<input type="text" id="cantidad_{$smarty.section.x.index}" style="width:3%;{if $gridArray[x][0] eq '43' || $gridArray[x][0] eq '24'}display:none;{/if}" onkeyup="validarEv(event,{$smarty.section.x.index});">
 				{if $gridArray[x][0] eq '43' || $gridArray[x][0] eq '24'}
 					<img src="../../img/busca_gral.png" height="50px;" style="top:17px;position:relative;" id="img_add_{$smarty.section.x.index}">
@@ -1145,11 +1214,11 @@
 				<input type="hidden" value="" id="aux_2_{$smarty.section.x.index}"><!--descripcion-->
 			</div>
 	<!--Implementación de Oscar 16.05.2018 para exportar/importar lista de estacionalidades
-	{if $tabla eq 'ec_estacionalidad' && $no_tabla eq '0'}	
+	{if $tabla eq 'ec_estacionalidad' && $no_tabla eq '0'}
 		<div style="position:absolute;bottom:-40%;z-index:3;">
 			<input type="button" id="bot_imp_estac" onclick="importa_exporta_estacionalidades(2);" value="Importar estacionalidad" style="padding:5px;border-radius:5px;">
 			<input type="button"  onclick="importa_exporta_estacionalidades(1);" value="Exportar estacionalidad"style="padding:5px;border-radius:5px;">
-			
+
 			<form class="form-inline">
 				<input type="file" id="imp_csv_prd" style="display:none;">
 				<p class="nom_csv">
@@ -1161,14 +1230,14 @@
 	{/if}
 	fin de implementación OScar 16.05.2018-->
 
-	
+
 			{literal}
 		<!--/*********************Implementación de importar/exportar estacionalidades con excel Oscar 16.05.2018******************************************************/-->
 			<!--incluimos libreria para poner csv en temporal-->
 				<script type="text/JavaScript">
-			/******************************************************Implementación de Buscador Global Oscar 2018**********************************************************/
+    // 12.2. Funcion que realiza la busqueda de registros por medio de archivo /code/ajax/buscadorGlobal.php
 					var tmp_busc="";
-					function activa_buscador_general(t,nu,ta,nt,e){
+					function activa_buscador_general(t,nu,ta,nt,e, grid_id, grid_nombre){//Se agrega grid_id, grid_nombre Oscar 17-09-2020
 						if(e.keyCode==40){
 							if($('#r_1')){
 								resalta_busc(0,1);
@@ -1176,18 +1245,20 @@
 							return false;
 						}
 					{/literal}
-						var id_gr='{$gridArray[x][0]}';//capturamos el id del grid
-						var posic='{$gridArray[x][1]}';//capturamos el nombre del grid
+						/*var id_gr='{$gridArray[x][0]}';//capturamos el id del grid
+						var posic='{$gridArray[x][1]}';//capturamos el nombre del grid*/
+			/*Implementacion Oscar 2020 para obtener valor de llave primaria de la pantalla*/
+						var llave_primaria = '{$llave}';
 						//alert('{$tipo}');
 					{literal}
-				/*implementación Oscar 09.09.2019 para mandar el id de proveedor en el buscador de detalle de ordenes de compra*/
+				//Excepcion : Implementacion Oscar 09.09.2019 para mandar el id de proveedor en el buscador de detalle de ordenes de compra
 						var id_condicion="";
-						if(id_gr==5){
+						if(grid_id == 5){
 							id_condicion=$("#id_proveedor").val();
-						} 
+						}
 				/**/
 					//sacamos las filas existentes en el grid
-						var fil_ex=($('#'+posic+' tr').length-5);
+						var fil_ex=($('#'+ grid_nombre +' tr').length-5);
 						//alert(t.value+', '+ta+', '+nt+', '+id_gr+posic);
 					//sacamos valor del buscador
 						var txt_busc=t.value;
@@ -1199,7 +1270,10 @@
 							type:'post',
 							url:'../ajax/buscadorGlobal.php',
 							cache:false,
-							data:{clave:txt_busc,tabla:ta,no_t:nt,id:id_gr,fil_exist:fil_ex,n_d:nu,grid_nom:posic,id_cond:id_condicion},
+							data:{clave:txt_busc,tabla:ta,no_t:nt, id : grid_id, fil_exist:fil_ex,n_d:nu,
+								grid_nom : grid_nombre, id_cond:id_condicion,
+								llave_principal : llave_primaria/*Implementacion Oscar 2020 para enviar valor de llave primaria de la pantalla*/
+							},
 							success:function(datos){
 								var respuesta=datos.split('|');
 								if(respuesta[0]!='ok'){
@@ -1213,7 +1287,7 @@
 							}
 						});
 					}
-			//funcion que valida acción sobre opciones
+    // 12.3. Funcion que valida accion de teclas sobre opciones
 					function eje(e,num_res,id_opc){
 						//alert(e.keyCode+num_res+id_opc);
 							//alert(e.keyCode);
@@ -1232,7 +1306,8 @@
 							}
 							return true;
 					}
-			//función que hace hover con flechas
+
+	//12.4 Funcion que resalta hover
 					function resalta_busc(actual,flag){
 						var nvo=actual+(flag);
 					//alert(nvo);
@@ -1248,24 +1323,27 @@
 						return false;
 					}
 
-			//funcion que pone producto en buscador y enfoca a cantidad
-					function insertaBuscador(n_b,valores){
+	//12.5. Funcion que pone producto en buscador y enfoca a cantidad
+					function insertaBuscador(n_b, valores, grid_id, grid_nombre){
 						//alert(n_b+"\n"+valores);
 						if(valores=="" || valores==null){
 							alert('No hay valores válidos');
 							return false;
-						}			
+						}
 						$("#res_bus_glob_"+n_b).html('');//limpiamos resultados
 						$("#res_bus_glob_"+n_b).css("display","none");//ocultamos div de resultados
 						$("#cantidad_"+n_b).val("1");//asignamos uno por default a cantidad
 						$("#cantidad_"+n_b).select();
 					//preparamos el boton para agregar producto seleccionado
 						{/literal}
-						var id_gr='{$gridArray[x][0]}';//capturamos el id del grid
-						var posic='{$gridArray[x][1]}';//capturamos el nombre del grid
+						/*'{assign var="count_tmp" value="'+n_b+'"}';
+						alert('{$count_tmp}');
+						var id_gr='{$gridArray[count_tmp][0]}';//capturamos el id del grid
+						var posic='{$gridArray[count_tmp][1]}';//capturamos el nombre del grid
+						alert(posic);*/
 					{literal}
 				//validamos que el registro no este en el grid
-						var valida_gr=validaRegGrid(id_gr,n_b,posic);
+						var valida_gr=validaRegGrid(grid_id,n_b,grid_nombre);
 						if(valida_gr=='1'){
 //							alert('El registro ya se encuentra en el grid...');
 							return false;
@@ -1276,8 +1354,8 @@
 						//descomponemos descripcion de buscador
 							var arr=document.getElementById('b_g_'+n_b).value.split("°");
 						/***********************************implementación de confirmación de movimiento de almacen prod c/maquila Oscar 11.04.2018*/
-							if(id_gr==9){//si es el grid de movimientos de almacén entra al proceso de validación...
-								var es_pd_mq=ajaxR("../ajax/validaMovProdMaq.php?id_pr="+arr[0]);	
+							if(grid_id == 9){//si es el grid de movimientos de almacén entra al proceso de validación...
+								var es_pd_mq=ajaxR("../ajax/validaMovProdMaq.php?id_pr="+arr[0]);
 								var arr_mq=es_pd_mq.split("|");
 								if(arr_mq[0]=='ok'){
 									if(arr_mq[1]=='maquilado'){
@@ -1296,18 +1374,18 @@
 							}
 						//fin de implementación 11.04.2018
 					//sacamos las filas existentes en el grid
-						var fil_ex=($('#'+posic+' tr').length-5);
+						var fil_ex=($('#'+grid_nombre+' tr').length-5);
 						$.ajax({
 							type:'post',
 							url:'../ajax/buscadorGlobal.php',
 							cache:false,
-							data:{flag:1,id:id_gr,fil_exist:fil_ex,clave:arr[1],n_d:n_b},
+							data:{flag:1,id : grid_id, fil_exist:fil_ex,clave:arr[1],n_d:n_b},
 							success:function(dat){
 								var resul=dat.split("|");
 								if(resul[0]!='ok'){
 									alert("Error!!!\n\n"+dat)
 								}else{
-									$("#img_add_"+n_b).attr("onclick",resul[2]);		
+									$("#img_add_"+n_b).attr("onclick",resul[2]);
 								}
 							}
 							});
@@ -1316,14 +1394,14 @@
 						//document.getElementById('img_add_'+n_b).style.display="none";
 					}
 
-			//funcion que valida datos
+	//12.6. Funcion que valida evento click o intro
 					function validarEv(e,nu_bus){
 						if(e.keyCode==13||e=='click'){
 							$("#img_add_"+nu_bus).click();
 						}
 
 					}
-			//
+	//12.7. Funcion que valida si el registro ya existe en en grid
 					function validaRegGrid(id_g,n_b,posic){
 						//alert(id_g+":"+n_b+":"+posic);
 						$.ajax({
@@ -1340,7 +1418,7 @@
 							//sacamos el numero de registros
 								var fil_ex=($('#'+posic+' tr').length-4);
 								var arr=document.getElementById('b_g_'+n_b).value.split("°");
-								for(var i=0;i<=fil_ex;i++){//se cambia menor o igual condición del ciclo for Oscar 26.03.2018
+								for(var i=0;i<=fil_ex;i++){//se cambia menor o igual condicion del ciclo for Oscar 26.03.2018
 									//alert(posic+'_'+arr_re[1]+"_"+i);
 									if(document.getElementById(posic+"_"+arr_re[1]+"_"+i)){//campo a comparar
 									var tmp=document.getElementById(posic+"_"+arr_re[1]+"_"+i).innerHTML;
@@ -1353,15 +1431,17 @@
 										}
 									}
 								}//fin de for i
+							//Excepcion 
 								if(id_g==43 || id_g==24){
 									alert("El producto no fue encontrado!!!");
 									$("#cantidad_0").val('');
 									$("#b_g_0").select();
 								}
-							}	
+							}
 						});
 					}
 				</script>
+	<!-- 12.8. Estilos CSS del buscador de grids -->
 				<style type="text/css">
 					.opcion{
 						height: 30px;
@@ -1374,52 +1454,53 @@
 		{/if}
 	<!--Fin de Cambio 12-02-2017-->
 
-			<div style="border:0px solid;display:none;height:100px;position:relative;z-index:100;" id="div_grid_{$smarty.section.x.index}"><!--implementación de Oscar 31.07.2018 para no mostrar todos los grids   (se quita la clase class="tablas-res_")-->
-			
-				{if $tabla eq 'ec_transferencias' && $no_tabla eq '3'}	
-				
+	<!-- 12.9. Div que contiene a cada Grid -->
+			<div style="border:0px solid;display:none;height:100px;position:relative;z-index:100;" id="div_grid_{$smarty.section.x.index}"><!--12.9.1. Implementacion de Oscar 31.07.2018 para no mostrar la informacion de todos los grids   (se quita la clase class="tablas-res_")-->
+		<!--Excepcion : para mostrar el buscador por codigo de barras en transferencias -->
+				{if $tabla eq 'ec_transferencias' && $no_tabla eq '3'}
+
 					{literal}
 					<style>
-				
+
 						.buscaProductoBar{
 							position:relative;
 							top:-20px;
 						}
-						
+
 						.inProductoBar{
 							width:200px !important;
 						}
-				
+
 					</style>
-					
+
 					<script>
-					
-					
+
+
 						function validaBar(obj)
 						{
 							{/literal}
 								var llave='{$llave}';
 							{literal}
-							
-							
+
+
 							var url="../ajax/validaProductoVer.php?id_transferencia="+llave+"&code="+obj.value;
-							
+
 							var res=ajaxR(url);
-							
+
 							var aux=res.split('|');
-							
+
 							if(aux[0] != 'exito')
 							{
 								alert(res);
 								return false;
 							}
-							
-							
+
+
 							var id_prod=aux[1];
-							
-							
+
+
 							var num=NumFilas('transferenciasProductos');
-							
+
 							for(var i=0;i<num;i++)
 							{
 								if(celdaValorXY('transferenciasProductos', 2, i) == id_prod)
@@ -1431,90 +1512,91 @@
 									htmlXY('transferenciasProductos', 7, i, aux);
 								}
 							}
-							
-							
+
+
 							obj.value="";
 							obj.focus();
-							
-							
+
+
 						}
-						
+
 						function validaEntBar(eve, obj)
 						{
-							var key=0;	
-							key=(eve.which) ? eve.which : eve.keyCode;	
-							
-							
+							var key=0;
+							key=(eve.which) ? eve.which : eve.keyCode;
+
+
 							if(key == 13)
 							{
-								validaBar(obj);	
+								validaBar(obj);
 							}
-							
+
 						}
-					
-					
-					
+
+
+
 					</script>
-					
-					
-					
+
+
+
 					{/literal}
-				
+
 					<div class="buscaProductoBar">
 						Código de barras:
 						<input type="text" name="codigo" class="inProductoBar" onkeyup="validaEntBar(event, this)">
 						<input type="button" class="boton" onclick="validaBar(codigo)" value="Validar">
 					</div>
-						
+
 				{/if}
-				
+
+		<!--Excepcion : para mostrar el buscador por codigo de barras en transferencias -->
 				{if $tabla eq 'ec_transferencias' && $no_tabla eq '0'}
-				
-				
+
+
 					{literal}
 					<style>
-				
+
 						.buscaProductoBar{
 							position:relative;
 							top:-20px;
 						}
-						
+
 						.inProductoBar{
 							width:200px !important;
 						}
-				
+
 					</style>
-					
+
 					<script>
-					
-					
+
+
 						function validaBar(obj)
 						{
 							{/literal}
 								var llave='{$llave}';
 							{literal}
-							
-							
+
+
 							var url="../ajax/validaProductoTrans.php?code="+obj.value;
-							
+
 							var res=ajaxR(url);
-							
+
 							var aux=res.split('|');
-							
+
 							if(aux[0] != 'exito')
 							{
 								alert(res);
 								return false;
 							}
-							
-							
+
+
 							//alert(aux[2]);
-							
+
 							var id_prod=aux[1];
 							var nver=0;
-							
+
 							var num=NumFilas('transferenciasProductos');
-							
+
 							for(var i=0;i<num;i++)
 							{
 								if(celdaValorXY('transferenciasProductos', 2, i) == id_prod)
@@ -1527,63 +1609,62 @@
 									nver++;
 								}
 							}
-							
-							
+
+
 							if(nver == 0)
 							{
 								InsertaFilaNoVal('transferenciasProductos');
-								
-								
+
+
 								valorXYNoOnChange('transferenciasProductos', 2, num, aux[1]);
 								valorXYNoOnChange('transferenciasProductos', 3, num, aux[2]);
 								valorXY('transferenciasProductos', 6, num, -1);
 								valorXY('transferenciasProductos', 10, num, 1);
 								valorXY('transferenciasProductos', 7, num, 1);
 								valorXY('transferenciasProductos', 8, num, 1);
-								
+
 								//htmlXY('transferenciasProductos', 3, num, aux[2]);
-								
+
 							}
-							
+
 							obj.value="";
 							obj.focus();
-							
-							
+
+
 						}
-						
+
 						function validaEntBar(eve, obj)
 						{
-							var key=0;	
-							key=(eve.which) ? eve.which : eve.keyCode;	
-							
-							
+							var key=0;
+							key=(eve.which) ? eve.which : eve.keyCode;
+
+
 							if(key == 13)
 							{
-								validaBar(obj);	
+								validaBar(obj);
 							}
-							
+
 						}
-					
-					
-					
+
+
+
 					</script>
-					
-					
-					
+
+
+
 					{/literal}
-				
-				
+
+
 					<div class="buscaProductoBar">
 						C&oacute;digo de barras:
 						<input type="text" name="codigo" class="inProductoBar" onkeyup="validaEntBar(event, this)">
 						<input type="button" class="boton" onclick="validaBar(codigo)" value="Validar">
 					</div>
-				
+
 				{/if}
-			
-			
+
 				{if ($tabla64 eq 'ZWNfdHJhbnNmZXJlbmNpYXM=' && $tipo eq '0') or (($tipo == 0 or $tipo == 1) and $gridArray[x][6] neq 'false')}
-			
+
             	<div class="submenu">
 
 					{if $tabla64 eq 'ZWNfdHJhbnNmZXJlbmNpYXM=NO' && $tipo eq '0'}
@@ -1592,34 +1673,77 @@
             				<p>Productos</p>
             			</div>
             		{/if}
-   
+	<!-- 12.10. Menu lateral boton para agregar fila en el grid-->
 					{if ($tipo == 0 or $tipo == 1) and $gridArray[x][6] neq 'false'}
 						<div class="Fila" title="clic para agregar un nuevo registro" onclick="InsertaFila('{$gridArray[x][1]}')">
 							<p>Nueva Fila</p>
 						</div>
 					{/if}
 				</div>
-				
+
 				{/if}
 
  				<!--Termina el menu lateral de los conetenidos-->
-			 	
+
  			<div id="cosa" align="center"><!--style="display:none;"-->
 
-	<!--Implementacion Oscar 22.11.2019 para mostrar el mensaje en el grid de pagos-->
+	<!--Excepcion : Implementacion Oscar 22.11.2019 para mostrar el mensaje en el grid de pagos-->
 				{if $gridArray[x][0] eq '7'}
 					<p align="center" style="color:red;font-size:25px;">Si modifica uno de estos pagos no se verá reflejado; hay que modificarlo manualmente en los pagos a proveedor por partida</p>
 				{/if}
+	<!--Excepcion : Implementacion Oscar 22.11.2019 para mostrar el mensaje en el grid de pagos-->
+	
+				{if $gridArray[x][0] eq '65'}
+					<p align="left" style="font-size:25px;">Imagen Principal</p>
+					<div align="center" style="font-size:20px; position: relative; left:0; width:80%; border: 1px solid; padding: 10px;
+					background:gray; color: white;">
+						
+						<label>Nombre : </label>
+						<input type="text" id="nombre_img_principal_editable" style="width : 250px;"
+						onchange="cambia_valor_nombre_img_principal();">
+						
+						<label>Extension : </label>
+						<select id="formato_imagen_principal" style="padding:10px;"
+						onchange="cambia_valor_nombre_img_principal();">
+							{section loop=$formatos_imagenes name=x_formatos}
+								{html_options values=$formatos_imagenes[x_formatos][0] output=$formatos_imagenes[x_formatos][1] }
+							{/section}
+						</select>
+						<label>  </label>
+						<input type="text" name="nombre_img_principal" id="nombre_img_principal" value="{$precios_especiales[7]}"
+						style="width : 250px;" readonly placeholder="Nombre Completo">
+						<label> <button type="button" onclick="limpia_valor_img_principal();">X</button> </label><br>
+					</div>
+					<p align="left" style="font-size:25px;">Imagenes Adicionales</p>
+					{literal}
+						<script type="text/javascript">
+							function cambia_valor_nombre_img_principal(){
+								var nom_img_princ = $("#nombre_img_principal_editable").val().trim();
+								var nom_form_img_princ =  $("#formato_imagen_principal option:selected").text().trim();
+								$("#nombre_img_principal").val( nom_img_princ + '.' + nom_form_img_princ);
+							}
+							function limpia_valor_img_principal(){
+								if(!confirm("Realmente desea eliminar el valor de la imagen principal") ){
+									return false;
+								}
+								$("#nombre_img_principal_editable").val('');
+								$("#nombre_img_principal").val('');
+							}
+						</script>
+					{/literal}
+
+				{/if}
+
 	<!--Fin de cambio Oscar 22.11.2019-->
- 		<!--Comienza el menu lateral de los contenidos-->
- 			<!--Se implementa {$filtro_fechas_1} en el atributo datos para filtrar grid por rango Oscar 14.08.2018-->
+ 		<!-- 12.11. Tabla del grid (contiene datos de cabecera y configuracion del grid)-->
+ 			<!--12.11.1. Se implementa {$filtro_fechas_1} en el atributo datos para filtrar grid por rango Oscar 14.08.2018-->
  				<table id="{$gridArray[x][1]}" cellpadding="0" cellspacing="0" border="1" Alto="{$gridArray[x][9]}"
                    conScroll="{$gridArray[x][8]}" validaNuevo="{$gridArray[x][6]}" despuesInsertar="" AltoCelda="25" auxiliar="0" ruta="../../img/grid/"
                    validaElimina="{$gridArray[x][7]}" Datos="{$gridArray[x][10]}{$llave}&campoid={$gridArray[x][16]}&id_grid={$gridArray[x][0]}&id_PF={$id_PF}&rango_fechas={$filtro_fechas_1}"
                    verFooter="{$gridArray[x][12]}" guardaEn="{$gridArray[x][11]}{$llave}&campoid={$gridArray[x][16]}&id_grid={$gridArray[x][0]}&make={$tipo}"
                    listado="{$gridArray[x][13]}" class="tabla_Grid_RC" scrollH="N" despuesEliminar="" >
-                	<tr class="HeaderCell">                    
-                <!--Modificacion de Oscar 07.06.2019 para mandar la llave al archivo que carga los combos del grid en atributo "datosDB"-->  
+                	<tr class="HeaderCell">
+                <!-- 12.11.2. Modificacion de Oscar 07.06.2019 para mandar la llave al archivo que carga los combos del grid en atributo datosDB-->
                     	{section loop=$gridArray[x][20] name=y}
                     		{if $gridArray[x][20][y][3] neq 'libre'}
 	                        	<td tipo="{$gridArray[x][20][y][3]}" modificable="{$gridArray[x][20][y][4]}" mascara="{$gridArray[x][20][y][5]}" align="{$gridArray[x][20][y][6]}" formula="{$gridArray[x][20][y][7]}" datosdb="../grid/getCombo.php?id={$gridArray[x][20][y][0]}&llave={$llave}" depende="{$gridArray[x][20][y][9]}" onChange="{$gridArray[x][20][y][10]}" largo_combo="{$gridArray[x][20][y][11]}" verSumatoria="{$gridArray[x][20][y][12]}" valida="{$gridArray[x][20][y][13]}" onkey="{$gridArray[x][20][y][14]}" inicial="{$gridArray[x][20][y][15]}" width="{$gridArray[x][20][y][17]}" offsetwidth="{$gridArray[x][20][y][17]}" on_Click="{$gridArray[x][20][y][19]}" multiseleccion="{$gridArray[x][20][y][20]}" requerido="{$gridArray[x][20][y][16]}">{$gridArray[x][20][y][1]}</td>
@@ -1629,51 +1753,55 @@
                     	{/section}
                    <!--Fin de cambio Oscar 07.06.2019-->
 
-                   <!--Implementacion Oscar 10.06.2019 para agregar el botón de dirección al listado de detalle de ediciones de movimientos caja-->
+                   <!--Excepcion : Implementacion Oscar 10.06.2019 para agregar el boton de direccion al listado de detalle de ediciones de movimientos caja-->
                  	{if $gridArray[x][0] eq '54'}
                    		<td width="56" offsetWidth="56" tipo="libre" valor="Ver detalle" align="center" campoBD='{$valuesEncGrid[x]}'>
 							<img class="autorizarmini" src="{$rooturl}img/autorizarmini.png" width="22" height="22" border="0" onclick="ver_detalle_mov_caja('#')" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" alt="Autorizar" title="De clic para ver los cambios en el movimiento"/>
 						</td>
                    	{/if}
                    <!--Fin de cambio Oscar Oscar 10.06.2019-->
-    	            </tr>       
+    	            </tr>
         	 	</table>
              </div>
-             <script>	  	
-             //alert('{$gridArray[x][1]}'+"\n"+'{$gridArray[x][0]}'+"\n"+'{$filtro_fechas_1}');
+             <script>
+             // 12.12. Se mandan cargar los datos mediante la funcion CargaGrid(%$nombre,$id_grid%%);
                 CargaGrid('{$gridArray[x][1]}','{$gridArray[x][0]}');
+			//Excepcion para insertar fila
 				{if $grids[ng][27] neq '0'}
 					for(ci=NumFilas('{$gridArray[x][1]}');ci<{$gridArray[x][18]};ci++)
 						InsertaFila('{$gridArray[x][1]}');
-				{/if}				
-              </script> 
-		</div>  
-        </div>	
-	{/section}			
-		
-		
-		
-	
-		
-		
-		
+				{/if}
+              </script>
+		</div>
+        </div>
+	{/section}
+<!-- 12.13. Fin de iteracion de grids-->
+
+
+
+
+
+
+
 	<br />
+<!-- 13. Seccion de botones laterales de la pantalla -->
 	<div id="accione"s  class="btn-inferio"r align="right">
-	
+
 		<table  border="0" style="position:fixed;z-index:100;top:35%;right:8px;">
-	<!--implementación de Oscar 21.08.2018-->
-		{if $tabla eq 'ec_productos'}	
+	<!--Ecepcion : implementacion de Oscar 21.08.2018 boton para avanzar al producto siguiente-->
+		{if $tabla eq 'ec_productos'}
 		  <tr><td align="center"><a href="#" class="fr" title="siguiente" onclick="getSig()" style="background:green;padding:5px;border-radius:5px;color:white;">Siguiente </a><br><br><br></td></tr>
 		{/if}
 	<!---->
-	<!--boton de guardar-->
+	<!-- 13.1. Boton de guardar-->
        	{if $tipo == 0 or $tipo == 1}
 				<tr><td id="guardarlistado" valign="bottom" title="Guardar listado"><table width="60"><tr><td ><img class="botonesacciones guardarbtn" src="{$rooturl}img/guardar.png" alt="guardar" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" title="clic para guardar los cambios" onclick="lanza_mensaje();"/><br>
                     <span style="border:0px solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Guardar</b></span></td></tr></table></td><!--valida() deshabilitado por Oscar 08.06.2018 para lanzar emergente--></tr>
 			{/if}
-	<!--boton de listado-->
+
+	<!-- 13.2. Boton de listado-->
 			<tr>
-		<!--implementación Oscar 08.05.2019 para redireccionar a Listado de Transferencias desde la Recepción-->
+		<!--Excepcion : implementacion Oscar 08.05.2019 para redireccionar a Listado de Transferencias desde la Recepcion-->
 		{if $tabla64 eq 'ZWNfdHJhbnNmZXJlbmNpYXM=' && $no_tabla64 eq 'Mg=='}
 			<td id="botonlistado" valign="bottom" title="Botón listado">
               <table>
@@ -1683,7 +1811,7 @@
                     <span style="border:0px solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Listado</b></span>
                 </td></tr>
               </table>
-            </td>             
+            </td>
 		<!--Fin de cambio Oscar 08.05.2019-->
 		{else}
 			<td id="botonlistado" valign="bottom" title="Botón listado">
@@ -1697,7 +1825,7 @@
             </td>
         {/if}
         </tr>
-	<!--boton de agregar registro-->
+	<!-- 13.3. Boton de agregar registro-->
 			{if ($tipo == 2 or $tipo == 3) and $mostrar_nuevo eq '1'}
 				<tr {if $tipo_sistema neq 'linea' && ($tabla eq 'ec_productos' || $tabla eq 'sys_users' || tabla eq 'ec_traspasos_bancos'
 				|| tabla eq 'ec_afiliaciones_cajero') || tabla eq 'ec_caja_o_cuenta'}style="display:none;"{/if}>
@@ -1708,8 +1836,8 @@
 				</table>
 				</td></tr>
 			{/if}
-	<!--boton de editar-->	
-			{if ($tipo == 2 or $tipo == 3) && $mostrar_mod eq '1'}	
+	<!--13.4. Boton de editar-->
+			{if ($tipo == 2 or $tipo == 3) && $mostrar_mod eq '1'}
 				<tr {if $tipo_sistema neq 'linea' && ($tabla eq 'ec_productos' || $tabla eq 'sys_users' || tabla eq 'ec_traspasos_bancos'
 				|| tabla eq 'ec_afiliaciones_cajero') || tabla eq 'ec_caja_o_cuenta'}style="display:none;"{/if}>
 				<td valign="top" title="Editar">
@@ -1717,7 +1845,7 @@
                     <span style="border:opx solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Editar</b></span>
                 </td></tr></table></td></tr>
 			{/if}
-	<!--boton de eliminar-->
+	<!--13.5. Boton de eliminar-->
 			{if $tipo == 3 && $mostrar_eli eq '1'}
 				<tr {if $tipo_sistema neq 'linea' && ($tabla eq 'ec_productos' || $tabla eq 'sys_users' || tabla eq 'ec_traspasos_bancos'
 				|| tabla eq 'ec_afiliaciones_cajero') || tabla eq 'ec_caja_o_cuenta'}style="display:none;"{/if}>
@@ -1726,40 +1854,40 @@
                     <span style="border:opx solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Eliminar</b></span>
                 </td></tr></table></td></tr>
 			{/if}<!--valida() deshabilitado por Oscar 08.06.2018 para lanzar emergente-->
-	<!--boton de imprimir-->			
+	<!--13.6. Boton de imprimir-->
 			{if ($tipo eq 1 or $tipo eq 2) && $mostrar_imp eq '1' && ($tabla eq 'ec_ordenes_compraNO' || $tabla eq 'ec_pedidos')}
 				<tr><td valign="bottom" title="Imprimir"><table width="60"><tr><td><img src="{$rooturl}img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" title="clic para imprimir el registro" onclick="imprime()" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';"/><br>
                     <span style="border:opx solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Imprimir</b></span>
                 </td></tr></table></td></tr>
-                
+
 			{/if}
-	<!--implementación Oscar 21.08.2018-->	
+	<!--Excepcion : Implementacion Oscar 21.08.2018 boton para retroceder al producto anterior-->
 		  		{if $tabla eq 'ec_productos'}
 		  		<tr><td><a href="#" class="fl" style="background:green;padding:5px;border-radius:5px;color:white;" title="anterior" onclick="getAnt()">Anterior</a></td></tr>
                      	<script>
                      		{literal}
-                     		
+                     	//Funcion para retroceder producto a travez del archivo code/ajax/prodAnt.php
                      		function getAnt()
                      		{
-                     			
+
                      			id_producto=document.getElementById('id_productos').value;
                      			//alert(id_producto);
-                     			
+
                      			res=ajaxR('../ajax/prodAnt.php?tipo=1&id_producto='+id_producto);
-                     			
+
                      			aux=res.split('|');
-                     			
+
                      			if(aux[0] == 'exito')
                      			{
-                     		
+
                      				//&a01773a8a11c5f7314901bdae5825a190=NTE2MA==&bnVtZXJvX3RhYmxh=MA==
-                     		
-                     		
+
+
 	                     			var url="contenido.php?aab9e1de16f38176f86d7a92ba337a8d=ZWNfcHJvZHVjdG9z&a1de185b82326ad96dec8ced6dad5fbbd=";
 	                     			{/literal}
 	                     			url+="{$tipo64}&a01773a8a11c5f7314901bdae5825a190="+aux[1]+"&bnVtZXJvX3RhYmxh=MA==";
 	                     			{literal}
-	                     			
+
 	                     			//alert(url);
 	                     			location.href=url;
 	                     		}
@@ -1767,33 +1895,34 @@
 	                     		{
 	                     			alert('No hay un producto anterior');
 	                     			return false;
-	                     		}	
+	                     		}
 	                     		else
 	                     			alert(res);
-                     		
+
                      		}
-                     		
+
+                     	//Funcion para avanzar producto a travez del archivo code/ajax/prodAnt.php
                      		function getSig()
                      		{
-                     			
+
                      			id_producto=document.getElementById('id_productos').value;
                      			//alert(id_producto);
-                     			
+
                      			res=ajaxR('../ajax/prodAnt.php?tipo=2&id_producto='+id_producto);
-                     			
+
                      			aux=res.split('|')
-                     			
+
                      			if(aux[0] == 'exito')
                      			{
-                     		
+
                      				//&a01773a8a11c5f7314901bdae5825a190=NTE2MA==&bnVtZXJvX3RhYmxh=MA==
-                     		
-                     		
+
+
 	                     			var url="contenido.php?aab9e1de16f38176f86d7a92ba337a8d=ZWNfcHJvZHVjdG9z&a1de185b82326ad96dec8ced6dad5fbbd=";
 	                     			{/literal}
 	                     			url+="{$tipo64}&a01773a8a11c5f7314901bdae5825a190="+aux[1]+"&bnVtZXJvX3RhYmxh=MA==";
 	                     			{literal}
-	                     			
+
 	                     			//alert(url);
 	                     			location.href=url;
 	                     		}
@@ -1801,102 +1930,103 @@
 	                     		{
 	                     			alert('No hay un producto siguiente');
 	                     			return false;
-	                     		}	
+	                     		}
 	                     		else
 	                     			alert(res);
-                     		
+
                      		}
-                     		
+
                      		{/literal}
                      	</script>
-                     	
-                    {/if} 
+
+                    {/if}
 		  	</td>
 		  </tr>
 		  <!--fin de cambio-->
-          
-        
+
+
 		</table>
 	</div>
-	</form>	
-	
+	</form>
+
 	<script>
-	
+
 		{literal}
-		
+		// 14. Funcion para enviar email atravez del archivo /code/pdf/enviaMail.php 
 		    function enviarMail()
 		    {
 		        {/literal}
                 var res=ajaxR('../pdf/enviaMail.php?id={$llave}');
                 {literal}
-                
+
                 if(res == 'exito')
                     alert('Se ha enviado el correo con exito');
                 else
                 {
                     //alert('No fue posible enviar el correo, verifique su configuracion');
                     alert(res);
-                }    
+                }
 		    }
-		
+
+		// 15. Funcion para imprimir cotizacion atravez del archivo /code/pdf/imprimeDoc.php
 		    function imprimirCot()
 		    {
 		        {/literal}
 		        window.open('../pdf/imprimeDoc.php?tdoc=COT&id={$llave}');
 		        {literal}
 		    }
-		
-		
+
+
 			function calculaTotales()
 			{
 				var num=NumFilas('productos');
 				var tot=0;
-				
+
 				for(var i=0;i<num;i++)
 				{
 					var can=celdaValorXY('productos', 4, i);
 					var pre=celdaValorXY('productos', 5, i);
-					
+
 					can=isNaN(parseFloat(can))?0:parseFloat(can);
 					pre=isNaN(parseFloat(pre))?0:parseFloat(pre);
-					
+
 					tot+=can*pre;
 				}
-				
+
 				var num=NumFilas('otros');
 				for(var i=0;i<num;i++)
 				{
 					var can=celdaValorXY('otros', 6, i);
 					var pre=celdaValorXY('otros', 7, i);
-					
+
 					can=isNaN(parseFloat(can))?0:parseFloat(can);
 					pre=isNaN(parseFloat(pre))?0:parseFloat(pre);
-					
+
 					tot+=can*pre;
 				}
-				
+
 				obj=document.getElementById('subtotal');
 				obj.value=tot;
-				
+
 				obj=document.getElementById('iva');
 				obj.value=tot*0.16;
-				
+
 				obj=document.getElementById('total');
 				obj.value=tot*1.16;
-			
+
 			}
-		
-		
+
+
 			function test()
 			{
 				return true;
 			}
-			
+
 			function cambiaProds(val)
 			{
 				id=celdaValorXY('productos', 2, val);
 				res=ajaxR('../ajax/valProds.php?id='+id);
-				
+
 				var aux=res.split('|');
 				if(aux[0] == 'exito')
 				{
@@ -1906,15 +2036,15 @@
 				else
 				{
 					valorXY('productos', 2, val, '');
-				}	
-				
+				}
+
 			}
 
 	/*implementación de Oscar 08.06.2018 para lanzar emergente al editar*/
 		function lanza_mensaje(){
 			var cargando='<p align="center" style="color:white;font-size:35px;">Guardando</p>';
 			cargando+='<br><img src="../../img/img_casadelasluces/load.gif" width="100px;"><br>';
-			$("#mensajEmerge").html(cargando);//cargamos el contenido al div	
+			$("#mensajEmerge").html(cargando);//cargamos el contenido al div
 				$("#emerge").css("display","block");
 				setTimeout(valida,100);//retrasamos la entrada de la validación
 			//alert(2);
@@ -1937,16 +2067,28 @@
 					$("#login").select();
 					return false;
 				}
-			/*fin de cambio Oscar 24.10.2019*/
+
+			/* implementacion Oscar 23-09-2020 para validar tipo de producto y fechas de seccion venta en linea*/
+				if(f.tabla.value=='ec_productos'){
+					if( !validacion_tipo_producto() ){
+						$("#emerge").css("display","none");
+						return false;
+					}
+					if( !valida_fecha_tienda_linea() ){
+						$("#emerge").css("display","none");
+						return false;
+					}
+				}
+
 				{/literal}
 					//alert({$tipo}); edición es tipo=1
 					//return true;
 					{if $tipo neq 3}
 						{$validacion_form}
-					{/if}	
-				
+					{/if}
+
 				{literal}
-				
+
 				if(f.tipo.value == '0')
 				{
 					f.accion.value="insertar";
@@ -1954,55 +2096,55 @@
 				if(f.tipo.value == '1')
 				{
 					f.accion.value="actualizar";
-					
+
 				}
 				if(f.tipo.value == '3')
 				{
 					f.accion.value="eliminar";
 				}
-				
+
 				/*if(f.tabla.value == 'sys_users')
 				{
 					var aux=GuardaGrid('permisos', 5);
-					
+
 					var ax=aux.split('|');
 					if(ax[0] == 'exito')
-					{	
+					{
 						f.filePermisos.value=ax[1];
 					}
 					else
 					{
 						alert(aux);
 						return false;
-					}	
-					
-					
+					}
+
+
 				}*/
-				
-				
+
+
 				//Guardamos los grids
 				{/literal}
-				
+
 					{section loop=$gridArray name=x}
-						
+
 						{if $gridArray[x][11] neq 'false'}
-							
+
 							{if $gridArray[x][4] neq ''}
 								var aux={$gridArray[x][4]};
 								if(!aux)
 								return false;
 							{/if}
-						
-						
-						
-						
+
+
+
+
 							var num=NumFilas('{$gridArray[x][1]}');
 							var nomGrid='{$gridArray[x][1]}';
 							var disGrid='{$gridArray[x][2]}';
 
 							{literal}
-					
-						 
+
+
 
 							if (nomGrid == 'sucursalProducto')
 							{
@@ -2019,32 +2161,77 @@
 						 	//	}
 
 						 		//getJsonSucPro();
-						 	}					 
+						 	}
+
+				/*Implementacion Oscar 2020 para validar que no se repitan atributos por producto*/
+							if (nomGrid == 'atributosProducto'){
+								var atributos_existentes = new Array();
+								var tmp, tmp_cat;
+								var categoria_producto = $("#id_categoria").val();
+								var atributos_incorrectos = "";
+							//recorre grid
+							//alert(NumFilas(nomGrid));
+								var tabla=document.getElementById('Body_' + nomGrid);
+								trs=tabla.getElementsByTagName('tr');
+								for(i_a=0 ; i_a < trs.length; i_a++){
+								//
+									i_a_a = ($(trs[i_a]).attr("id")).replace('atributosProducto_Fila' , '');
+									tds=trs[i_a].getElementsByTagName('td');
+           							tmp_cat = tds[5].getAttribute('valor');
+           							
+           							tmp = tds[3].getAttribute('valor');
+											
+           							if(tmp_cat != categoria_producto && (tmp_cat != null && tmp_cat != '') ){
+										 atributos_incorrectos += $("#" + nomGrid + "_2_" + i_a_a ).html() + "\n";
+										 //alert('$("#"'+ nomGrid + "_2_" + i_a_a + ')' );
+									}
+									for(var a_e = 0; a_e < atributos_existentes.length; a_e++){
+										if(tmp == atributos_existentes[a_e] && atributos_existentes[a_e] != null){
+											$("#emerge").css("display","none");
+											alert("Hay un atributo repetido para el producto y no es posible guardar" +
+												"\nVerifique y vuelva a intentar");
+											setTimeout(function(){$("#" + nomGrid + "_2_" + (i_a_a) ).click();} , '300'); 
+											return false;
+										}
+									}
+									//alert("tmp : " + tmp);
+									atributos_existentes.push(tmp);
+           						}
+
+								if(atributos_incorrectos != ""){
+									$("#emerge").css("display","none");
+									alert("Los siguientes atributos no corresponde a la categoria del" +
+										" producto, verifique sus datos y vuelva a intentar: \n" 
+										+ atributos_incorrectos);
+									return false;
+						 		}
+						 	}
+				/**/
 							for(ig=0;ig<num;ig++)
 							{
 								var nc=NumColumnas(nomGrid);
-					
+
 								for(jg=0;jg<nc;jg++)
 								{
 									req=getValueHeader(nomGrid, jg, 'requerido');
-						
+
 							//alert(jg+" req:"+req);
-						
+
 									if(req == 'S' || req == 's')
 									{
 										if(celdaValorXY(nomGrid, jg, ig) == '')
-										{		
+										{
 											//alert(nomGrid+"_"+jg+"_"+ig);
 											alert("Debe llenar los datos del grid "+disGrid);
 											$("#emerge").css("display","none");
 											return false;
 										}
 									}
-								}	
-							}	
-						
+								}
+							}
+
 						/*Cambio para no permitir recibir transferencia si no hay internet Oscar(09-11-2017)*/
-						
+
 					/*si el grid es de recepcion de transferencia verificamos conexion con el servidor
 						{/literal}
 						var xD='{$gridArray[x][0]}';
@@ -2056,18 +2243,18 @@
 								"Verifique su conexion a internet y vuelva a intentar!!!");
 								return false;
 							}
-						}	
+						}
 					//finaliza cambio                   deshabilitado por Oscar 08.06.2018*/
 
 						{/literal}
-						var aux=GuardaGrid('{$gridArray[x][1]}', 5);					
+						var aux=GuardaGrid('{$gridArray[x][1]}', 5);
 						var ax=aux.split('|');
 						{literal}
-						
+
 						//alert(aux);
-						
+
 						if(ax[0] == 'exito')
-						{	
+						{
 							{/literal}
 							f.file{$gridArray[x][1]}.value=ax[1];
 							{literal}
@@ -2079,34 +2266,33 @@
 
 							return false;
 						}
-						
+
 						{/literal}
-						
+
 						{/if}
 
 					{/section}
-				
+
 				{literal}
-				
+
 				/*alert('Suspendido por pruebas...Atte Equipo de desarrollo');
 				return false;*/
-				
-				
+
 				f.submit();
-				
+
 			}//fin de función valida
-			
-			
+
+
 			function actualizaDependiente(id_catalogos, id_objetos, valor, val_pre)
 			{
-			
+
 				var ids=id_catalogos.split(',');
 				var obs=id_objetos.split(',');
 				var vpres=val_pre.split(',');
-				
-			
+
+
 				//alert(ids.length);
-			
+
 				for(var j=0;j<ids.length;j++)
 				{
 					//alert(i)
@@ -2116,11 +2302,11 @@
 					{
 						if(document.getElementById(vpres[j]))
 							var vpred=document.getElementById(vpres[j]).value;
-						else	
+						else
 							var vpred=vpres[j];
-							
-						//alert(vpred);	
-					
+
+						//alert(vpred);
+
 						var obj=document.getElementById(obs[j]);
 						obj.options.length=0;
 						for(i=1;i<aux.length;i++)
@@ -2132,17 +2318,17 @@
 						{
 							obj.value=vpred;
 						}
-						
+
 						var och=obj.getAttribute("onchange");
 						//var och=och.replace("\n", '');
 						//alert(och);
-						eval(och);	
+						eval(och);
 					}
 					else
 						alert(res);
-				}		
+				}
 			}
-			
+
 			function botonBuscador(nomcampo)
 			{
 				var obj=document.getElementById(nomcampo+"_txt");
@@ -2155,40 +2341,40 @@
 				else
 					alert("Error, objeto no encontrado.\n\n"+nomcampo+"_txt");
 			}
-			
+
 			function activaBuscador(nomcampo, evento)
 			{
-				
+
 				objInput=document.getElementById(nomcampo+"_txt");
-				
+
 				var objdiv=document.getElementById(nomcampo+"_div");
 				if(!objdiv)
 				{
 					alert("Error, objeto no encontrado.\n\n"+nomcampo+"_div");
 					return false;
-				}	
-				
+				}
+
 				//alert(evento.keyCode);
-				
+
 				if(evento.keyCode==9)
 				{
-					ocultaCombobusc(nomcampo);		
+					ocultaCombobusc(nomcampo);
 					return false;
 				}
-				
+
 				var objh=document.getElementById(nomcampo);
 				if(!objh)
 				{
 					alert("Error, objeto no encontrado.\n\n"+nomcampo);
 					return false;
 				}
-				
+
 				if(objh&&evento.keyCode!=40)
 				{
 					objh.value="";
-					objh.value=objInput.value;		
-				}	
-							
+					objh.value=objInput.value;
+				}
+
 				if(evento.keyCode==40 && objdiv.style.display=="block")
 				{
 					//alert("??");
@@ -2198,7 +2384,7 @@
 				if(evento.keyCode==40)
 				{
 					//alert('?');
-					
+
 					var depende=(objInput.getAttribute("depende"))?objInput.getAttribute("depende"):"";
 					var cadbusq="";
 					if(depende!=""&&depende!=0)
@@ -2219,7 +2405,7 @@
 							}
 							var arrnomde=objInput.name.split("_");
 							nomde=arrnomde[1]+"_"+dependencia;
-							var objvaldep=document.getElementsByName(nomde)[0];				
+							var objvaldep=document.getElementsByName(nomde)[0];
 							if(objvaldep)
 							{
 								if(objvaldep.value!="")
@@ -2230,20 +2416,20 @@
 							}
 							if(objvaldep.value!="")
 								break;
-						}			
+						}
 					}
 					if(cadbusq!="")
 					{
 						muestraBuscador(nomcampo);
 						ComboBuscador(nomcampo);
 					}
-					
+
 					//alert("Fin ?");
 				}
-				
+
 				var numAct=0;
-				
-				
+
+
 				if((evento.keyCode==40& objInput.value.length>=numAct)||objInput.value.length>=numAct)
 				{
 					//alert("Y");
@@ -2253,13 +2439,13 @@
 				else if(objdiv.style.display=="block"&&objInput.value.length>=numAct)
 				{
 					ComboBuscador(nomcampo);
-				}	
+				}
 				return true;
 			}
-			
+
 			function muestraBuscador(nomcampo)
 			{
-				
+
 				var objdiv=document.getElementById(nomcampo+"_div");
 				objInput=document.getElementById(nomcampo+"_txt");
 				if(objdiv)
@@ -2267,10 +2453,10 @@
 					if(objdiv.style.display=="none")
 					{
 						objdiv.style.display="block";
-						objdiv.style.visibility="visible";		
+						objdiv.style.visibility="visible";
 						var top=objdiv.offsetTop;
 						var altura=objInput.offsetHeight;
-						var y=posicionObjeto(objInput)[1];			
+						var y=posicionObjeto(objInput)[1];
 						//if(navigator.appName=="Microsoft Internet Explorer")
 						top+=2;
 						//if(top<(y+altura))
@@ -2279,23 +2465,23 @@
 							top+="px";
 							//objdiv.style.top=top;
 						//}
-					}		
+					}
 				}
 				return true;
 			}
-			
-			
+
+
 			function ComboBuscador(nomcampo)
 			{
-				/*var nomcampo=objInput.name;	
+				/*var nomcampo=objInput.name;
 				var arr=nomcampo.split("_");
 				nomcampo=arr[1]+"_"+arr[2];*/
-				
+
 				objInput=document.getElementById(nomcampo+"_txt");
-				
-				
+
+
 				//alert(objInput);
-				
+
 				var objselec=document.getElementById(nomcampo+"_sel");
 				if(objselec)
 				{
@@ -2304,15 +2490,15 @@
 					var lon=objselec.length;
 					for(var i=0;i<lon;i++)
 						objselec.options[0]=null;
-						
-						
-					//alert(objselec)	
-						
+
+
+					//alert(objselec)
+
 					var url=objselec.getAttribute("datosdb");
-					
-					
+
+
 					//alert(url);
-					
+
 					if(url.length>0)
 					{
 						url+="&val="+objInput.value;
@@ -2336,7 +2522,7 @@
 								}
 								var arrnomde=objInput.name.split("_");
 								nomde=arrnomde[1]+"_"+dependencia;
-								var objvaldep=document.getElementsByName(nomde)[0];				
+								var objvaldep=document.getElementsByName(nomde)[0];
 								if(objvaldep)
 								{
 									if(objvaldep.value!="")
@@ -2347,7 +2533,7 @@
 								}
 								if(objvaldep.value!="")
 									break;
-							}							
+							}
 							if(objvaldep)
 							{
 								url+="&depende="+(parseInt(numdep)+1)+"&valordep="+cadbusq;
@@ -2355,15 +2541,15 @@
 									url+="&nom_dependencia="+campodepen;
 							}
 						}
-						
+
 						//alert(url);
-						
+
 						var resp=ajaxR(url);
-						
+
 						//alert(resp);
 						var arr=resp.split("|");
-						
-						
+
+
 						if(arr[0]!="exito")
 						{
 							alert(resp);
@@ -2371,20 +2557,20 @@
 						}
 						var num=parseInt(arr[1]);
 						//alert(num);
-						
+
 						if(num<=0)
 						{
 							/*var nombre=objInput.name.split("_");
 							nombre=nombre[1]+"_"+nombre[2];*/
-							
+
 							//alert('malo');
-							
+
 							ocultaCombobusc(nomcampo);
 							return false;
 						}
-						var objselec=document.getElementById(nomcampo+"_sel");	
+						var objselec=document.getElementById(nomcampo+"_sel");
 						objselec.options.length=0;
-						//alert(objselec);		
+						//alert(objselec);
 						for(var i=2;i<(num+2);i++)
 						{
 							var arrOpciones=arr[i].split("~");
@@ -2392,7 +2578,7 @@
 						}
 						if(objselec.options.length == 1 && !isNaN(objInput.value) && 0)
 						{
-							
+
 							//alert('?');
 							objselec.options[0].selected=true;
 							asignavalorbusc(nomcampo);
@@ -2401,9 +2587,9 @@
 				}
 				return true;
 			}
-			
+
 			function asignavalorbusc(nomcampo)
-			{	
+			{
 				//alert('1');
 				var objsel=document.getElementById(nomcampo+"_sel");
 				if(objsel)
@@ -2423,12 +2609,12 @@
 						{
 							//alert('4');
 							objh.value=oculto;
-							objcampo.value=visible;				
+							objcampo.value=visible;
 							var funciononchange=(objcampo.getAttribute("on_change"))?objcampo.getAttribute("on_change"):"";
 							//alert(funciononchange);
 							if(funciononchange.indexOf("#")!=-1)
 								funciononchange=funciononchange.replace('#',objh.id);
-							//alert('p1');	
+							//alert('p1');
 							ocultaCombobusc(nomcampo);
 							//alert('p2');
 							eval(funciononchange);
@@ -2437,8 +2623,8 @@
 				}
 				return true;
 			}
-			
-			
+
+
 			function ocultaCombobusc(campo)
 			{
 				var objdiv=document.getElementById(campo+"_div");
@@ -2464,12 +2650,12 @@
 							//objdiv.style.top=top;
 						}
 						objdiv.style.display="none";
-						objdiv.style.visibility="hidden";			
+						objdiv.style.visibility="hidden";
 					}
 				}
 				return true;
 			}
-			
+
 			function posicionObjeto(obj)
 			{
 			    var left = 0;
@@ -2496,9 +2682,9 @@
 			//asignamos valores habilitado/deshabilitado a grid a productos por sucursal
 				for(var i=0;i<=tope_gr;i++){
 					document.getElementById("csucursalProd_4_"+i).checked=check_val;//habilitamos/deshabilitamos checkbox
-					$("#sucursalProd_4_"+i).attr("valor",valor);//cambiamos valor del checkbox 
+					$("#sucursalProd_4_"+i).attr("valor",valor);//cambiamos valor del checkbox
 					$("#sucursalProd_4_"+i).attr("valor",valor);//cambiamos valor de la celda (este es el que modifica el valor en la BD)
-					
+
 					if(valor==1  && i==0){
 						return true;
 					}
@@ -2535,9 +2721,9 @@
 						}
 					});
 				}
-			}			
-	
-var existe_o_l=0;			
+			}
+
+var existe_o_l=0;
 		//implementación de Oscar 21-02-2018
 			function validaNoLista(obj,e){
 				var tca=e.keyCode;
@@ -2698,11 +2884,11 @@ Fin de deshabilitar Oscar 08.11.2018*/
 			//$(obj_1)
 		}
 			eval(ejecutar);
-		
+
 		{/literal}
-	
+
 	</script>
-     
+
 {include file="general/funciones.tpl" tabla=$tabla}
 
 {include file="_footer.tpl" pagetitle="$contentheader"}

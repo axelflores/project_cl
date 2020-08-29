@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Mantenimiento de la BD</title>
+<!-- 1. Incluye hoja de estilos CSS, librerias de Calendario y archivo /js/jquery-1.10.2.min.js -->
 <link rel="stylesheet" type="text/css" href="../../../../css/gridSW_l.css"/>
 <script type="text/javascript" src="../../../../js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="../../../../js/calendar.js"></script>
@@ -9,6 +10,7 @@
 <script type="text/javascript" src="../../../../js/calendar-setup.js"></script>
 
 </head>
+<!-- 2. Estilos CSS -->
 <style type="text/css">
 	th{background: rgba(225,0,0,.5);color: white;padding: 10px;}
 	td{padding: 10px;}
@@ -20,7 +22,9 @@
 </style>
 <body background="../../../../img/img_casadelasluces/bg8.jpg">
 <?php
+//3. Incluye archivo /conectMin.php
 	include('../../../../conectMin.php');
+//4. Consulta configuracion de agrupacion
 	$sql="SELECT 
 			minimo_agrupar_ma_dia,/*0*/
 			minimo_agrupar_ma_ano,/*1*/
@@ -41,15 +45,25 @@
 	$eje=mysql_query($sql)or die("Error al consultar parámetros de Agrupación!!!<br>".mysql_error());
 	$r=mysql_fetch_row($eje);
 ?>
-<!--Emergente-->
+<!-- 5. Ventana emergente -->
 <div id="emergente">
 	<p align="center" id="contenido_emergente"></p>
 </div>
-<!--comienza contenido-->
+<!-- 6. Opciones de agrupamiento -->
 	<div id="global">
 		<table style="width:48%;float:left;">
 			<tr>
-				<th colspan="5" style="background:rgba(0,225,0,.5);"><button onclick="insertaProcedures();">Obtener <br>procedures</button></hd>
+				<th colspan="1" style="background:rgba(0,225,0,.5);">
+					<button onclick="insertaProcedures('procedures_inserta');">
+						Obtener <br>procedures
+					</button>
+				</th>
+	<!-- Implementacion Oscar 20-09-2020 boton para recalcular inventarios en almacen producto-->	
+				<th colspan="3" style="background:rgba(0,225,0,.5);">
+					<button onclick="insertaProcedures('recalcula_inventario_almacen');">
+						Recalcular inventario<br> por almacen
+					</button>
+				</hd>
 			</tr>
 			<tr>
 				<th colspan="3"><b>Agrupaciones de Movimientos de Almacén</b></th>
@@ -166,9 +180,9 @@
 	</div>
 </body>
 </html>
-				
+<!-- 7. Funciones JavaScript -->			
 <script type="text/javascript">
-
+//7.1. Funcion para cambiar el numero de dias por medio del archivo bd_sql.php
 	function cambiar_numero_dias(obj,flag){
 	//obtenemos el valor del objeto
 		var fecha_tmp=$(obj).val();
@@ -189,6 +203,7 @@
 		});
 	}
 
+//7.2. Funcion para habilitar / deshabilitar edicion de dias
 	function habilitar_campo(id_campo,flag,id_boton,btn_guarda,campo_cambia){
 		if(flag==1){
 			$("#"+id_campo).removeAttr('disabled');
@@ -206,6 +221,7 @@
 		}
 	}
 
+//7.3. Funcion para cambiar parametro por medio del archivo bd_sql.php
 	function cambiar_parametro(id_campo,flag,id_boton,btn_guarda){
 	//extraemos el nuevo dato
 		var dato_nvo=$("#"+id_campo).val();
@@ -231,6 +247,7 @@
 		});
 	}
 
+//7.4. Funcion para mandar llamar procedure por medio del archivo bd_sql.php
 	function llamar_prodedure(id_campo,flag,subtipo){
 		var cont_emerge='<b style="font-size:50px;">Procesando...</b>';
 		cont_emerge+='<br><br><img src="../../../../img/img_casadelasluces/load.gif">';
@@ -256,6 +273,7 @@
 
 	}
 
+//7.5. Funcion de Calendario
 	function calendario(objeto){
     	Calendar.setup({
         	inputField     :    objeto.id,
@@ -265,22 +283,33 @@
 		});
 	}
 
-/*implementacion Oscar 20.12.2019*/
-	function insertaProcedures(){
-		alert();
+//7.6. Funcion para instalar procedures
+	function insertaProcedures(fl){
+
+		var cont_emerge='<b style="font-size:50px;">Procesando...</b>';
+		cont_emerge+='<br><br><img src="../../../../img/img_casadelasluces/load.gif">';
+		$("#contenido_emergente").html(cont_emerge);
+		$("#emergente").css("display","block");
+
+		var confirmacion = "";
+		if( fl == 'procedures_inserta'){ 
+			confirmacion = "Procedures insertados/actualizados exitosamente"; }
+		if( fl == 'recalcula_inventario_almacen' ){ 
+			confirmacion = "Inventarios de almacenes por productos recalculados exitosamente"; }
+
 	//enviamos datos por ajax
 		$.ajax({
 			type:'post',
 			url:'bd_sql.php',
 			cache:false,
-			data:{flag:'procedures_inserta'},
+			data:{flag : fl},
 			success:function(dat){
 			//lanzamos emergente
 				var aux=dat.split('|');
 				if(aux[0]!='ok'){
 					alert('Error!!!\n'+dat);return false;
 				}
-				alert("Procedures insertados/actualizados exitosamente");
+				alert(confirmacion);
 				location.reload();			
 			}
 		});
