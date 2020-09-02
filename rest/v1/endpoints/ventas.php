@@ -39,9 +39,10 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
     $total = $request->getParam('total');
     $productos = $request->getParam('productos');
     $sucursal = $request->getParam('sucursal');
+    $grupo_cliente_magento = $request->getParam('grupo_cliente_magento');
 
     //Validar elementos requerido para crear venta
-    if (empty($folio) || empty($subtotal) || empty($descuento) || empty($total) || empty($productos) || empty($sucursal) ) {
+    if (empty($folio) || empty($subtotal) || empty($descuento) || empty($total) || empty($productos) || empty($sucursal) || empty($grupo_cliente_magento) ) {
       return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
     }
     //Validar elementos requerido para nodo productos
@@ -49,9 +50,11 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
       //Itera y valida productos
       $productRow=0;
       foreach($productos as $producto) {
-        if (empty($producto['idProducto']) || empty($producto['cantidad']) || empty($producto['precio']) || empty($producto['monto']) || empty($producto['grupo_cliente_magento']) ) {
+        if (empty($producto['idProducto']) || empty($producto['cantidad']) || empty($producto['precio']) || empty($producto['monto']) || (empty($grupo_cliente_magento) && empty($producto['grupo_cliente_magento'])) ) {
           return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
         }
+
+        $producto['grupo_cliente_magento'] = empty($producto['grupo_cliente_magento']) ? $grupo_cliente_magento : $producto['grupo_cliente_magento'];
 
         $queryG = "select id_precio from ec_precios where grupo_cliente_magento='{$producto['grupo_cliente_magento']}';";
         $grupo_cliente = getOneQuery($db, $queryG, 'id_precio');
