@@ -39,10 +39,11 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
     $total = $request->getParam('total');
     $productos = $request->getParam('productos');
     $sucursal = $request->getParam('sucursal');
+    $costo_envio = $request->getParam('costo_envio');
     $grupo_cliente_magento = $request->getParam('grupo_cliente_magento');
 
     //Validar elementos requerido para crear venta
-    if (empty($folio) || empty($subtotal) || empty($descuento) || empty($total) || empty($productos) || empty($sucursal) || empty($grupo_cliente_magento) ) {
+    if (empty($folio) || empty($subtotal) || empty($descuento) || empty($total) || empty($productos) || empty($sucursal) || empty($grupo_cliente_magento) || empty($costo_envio) ) {
       return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
     }
     //Validar elementos requerido para nodo productos

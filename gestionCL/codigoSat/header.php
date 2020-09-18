@@ -14,9 +14,9 @@ error_reporting(E_ALL); // report all php errors
         <title><?php echo $page_title; ?></title>
 
         <!-- Bootstrap CSS -->
-        <link href="library/css/bootstrap.css" rel="stylesheet" media="screen" />
-        <link href="library/css/bootstrap.min.css" rel="stylesheet">
-        <script src="library/js/bootstrap.min.js"></script>
+        <link href="../library/css/bootstrap.css" rel="stylesheet" media="screen" />
+        <link href="../library/css/bootstrap.min.css" rel="stylesheet">
+        <script src="../library/js/bootstrap.min.js"></script>
 
         <!-- some custom CSS -->
         <style>
