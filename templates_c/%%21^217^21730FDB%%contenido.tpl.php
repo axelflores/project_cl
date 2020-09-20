@@ -1,16 +1,18 @@
-<?php /* Smarty version 2.6.13, created on 2019-11-22 18:20:38
+<?php /* Smarty version 2.6.13, created on 2020-09-18 19:27:12
          compiled from general/contenido.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'html_options', 'general/contenido.tpl', 531, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'html_options', 'general/contenido.tpl', 548, false),)), $this); ?>
 <!--version 30.10.2019-->
+<!-- 1. Incluye archivo /templates/_header.tpl -->
 <?php $_smarty_tpl_vars = $this->_tpl_vars;
 $this->_smarty_include(array('smarty_include_tpl_file' => "_header.tpl", 'smarty_include_vars' => array('pagetitle' => ($this->_tpl_vars['contentheader']))));
 $this->_tpl_vars = $_smarty_tpl_vars;
 unset($_smarty_tpl_vars);
  ?>
 
+<!-- Excepcion 1: Implementacion para botones de exportacion de ubicaciones desde la configuracion de la sucursal -->
 <?php if ($this->_tpl_vars['tabla'] == 'ec_configuracion_sucursal' && $this->_tpl_vars['no_tabla'] == '0'): ?>
-	<table style="position:absolute;bottom:30%;">	
+	<table style="position:absolute;bottom:30%;">
 		<tr>
 			<td>
 				<button onclick="exporta_ubics_sucs();">
@@ -36,7 +38,7 @@ unset($_smarty_tpl_vars);
 	</form>
 	<?php echo '
 		<script type="text/javascript">
-			
+
 			var ventana_abierta_ubics;
 			function msg_importa_ubics(){
 				if(!confirm("Recuerde que no pueden ir comas en las ubicaciones y las ubicaciones deberán de ser menores a 10 caracteres!!!")){
@@ -55,9 +57,9 @@ unset($_smarty_tpl_vars);
 				$("#fl_ubic").val(\'exporta_ubicaciones\');
 				$("#sucursal_ubic").val(id_suc_ubic);
 			//enviamos la descarga
-				ventana_abierta_ubics=window.open(\'\', \'TheWindow\');	
+				ventana_abierta_ubics=window.open(\'\', \'TheWindow\');
 				document.getElementById(\'formularioUbicaciones\').submit();
-				setTimeout(cierra_pestana_ubic,10000);			
+				setTimeout(cierra_pestana_ubic,10000);
 			}
 
 			function cierra_pestana_ubic(){
@@ -97,7 +99,7 @@ unset($_smarty_tpl_vars);
 			function importaUbicacionesSucursales(results){
 				$("#contenido_emergente_global").html(\'<p align="center" style="color:white;font-size:30px;">Cargando datos<br><img src="../../img/img_casadelasluces/load.gif"></p>\');
 					$("#ventana_emergente_global").css("display","block");
-					
+
 				var data = results.data;//guardamos en data los valores delarchivo CSV
 				var arr="";
 				var id_suc_ubic=$("#id_sucursal").val();
@@ -114,7 +116,7 @@ unset($_smarty_tpl_vars);
 							return false;
 						}
 						arr+=cells[0]+",";
-    					arr+=cells[5];//se cambia la posición  de 6 a 7 por la implementación de la clave de proveedor Oscar 26.02.2019 
+    					arr+=cells[5];//se cambia la posición  de 6 a 7 por la implementación de la clave de proveedor Oscar 26.02.2019
 						if(i<data.length-1){
 					 		arr+="|";
 						}
@@ -134,14 +136,17 @@ unset($_smarty_tpl_vars);
 					}
 				});
 			}
-	
+
 		</script>
 	'; ?>
 
 <?php endif; ?>
 
 
+<!-- Excecpcion 2: Implementacion para exportar/ importar estacionalidades -->
 <?php echo '
+
+<!-- 2. Incluye archivo /js/papaparse.min.js -->
 <script language="JavaScript" type="text/javascript" src="../../js/papaparse.min.js"></script>
 				<script type="text/JavaScript">
 				$(\'#submit-file\').on("click",function(e){
@@ -171,7 +176,7 @@ unset($_smarty_tpl_vars);
        				/* if(nombre_fichero_seleccionado===\'\') {
       			    $(\'#delCarta\').addClass(\'invisible\');
         			} else {
-        			   $(\'#delCarta\').removeClass(\'invisible\'); 
+        			   $(\'#delCarta\').removeClass(\'invisible\');
        				 }*/
        				if(nombre_fichero_seleccionado!=""){
         				$("#bot_imp_estac").css("display","none");//ocultamos botón de importación
@@ -192,7 +197,7 @@ unset($_smarty_tpl_vars);
 				function importaEstac(results){
 					$("#contenido_emergente_global").html(\'<p align="center" style="color:white;font-size:30px;">Cargando datos<br><img src="../../img/img_casadelasluces/load.gif"></p>\');
 					$("#ventana_emergente_global").css("display","block");
-					
+
 					var id_estac=$("#id_estacionalidad").val();
 	  				var data = results.data;//guardamos en data los valores delarchivo CSV
 	    			var tam_grid=$("#estacionalidadProducto tr").length-3;
@@ -228,7 +233,7 @@ unset($_smarty_tpl_vars);
 	    				}
 	    			});
 	    		}
-				
+
 				function importa_exporta_estacionalidades(flag){
 					var est_id=$("#id_estacionalidad").val();//extraemos el id de la estacionalidad
 					if(flag==1){
@@ -244,14 +249,15 @@ unset($_smarty_tpl_vars);
 
 
     <div id="campos">
+<!-- 3. Div de ventana emergente -->
 	<div id="emerge" style="position:fixed;top:0;height:100%;width:100%;background:rgba(0,0,0,.6);display:none;z-index:100;"><!--rgba(103, 161,13,.8);-->
 		<center>
 			<div id="mensajEmerge" style="width:50%;position:absolute;top:200px;left:25%;background:rgba(225,0,0,.5);border-radius:10px;">
-				
+
 			</div>
 		</center>
 	</div>
-<!--Implementación Oscar 19.08.2019 para impresion de credencial de usuario--> 
+<!--Excepcion 3: Implementacion Oscar 19.08.2019 para impresion de credencial de usuario-->
 		<?php if ($this->_tpl_vars['tabla'] == 'sys_users' && $this->_tpl_vars['no_tabla'] == '0' && $this->_tpl_vars['tipo'] != '0'): ?>
 			<button id="impresion_cred_usuario" onclick="imprimeCredencial();" style="position:absolute;top:300px;left:42%;">
 				Imprimir credencial<img src="../../img/especiales/credencial_usuario.png"  width="50px">
@@ -259,7 +265,7 @@ unset($_smarty_tpl_vars);
 		<?php endif; ?>
 <!--Fin de cambio Oscar 19.08.2019-->
 
-<!--Implementación Oscar 02.08.2019 para importación del detalle de ordenes de compra--> 
+<!--Excepcion 4: Implementacion Oscar 02.08.2019 para importacion del detalle de ordenes de compra-->
 		<?php if ($this->_tpl_vars['tabla'] == 'ec_ordenes_compra' && $this->_tpl_vars['no_tabla'] == '1' && $this->_tpl_vars['tipo'] != '0'): ?>
 			<button style="position:fixed;right:1.6%;top:72%;border-radius:10px;font-size:10px;" onclick="descarga_formato_detalle_oc();">
 				<img src="../../img/especiales/fotmato_en_blanco.png" width="30px"><br>
@@ -291,8 +297,8 @@ unset($_smarty_tpl_vars);
 					</form>-->
 		<?php endif; ?>
 <!--Fin de cambio Oscar 02.08.2019-->
-	
-	<!--Implementación de Oscar 25.07.2018 para exportar/importar lista de estacioonalidades-->
+
+	<!-- Excepcion 5: Implementacion de Oscar 25.07.2018 para exportar/importar lista de estacionalidades-->
 		<?php if ($this->_tpl_vars['tabla'] == 'ec_oc_recepcion'): ?>
 		<div style="position:fixed;z-index:40;top:15px;right:15px;">
 			<button onclick="emerge_pagos();" id="pags_prv" style="background:white;border-radius:15px;">
@@ -356,14 +362,16 @@ unset($_smarty_tpl_vars);
 
 		<?php endif; ?>
 	<!--Fin de cambio-->
+
+<!-- 4. Div de titulo de la pantalla -->
 	<div id="titulo"><?php echo $this->_tpl_vars['titulo']; ?>
-</div>    
+</div>
+<!-- 5. Declaracion del formulario -->
 		<form action="" method="post" name="formaGral" enctype="multipart/form-data">
-			
-			<script>			
+			<script>
 				var ejecutar="";
-			</script>	
-							
+			</script>
+<!-- 6. Variables ocultas %tipo, accion, tabla, no_tabla, llave%% -->
 				<input type="hidden" name="tipo" value="<?php echo $this->_tpl_vars['tipo']; ?>
 " />
 				<input type="hidden" name="accion" value="" />
@@ -373,7 +381,7 @@ unset($_smarty_tpl_vars);
 " />
 				<input type="hidden" name="llave" value="<?php echo $this->_tpl_vars['llave']; ?>
 " />
-			<!--Aqui se mete boton de deshabilitar productos sin inventario-->
+		<!--Excepcion : Implementacion de botones especiales de la pantalla de sucursal-->
 				<?php if ($this->_tpl_vars['tabla'] == 'sys_sucursales' && $this->_tpl_vars['no_tabla'] == 0 && ( $this->_tpl_vars['tipo_perfil'] == '1' || $this->_tpl_vars['tipo_perfil'] == '5' )): ?>
 				<?php echo '
 					<style type="text/css">
@@ -386,6 +394,7 @@ unset($_smarty_tpl_vars);
 				<?php if ($this->_tpl_vars['campos'][0][10] == '-1'): ?>
 					<?php $this->assign('sucursal_informacion_tooltip', 'en todas las sucursales'); ?>
 				<?php endif; ?>
+
 				<table align="center" cellspacing="15px;" style="width:80%;">
 					<tr>
 						<td>
@@ -413,7 +422,7 @@ unset($_smarty_tpl_vars);
 ">
 								Deshabilitar todos los productos <br> en <?php echo $this->_tpl_vars['campos'][1][10]; ?>
 
-							</button>							
+							</button>
 						</td>
 						<td>
 							<button type="button" onclick="deshabilitaSinInventario(0,<?php echo $this->_tpl_vars['campos'][0][10]; ?>
@@ -422,7 +431,7 @@ unset($_smarty_tpl_vars);
 ">
 								Deshabilitar Productos sin inventario <br> en <?php echo $this->_tpl_vars['campos'][1][10]; ?>
 
-							</button>	
+							</button>
 						</td>
 						<td>
 							<button type="button" onclick="deshabilitaSinInventario(4,<?php echo $this->_tpl_vars['campos'][0][10]; ?>
@@ -431,7 +440,7 @@ unset($_smarty_tpl_vars);
 ">
 								Actualizar Productos Maquilados <br>con inventario en <?php echo $this->_tpl_vars['campos'][1][10]; ?>
 
-							</button>	
+							</button>
 						</td>
 						<td>
 							<button type="button" onclick="deshabilitaSinInventario(5,<?php echo $this->_tpl_vars['campos'][0][10]; ?>
@@ -457,15 +466,15 @@ unset($_smarty_tpl_vars);
 							<!--<input type="button" value="Generar descarga de Precios" onclick="generaDescPrecio();" style="padding:10px;border-radius:5px;position:absolute;top:300px;right:30px;">-->
 							<?php echo '
 						<script type="text/javascript">
-							
+
 							function resetea_con_folios_vtas(){
 								if(!confirm("Si realiza esta accion de manera inadecuada se pueden repetir los folios.\\nRealmente desea resetear el contador de folios de Venta?")){
 									return false;
 								}
 								var envia=ajaxR("../ajax/deshabilitaSinInventario.php?&fl=resetear_cont_fol");
-								alert(envia);								
+								alert(envia);
 							}
-							
+
 							function generaDescPrecio(id_sucu){
 								//var datos=<?php echo $user_sucursal?>;
 							'; ?>
@@ -504,7 +513,7 @@ unset($_smarty_tpl_vars);
 							<button type="button" onclick="deshabilitaSinInventario(7,<?php echo $this->_tpl_vars['campos'][0][10]; ?>
 );" class="btns_deshabilit"
 							title="">
-								Habilitar productos con<br>esracionalidad en <?php echo $this->_tpl_vars['campos'][1][10]; ?>
+								Habilitar productos con<br>estacionalidad en <?php echo $this->_tpl_vars['campos'][1][10]; ?>
 
 							</button>
 						</td>
@@ -513,8 +522,9 @@ unset($_smarty_tpl_vars);
 
 				<?php endif; ?>
 				<?php if ($this->_tpl_vars['no_tabs'] == 1): ?>
-					<div class="redondo" align="center" >			
+					<div class="redondo" align="center" >
 						<table width="87%" border="0" class="tabla-inputs" >
+	<!-- 7. Iteracion del arreglo %$campos%% para formar campos (catalogos) de la pantalla-->
 							<?php unset($this->_sections['indice']);
 $this->_sections['indice']['loop'] = is_array($_loop=$this->_tpl_vars['campos']) ? count($_loop) : max(0, (int)$_loop); unset($_loop);
 $this->_sections['indice']['name'] = 'indice';
@@ -541,18 +551,19 @@ $this->_sections['indice']['index_next'] = $this->_sections['indice']['index'] +
 $this->_sections['indice']['first']      = ($this->_sections['indice']['iteration'] == 1);
 $this->_sections['indice']['last']       = ($this->_sections['indice']['iteration'] == $this->_sections['indice']['total']);
 ?>
-								<tr height="47">
+		<!-- 7.1. Condicion si son tres o menos campos-->
 									<?php if ($this->_tpl_vars['no_campos'] <= 3): ?>
 										<td width="69" class="texto_form"><?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][3]; ?>
 </td>
 										<td width="175">
+			<!-- 7.1.1. Condicion si el tipo de campo es CHAR -->
 										<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'CHAR'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>   
+                                            <?php endif; ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][12] > 60): ?>
 												<textarea name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
@@ -568,20 +579,22 @@ $this->_sections['indice']['last']       = ($this->_sections['indice']['iteratio
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?>/>
 											<?php endif; ?>
+			<!-- 7.1.2. Condicion si el tipo de campo es DATE -->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'DATE'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>	
+                                            <?php endif; ?>
 											<input type="text" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="10" maxlength="10" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> />		
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> />
 											<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.1.3. Condicion si el tipo de campo es TIME -->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'TIME'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
@@ -595,14 +608,15 @@ $this->_sections['indice']['last']       = ($this->_sections['indice']['iteratio
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?> onkeypress="return validaTime(event, this.id)"<?php endif; ?> />
-											<span class="text_legend">hh:mm:ss</span>		
+											<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.1.4. Condicion si el tipo de campo es INT o FLOAT -->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'INT' || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>	
+                                            <?php endif; ?>
 											<input type="text" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][12]; ?>
@@ -612,13 +626,14 @@ $this->_sections['indice']['last']       = ($this->_sections['indice']['iteratio
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> onkeypress="return validarNumero(event,<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>1<?php else: ?>0<?php endif; ?>,id);" onblur="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][15]; ?>
 "/>
+			<!-- 7.1.5. Condicion si el tipo de campo es PASSWORD -->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'PASSWORD'): ?>
                                             <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>   
+                                            <?php endif; ?>
                                             <input type="password" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][12]; ?>
@@ -626,7 +641,8 @@ $this->_sections['indice']['last']       = ($this->_sections['indice']['iteratio
 " class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?>/>	
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?>/>
+			<!-- 7.1.6. Condicion si el tipo de campo es BINARY -->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'BINARY'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
@@ -649,6 +665,7 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][9] != 0): ?> checked="checked" <?php endif; ?> <?php else: ?> <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][10] != 0): ?> checked="checked" <?php endif; ?> <?php endif; ?> onclick="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][16]; ?>
 "/>
 											<?php endif; ?>
+			<!-- 7.1.7. Condicion si el tipo de campo es COMBO-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'COMBO'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
@@ -667,7 +684,7 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 													<?php else: ?>
 														<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]), $this);?>
 
-													<?php endif; ?>	
+													<?php endif; ?>
 												</select>
 												<input type="hidden" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
@@ -686,10 +703,11 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 													<?php else: ?>
 														<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]), $this);?>
 
-													<?php endif; ?>	
+													<?php endif; ?>
 												</select>
-																								
+
 											<?php endif; ?>
+			<!-- 7.1.8. Condicion si el tipo de campo es BUSCADOR-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'BUSCADOR'): ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 1 && $this->_tpl_vars['tipo'] != 2 && $this->_tpl_vars['tipo'] != 3): ?>
 												<table>
@@ -710,7 +728,7 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 ')" src="<?php echo $this->_tpl_vars['rooturl']; ?>
 img/flecha_abajo.gif" style="height:12px;" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" />-->
 														</td>
-													</tr>	
+													</tr>
 												</table>
 												<div id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 _div" style="visibility:hidden; display:none; position:absolute; z-index:3;">
@@ -737,7 +755,8 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 												<input type="hidden" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " value="<?php if ($this->_tpl_vars['tipo'] == 0):  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9];  else:  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10];  endif; ?>">
-											<?php endif; ?>	
+											<?php endif; ?>
+			<!-- 7.1.9. Condicion si el tipo de campo es FILE-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FILE'): ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][10] != ''): ?>
 												<a href="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
@@ -756,14 +775,16 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 											    <br>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
-)</span>                                                
+)</span>
                                             <?php endif; ?>
 										<?php endif; ?>
 										</td>
+		<!-- 7.2. Condicion si son 4 campos-->
 									<?php elseif ($this->_tpl_vars['no_campos'] == 4): ?>
 										<td width="69"  class="texto_form"><?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][3]; ?>
 </td>
 										<td width="175">
+			<!-- 7.2.1. Condicion si el tipo de campo es CHAR-->
 										<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'CHAR'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
@@ -787,19 +808,21 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?>/>
 											<?php endif; ?>
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'DATE'): ?>
+			<!-- 7.2.2. Condicion si el tipo de campo es DATE-->
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>	
+                                            <?php endif; ?>
 											<input type="text" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="10" maxlength="10" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> />		
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> />
 											<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.2.3. Condicion si el tipo de campo es TIME-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'TIME'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
@@ -813,14 +836,15 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?> onkeypress="return validaTime(event, this.id)"<?php endif; ?> />
-											<span class="text_legend">hh:mm:ss</span>		
+											<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.2.4. Condicion si el tipo de campo es INT o FLOAT-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'INT' || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>	
+                                            <?php endif; ?>
 											<input type="text" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][12]; ?>
@@ -830,13 +854,14 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> onkeypress="return validarNumero(event,<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>1<?php else: ?>0<?php endif; ?>,id);" onblur="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][15]; ?>
 "/>
+			<!-- 7.2.5. Condicion si el tipo de campo es PASSWORD-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'PASSWORD'): ?>
                                             <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>   
+                                            <?php endif; ?>
                                             <input type="password" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][12]; ?>
@@ -844,7 +869,8 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />	
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />
+			<!-- 7.2.6. Condicion si el tipo de campo es BINARY-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'BINARY'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
@@ -867,6 +893,7 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][9] != 0): ?> checked="checked" <?php endif; ?> <?php else: ?> <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][10] != 0): ?> checked="checked" <?php endif; ?> <?php endif; ?> onclick="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][16]; ?>
 "/>
 											<?php endif; ?>
+			<!-- 7.2.7. Condicion si el tipo de campo es COMBO-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'COMBO'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
@@ -885,7 +912,7 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 													<?php else: ?>
 														<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]), $this);?>
 
-													<?php endif; ?>	
+													<?php endif; ?>
 												</select>
 												<input type="hidden" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
@@ -904,9 +931,10 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 													<?php else: ?>
 														<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]), $this);?>
 
-													<?php endif; ?>	
+													<?php endif; ?>
 												</select>
 											<?php endif; ?>
+			<!-- 7.2.8. Condicion si el tipo de campo es BUSCADOR-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'BUSCADOR'): ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 1 && $this->_tpl_vars['tipo'] != 2 && $this->_tpl_vars['tipo'] != 3): ?>
 												<table>
@@ -927,7 +955,7 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 ')" src="<?php echo $this->_tpl_vars['rooturl']; ?>
 img/flecha_abajo.gif" style="height:12px;" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" />-->
 														</td>
-													</tr>	
+													</tr>
 												</table>
 												<div id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 _div" style="visibility:hidden; display:none; position:absolute; z-index:3;">
@@ -954,7 +982,8 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 												<input type="hidden" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " value="<?php if ($this->_tpl_vars['tipo'] == 0):  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9];  else:  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10];  endif; ?>">
-											<?php endif; ?>	
+											<?php endif; ?>
+			<!-- 7.2.9. Condicion si el tipo de campo es FILE-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FILE'): ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][10] != ''): ?>
 												<a href="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
@@ -968,20 +997,22 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][12]; ?>
 "/>
-											<?php endif; ?>		
+											<?php endif; ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
 											    <br>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
-)</span>                                                
+)</span>
                                             <?php endif; ?>
 										<?php endif; ?>
 										</td>
+		<!-- 7.3. Condicion si existe la variable %$smarty.section.indice.first%%-->
 										<?php if ($this->_sections['indice']['first']): ?>
 											 <td width="158">&nbsp;</td>
 										     <td width="155" class="texto_form"><?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][3]; ?>
 </td>
 											 <td width="193">
+			<!-- 7.3.1. Condicion si el tipo de campo es CHAR-->
 											 <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'CHAR'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
@@ -1004,20 +1035,22 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?>/>
 												<?php endif; ?>
+			<!-- 7.3.2. Condicion si el tipo de campo es DATE-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'DATE'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                     <br />
-                                                <?php endif; ?>	
+                                                <?php endif; ?>
 												<input type="text" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " size="10" maxlength="10" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> />		
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> />
 												<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.3.3. Condicion si el tipo de campo es TIME-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'TIME'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
@@ -1031,14 +1064,15 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?> onkeypress="return validaTime(event, this.id)"<?php endif; ?> />
-												<span class="text_legend">hh:mm:ss</span>		
+												<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.3.4. Condicion si el tipo de campo es INT O FLOAT-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'INT' || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                     <br />
-                                                <?php endif; ?>	
+                                                <?php endif; ?>
 												<input type="text" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][12]; ?>
@@ -1048,13 +1082,14 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> onkeypress="return validarNumero(event,<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>1<?php else: ?>0<?php endif; ?>,id);" onblur="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][15]; ?>
 "/>
+			<!-- 7.3.5. Condicion si el tipo de campo es PASSWORD-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'PASSWORD'): ?>
                                                 <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                     <br />
-                                                <?php endif; ?>   
+                                                <?php endif; ?>
                                                 <input type="password" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][12]; ?>
@@ -1062,7 +1097,8 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />	
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />
+			<!-- 7.3.6. Condicion si el tipo de campo es BINARY-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'BINARY'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
@@ -1085,6 +1121,7 @@ _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['in
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9] != 0): ?> checked="checked" <?php endif; ?> <?php else: ?> <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10] != 0): ?> checked="checked" <?php endif; ?> <?php endif; ?> onclick="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][16]; ?>
 "/>
 												<?php endif; ?>
+			<!-- 7.3.7. Condicion si el tipo de campo es COMBO-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'COMBO'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
@@ -1093,7 +1130,7 @@ _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['in
                                                     <br />
                                                 <?php endif; ?>
 												<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>
-													
+
 													<select  name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 _1" id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][11]; ?>
@@ -1104,13 +1141,13 @@ _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['in
 														<?php else: ?>
 															<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]), $this);?>
 
-														<?php endif; ?>	
+														<?php endif; ?>
 													</select>
 													<input type="hidden" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " value="<?php if ($this->_tpl_vars['tipo'] == 0):  echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9];  else:  echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10];  endif; ?>"/>
 												<?php else: ?>
-													
+
 													<select  name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " onclick="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][16]; ?>
@@ -1124,9 +1161,10 @@ _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['in
 														<?php else: ?>
 															<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]), $this);?>
 
-														<?php endif; ?>	
-													</select>												
+														<?php endif; ?>
+													</select>
 												<?php endif; ?>
+			<!-- 7.3.8. Condicion si el tipo de campo es BUSCADOR-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'BUSCADOR'): ?>
 												<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 1 && $this->_tpl_vars['tipo'] != 2 && $this->_tpl_vars['tipo'] != 3): ?>
 													<table>
@@ -1174,7 +1212,8 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 													<input type="hidden" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " value="<?php if ($this->_tpl_vars['tipo'] == 0):  echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9];  else:  echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10];  endif; ?>">
-												<?php endif; ?>	
+												<?php endif; ?>
+			<!-- 7.3.9. Condicion si el tipo de campo es FILE-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'FILE'): ?>
 												<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10] != ''): ?>
 													<a href="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
@@ -1193,21 +1232,23 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 												    <br>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
-)</span>                                                    
-                                                <?php endif; ?>		
+)</span>
+                                                <?php endif; ?>
 											<?php endif; ?>
 											 </td>
 										<?php endif; ?>
+		<!-- 7.4. Condicion si son mas de 4 campos-->
 									<?php else: ?>
 										<td width="69" class="texto_form"><?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][3]; ?>
 </td>
 										<td width="175">
+			<!-- 7.4.1. Condicion si el tipo de campo es CHAR-->
 										<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'CHAR'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                <br />                                             
+                                                <br />
                                             <?php endif; ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][12] > 60): ?>
 												<textarea name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
@@ -1232,14 +1273,15 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 													height:100px;overflow:auto;display:none;" id="res_ord_lis"></div>
 												<?php endif; ?>
 										<!--Fin de cambio-->
-											<?php endif; ?>	
+											<?php endif; ?>
+			<!-- 7.4.2. Condicion si el tipo de campo es DATE-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'DATE'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                <br />                                             
-                                            <?php endif; ?>	
+                                                <br />
+                                            <?php endif; ?>
 											<input type="text" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="10" maxlength="10" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][11]; ?>
@@ -1248,12 +1290,13 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> tabindex="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][4]; ?>
 "/>
 											<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.4.3. Condicion si el tipo de campo es TIME-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'TIME'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                <br />                                             
+                                                <br />
                                             <?php endif; ?>
 											<input type="text" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
@@ -1262,14 +1305,15 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?> onkeypress="return validaTime(event, this.id)"<?php endif; ?> tabindex="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][4]; ?>
 "/>
-											<span class="text_legend">hh:mm:ss</span>		
+											<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.4.4. Condicion si el tipo de campo es INT o FLOAT-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'INT' || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                <br />                                             
-                                            <?php endif; ?>	
+                                                <br />
+                                            <?php endif; ?>
 											<input type="text" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][12]; ?>
@@ -1280,13 +1324,14 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> onkeypress="return validarNumero(event,<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>1<?php else: ?>0<?php endif; ?>,id);" tabindex="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][4]; ?>
 " onblur="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][15]; ?>
 "/>
+			<!-- 7.4.5. Condicion si el tipo de campo es PASSWORD-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'PASSWORD'): ?>
                                             <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                 <br />
-                                            <?php endif; ?>   
+                                            <?php endif; ?>
                                             <input type="password" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][12]; ?>
@@ -1294,13 +1339,14 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 " class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />	
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />
+			<!-- 7.4.6. Condicion si el tipo de campo es BINARY-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'BINARY'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                <br />                                             
+                                                <br />
                                             <?php endif; ?>
 											<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>
 												<input type="hidden" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
@@ -1318,12 +1364,13 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 " onclick="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][16]; ?>
 "/>
 											<?php endif; ?>
+			<!-- 7.4.7. Condicion si el tipo de campo es COMBO-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'COMBO'): ?>
 										    <?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][27] != ''): ?>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                <br />                                             
+                                                <br />
                                             <?php endif; ?>
 											<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 0): ?>
 												<select  name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
@@ -1336,13 +1383,13 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 													<?php else: ?>
 														<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]), $this);?>
 
-													<?php endif; ?>	
+													<?php endif; ?>
 												</select>
 												<input type="hidden" name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " value="<?php if ($this->_tpl_vars['tipo'] == 0):  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9];  else:  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10];  endif; ?>"/>
 											<?php else: ?>
-										<!--Implementación Oscar 17.09.2019 para no poder editar el campo de proveedor en OC al ser edición-->
+										<!--EXCEPCION : Implementacion Oscar 17.09.2019 para no poder editar el campo de proveedor en OC al ser edicion-->
 												<select  name="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " onclick="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][16]; ?>
@@ -1359,11 +1406,12 @@ _1" class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['ind
 													<?php else: ?>
 														<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]), $this);?>
 
-													<?php endif; ?>	
+													<?php endif; ?>
 												</select>
-										<!--Fin de cambio Oscar 17.09.2019-->			
+										<!--Fin de cambio Oscar 17.09.2019-->
 
 											<?php endif; ?>
+			<!-- 7.4.8. Condicion si el tipo de campo es BUSCADOR-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'BUSCADOR'): ?>
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][8] == 1 && $this->_tpl_vars['tipo'] != 2 && $this->_tpl_vars['tipo'] != 3): ?>
 												<table>
@@ -1384,7 +1432,7 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 ')" src="<?php echo $this->_tpl_vars['rooturl']; ?>
 img/flecha_abajo.gif" style="height:12px;" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" />-->
 														</td>
-													</tr>	
+													</tr>
 												</table>
 												<div id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 _div" style="visibility:hidden; display:none; position:absolute; z-index:3;">
@@ -1412,7 +1460,9 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " id="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][2]; ?>
 " value="<?php if ($this->_tpl_vars['tipo'] == 0):  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][9];  else:  echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10];  endif; ?>">
 											<?php endif; ?>
+			<!-- 7.4.9. Condicion si el tipo de campo es FILE-->
 										<?php elseif ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][5] == 'FILE'): ?>
+
 											<?php if ($this->_tpl_vars['campos'][$this->_sections['indice']['index']][10] != ''): ?>
 												<a href="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][10]; ?>
 " target="_blank" class="texto_form">Ver documento</a>
@@ -1430,16 +1480,18 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 											     <br>
                                                 <span class="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['index']][27]; ?>
-)</span>                                                                                             
-                                            <?php endif; ?>	
+)</span>
+                                            <?php endif; ?>
 										<?php endif; ?>
 										</td>
+		<!-- 7.5 Condiciones si el campo display es !='' -->
 										<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][3] != ''): ?>
 											<td width="158">&nbsp;</td>
 										    <td width="155" class="texto_form"><?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][3]; ?>
 </td>
 											<td width="193" <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][0] == '466'): ?>align="center"<?php endif; ?>>
-											 <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'CHAR'): ?>											   
+											 <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'CHAR'): ?>
+			<!-- 7.5.1. Condicion si el tipo de campo es CHAR-->
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
@@ -1463,10 +1515,10 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> tabindex="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][4]; ?>
 " <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][0] == '466'): ?>onkeyup="crea_previo_etiqueta();"<?php endif; ?>/>
 												<?php endif; ?>
-											<!--Implementación Oscar 19.02.2019 para previo de etiqueta-->
+											<!--Excepcion : Implementacion Oscar 19.02.2019 para previo de etiqueta de productos-->
 												<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][0] == '466'): ?>
 													<div id="previo_etiqueta" style="position:relative;top: 0;border:4px solid blue;width:400px;background:white;
-													height:190px;overflow:none;margin:5px;display: none;"> 
+													height:190px;overflow:none;margin:5px;display: none;">
 													</div>
 													<?php echo '
 													<script type="text/javascript">
@@ -1479,20 +1531,21 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 																"&ord_lsta="+$("#orden_lista").val()+"&id_prod="+$("#id_productos").val());
 															//var arr_mq=es_pd_mq.split("|");
 															$("#previo_etiqueta").html(ajax_previo_etq);
-															$("#previo_etiqueta").css("display","block");				
+															$("#previo_etiqueta").css("display","block");
 														}
 													</script>
 													'; ?>
 
 												<?php endif; ?>
-											<!--Fin de Cambio Oscar 19.02.2018-->												
+											<!--Fin de Cambio Oscar 19.02.2018-->
+			<!-- 7.5.2. Condicion si el tipo de campo es DATE-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'DATE'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                    <br />                                             
-                                                <?php endif; ?>	
+                                                    <br />
+                                                <?php endif; ?>
 												<input type="text" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " size="10" maxlength="10" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][11]; ?>
@@ -1500,13 +1553,14 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?>onfocus="calendario(this)"<?php endif; ?> tabindex="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][4]; ?>
 "/>
-												<span class="text_legend">yy-mm-dd</span>	
+												<span class="text_legend">yy-mm-dd</span>
+			<!-- 7.5.3. Condicion si el tipo de campo es TIME-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'TIME'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                    <br />                                             
+                                                    <br />
                                                 <?php endif; ?>
 												<input type="text" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
@@ -1515,15 +1569,16 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>readonly=""<?php else: ?> onkeypress="return validaTime(event, this.id)"<?php endif; ?> tabindex="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][4]; ?>
 "/>
-												<span class="text_legend">hh:mm:ss</span>	
+												<span class="text_legend">hh:mm:ss</span>
+			<!-- 7.5.4. Condicion si el tipo de campo es INT o FLOAT-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'INT' || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                    <br />                                             
-                                                <?php endif; ?>	
-                                        <!--Implementación Oscar 27.02.2018 se agrega if id eq 615 or 617 para hacner cambio de tipo de pago de usuario-->
+                                                    <br />
+                                                <?php endif; ?>
+                                        <!-- Excepcion : Implementacion Oscar 27.02.2018 se agrega if id eq 615 or 617 para hacer cambio de tipo de pago de usuario-->
 												<input type="text" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][12]; ?>
@@ -1533,17 +1588,18 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
 " <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> onkeypress="return validarNumero(event,<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'FLOAT'): ?>1<?php else: ?>0<?php endif; ?>,id);" tabindex="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][4]; ?>
 " onblur="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][15]; ?>
-" 
+"
 												<?php if (( $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][0] == '615' || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][0] == '617' )): ?> onclick="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][16]; ?>
 " <?php endif; ?>/>
 										<!--fin de cambio 27.02.2018-->
+			<!-- 7.5.5. Condicion si el tipo de campo es PASSWORD-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'PASSWORD'): ?>
                                                 <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
                                                     <br />
-                                                <?php endif; ?>   
+                                                <?php endif; ?>
                                                 <input type="password" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][12]; ?>
@@ -1551,13 +1607,14 @@ _txt" size="<?php echo $this->_tpl_vars['campos'][$this->_sections['indice']['in
 " class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][11]; ?>
 " <?php if ($this->_tpl_vars['tipo'] == 0): ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9]; ?>
 " <?php else: ?> value="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
-" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />	
+" <?php endif; ?> <?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?> readonly="" <?php endif; ?> />
+			<!-- 7.5.6. Condicion si el tipo de campo es BINARY-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'BINARY'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                    <br />                                             
+                                                    <br />
                                                 <?php endif; ?>
 												<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>
 													<input type="hidden" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
@@ -1575,12 +1632,13 @@ _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['in
 " onclick="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][16]; ?>
 "/>
 												<?php endif; ?>
+			<!-- 7.5.7. Condicion si el tipo de campo es COMBO-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'COMBO'): ?>
 											    <?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27] != ''): ?>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
 )</span>
-                                                    <br />                                             
+                                                    <br />
                                                 <?php endif; ?>
 												<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) || $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 0): ?>
 													<select  name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
@@ -1593,7 +1651,7 @@ _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['in
 														<?php else: ?>
 															<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]), $this);?>
 
-														<?php endif; ?>	
+														<?php endif; ?>
 													</select>
 													<input type="hidden" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
@@ -1615,9 +1673,10 @@ _1" class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['in
 														<?php else: ?>
 															<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][0],'output' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][25][1],'selected' => $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]), $this);?>
 
-														<?php endif; ?>	
-													</select>													
+														<?php endif; ?>
+													</select>
 												<?php endif; ?>
+			<!-- 7.5.8. Condicion si el tipo de campo es BUSCADOR-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'BUSCADOR'): ?>
 												<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][8] == 1 && $this->_tpl_vars['tipo'] != 2 && $this->_tpl_vars['tipo'] != 3): ?>
 													<table>
@@ -1665,7 +1724,8 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 													<input type="hidden" name="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " id="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][2]; ?>
 " value="<?php if ($this->_tpl_vars['tipo'] == 0):  echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][9];  else:  echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10];  endif; ?>">
-												<?php endif; ?>	
+												<?php endif; ?>
+			<!-- 7.5.9. Condicion si el tipo de campo es FILE-->
 											<?php elseif ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][5] == 'FILE'): ?>
 												<?php if ($this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10] != ''): ?>
 													<a href="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][10]; ?>
@@ -1684,22 +1744,17 @@ _txt" size="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['i
 												    <br>
                                                     <span class="<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][28]; ?>
 ">(<?php echo $this->_tpl_vars['campos2'][$this->_sections['indice']['index']][27]; ?>
-)</span>                                                                                                 
-                                                <?php endif; ?>	
+)</span>
+                                                <?php endif; ?>
 											<?php endif; ?>
 											 </td>
 										<?php endif; ?>
-									<?php endif; ?>	
+									<?php endif; ?>
 								</tr>
+	<!-- 8. Fin de iteracion de campos visibles -->
 							<?php endfor; endif; ?>
-							
-							
-							
-								
-							
-							
-							
 						</table>
+	<!-- 9. Iteracion de campos no visibles -->
 						<?php unset($this->_sections['indice']);
 $this->_sections['indice']['loop'] = is_array($_loop=$this->_tpl_vars['datosInvisibles']) ? count($_loop) : max(0, (int)$_loop); unset($_loop);
 $this->_sections['indice']['name'] = 'indice';
@@ -1730,43 +1785,47 @@ $this->_sections['indice']['last']       = ($this->_sections['indice']['iteratio
 						<?php endfor; endif; ?>
                  	</div>
 				<?php endif; ?>
+	<!-- 10. Seccion de botones de opciones-->
                <div class="Botones">
-               
+               	<!-- Excepcion : Implementacion para exportar/importar lista de precios -->
                		<?php if ($this->_tpl_vars['tabla'] == 'ec_precios'): ?>
                			<a href="#" class="fl" title="Exportar" onclick="window.open('../especiales/listaCSV.php?id_precio=<?php echo $this->_tpl_vars['llave']; ?>
 ')">Exportar </a>
                			<a href="#" class="fr" title="Importar" onclick="location.href='../especiales/importaCSV.php?id_precio=<?php echo $this->_tpl_vars['llave']; ?>
 '">Importar </a>
-               			<a href="#" class="fl" title="Exportar para mayoreo" 
+               			<a href="#" class="fl" title="Exportar para mayoreo"
                			onclick='window.open("../especiales/listaCSV.php?id_precio=<?php echo $this->_tpl_vars['llave']; ?>
 &#x26para_mayoreo=1")'>Exportar<br>Mayoreo</a>
                		<?php endif; ?>
-               		
+
+               	<!-- Excepcion : Implementacion para exportar/importar estacionalidades -->
                		<?php if ($this->_tpl_vars['tabla'] == 'ec_estacionalidad'): ?>
                			<a href="#" class="fl" title="Exportar" onclick="window.open('../especiales/listaEstCSV.php?id_estacionalidad=<?php echo $this->_tpl_vars['llave']; ?>
 ')">Exportar </a>
                			<a href="#" class="fr" title="Importar" onclick="location.href='../especiales/importaEstCSV.php?id_estacionalidad=<?php echo $this->_tpl_vars['llave']; ?>
 '">Importar </a>
                		<?php endif; ?>
-               
+
+               	<!-- No se usa -->
                     <?php if ($this->_tpl_vars['tabla'] == 'ec_autorizacion' && $this->_tpl_vars['tipo'] == 1): ?>
-                    	
+
 						<a href="#"  class="fr b" title="Rechazar"  onclick="document.getElementById('autorizado').checked=false;valida()">Rechazar</a>
                     	<a href="#"  class="fr b" title="Autorizar"  onclick="document.getElementById('autorizado').checked=true;valida()">Autorizar</a>
 
-                    <?php endif; ?>                   
-               
-               </div>  
+                    <?php endif; ?>
 
-<!--Implementación de ventana emergente para avisos Oscar 11.04.2018-->
+               </div>
+
+<!-- 11. Implementacion de ventana emergente para avisos Oscar 11.04.2018-->
 	<div id="ventana_emergente_global" style="position:absolute;z-index:1000;width:100%;height:250%;background:rgba(0,0,0,.8);top:0;left:0;display:none;">
 		<p align="right"><img src="../../img/especiales/cierra.png" height="50px" onclick="document.getElementById('ventana_emergente_global').style.display='none';"></p>
 		<p id="contenido_emergente_global"></p><!--En este div se cargan los datos o avisos que se quieren mostrar en pantalla-->
 	</div>
 
-<!--Fin de implementación de ventana emergenete-->
-	
-	
+<!--Fin de implementacion de ventana emergenete-->
+
+
+<!-- 12. Seccion de grids-->
 	<?php unset($this->_sections['x']);
 $this->_sections['x']['loop'] = is_array($_loop=$this->_tpl_vars['gridArray']) ? count($_loop) : max(0, (int)$_loop); unset($_loop);
 $this->_sections['x']['name'] = 'x';
@@ -1791,12 +1850,26 @@ $this->_sections['x']['index_next'] = $this->_sections['x']['index'] + $this->_s
 $this->_sections['x']['first']      = ($this->_sections['x']['iteration'] == 1);
 $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $this->_sections['x']['total']);
 ?>
-	
 		<input type="hidden" name="file<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
 " value="">
-		
+	<!-- Impementacion Oscar 17-09-2020 para insertar separarador de venta en linea productos-->
+    		<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0] == '60'): ?>
+		<div id="bg_seccion" style="">
+
+    			<?php $_smarty_tpl_vars = $this->_tpl_vars;
+$this->_smarty_include(array('smarty_include_tpl_file' => "general/seccionProductosLinea.tpl", 'smarty_include_vars' => array()));
+$this->_tpl_vars = $_smarty_tpl_vars;
+unset($_smarty_tpl_vars);
+ ?>
+   
+		</div>
+			<?php endif; ?>
+    <!-- Fin de cambio Oscar 17-09-2020 -->
 		<div id="bg_seccion">
+    		
     		<div class="name_module" align="center">
+	
+    
 
     			<table>
 					<tr valign="middle">
@@ -1804,21 +1877,23 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 <img src="../../img/especiales/add.png" id="desp_<?php echo $this->_sections['x']['index']; ?>
 " width="35px" style="top:20px;position:relative;padding:10px;" onClick="despliega(1,<?php echo $this->_sections['x']['index']; ?>
 );"></p></td>
-                       
+
 					</tr>
 				</table><br>
     		</div>
-    <!--implementación de Oscar 12/02/2018-->
+    <!-- 12.1. Implementacion de Oscar 12/02/2018 Para buscador de grids-->
     	<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][21] == '1'): ?><!--condicionamos que solo muestre buscador si el grid asi lo marca en la BD  && ($tipo eq '0' || $tipo eq '1')-->
     		<br><br>
-			<div style="border:1px solid;display:none;" id="div_busc_grid_<?php echo $this->_sections['x']['index']; ?>
+			<div style="border:0;display:none;" id="div_busc_grid_<?php echo $this->_sections['x']['index']; ?>
 ">
-				<p align="left" style="position:absolute;"><b>Buscador:</b></p>
+				<span align="left" style="position:absolute;padding:0; font-size:15px; width : 300px;"><b>Buscador:</b></span>
 				<input type="text" id="b_g_<?php echo $this->_sections['x']['index']; ?>
 " style="width:50%;" onkeyup="activa_buscador_general(this,'<?php echo $this->_sections['x']['index']; ?>
 ','<?php echo $this->_tpl_vars['tabla']; ?>
 ','<?php echo $this->_tpl_vars['no_tabla']; ?>
-',event);">
+',event ,'<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0]; ?>
+', '<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
+');">
 				<input type="text" id="cantidad_<?php echo $this->_sections['x']['index']; ?>
 " style="width:3%;<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0] == '43' || $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0] == '24'): ?>display:none;<?php endif; ?>" onkeyup="validarEv(event,<?php echo $this->_sections['x']['index']; ?>
 );">
@@ -1839,11 +1914,11 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 "><!--descripcion-->
 			</div>
 	<!--Implementación de Oscar 16.05.2018 para exportar/importar lista de estacionalidades
-	<?php if ($this->_tpl_vars['tabla'] == 'ec_estacionalidad' && $this->_tpl_vars['no_tabla'] == '0'): ?>	
+	<?php if ($this->_tpl_vars['tabla'] == 'ec_estacionalidad' && $this->_tpl_vars['no_tabla'] == '0'): ?>
 		<div style="position:absolute;bottom:-40%;z-index:3;">
 			<input type="button" id="bot_imp_estac" onclick="importa_exporta_estacionalidades(2);" value="Importar estacionalidad" style="padding:5px;border-radius:5px;">
 			<input type="button"  onclick="importa_exporta_estacionalidades(1);" value="Exportar estacionalidad"style="padding:5px;border-radius:5px;">
-			
+
 			<form class="form-inline">
 				<input type="file" id="imp_csv_prd" style="display:none;">
 				<p class="nom_csv">
@@ -1855,14 +1930,14 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 	<?php endif; ?>
 	fin de implementación OScar 16.05.2018-->
 
-	
+
 			<?php echo '
 		<!--/*********************Implementación de importar/exportar estacionalidades con excel Oscar 16.05.2018******************************************************/-->
 			<!--incluimos libreria para poner csv en temporal-->
 				<script type="text/JavaScript">
-			/******************************************************Implementación de Buscador Global Oscar 2018**********************************************************/
+    // 12.2. Funcion que realiza la busqueda de registros por medio de archivo /code/ajax/buscadorGlobal.php
 					var tmp_busc="";
-					function activa_buscador_general(t,nu,ta,nt,e){
+					function activa_buscador_general(t,nu,ta,nt,e, grid_id, grid_nombre){//Se agrega grid_id, grid_nombre Oscar 17-09-2020
 						if(e.keyCode==40){
 							if($(\'#r_1\')){
 								resalta_busc(0,1);
@@ -1871,21 +1946,24 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						}
 					'; ?>
 
-						var id_gr='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0]; ?>
+						/*var id_gr='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0]; ?>
 ';//capturamos el id del grid
 						var posic='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
-';//capturamos el nombre del grid
+';//capturamos el nombre del grid*/
+			/*Implementacion Oscar 2020 para obtener valor de llave primaria de la pantalla*/
+						var llave_primaria = '<?php echo $this->_tpl_vars['llave']; ?>
+';
 						//alert('<?php echo $this->_tpl_vars['tipo']; ?>
 ');
 					<?php echo '
-				/*implementación Oscar 09.09.2019 para mandar el id de proveedor en el buscador de detalle de ordenes de compra*/
+				//Excepcion : Implementacion Oscar 09.09.2019 para mandar el id de proveedor en el buscador de detalle de ordenes de compra
 						var id_condicion="";
-						if(id_gr==5){
+						if(grid_id == 5){
 							id_condicion=$("#id_proveedor").val();
-						} 
+						}
 				/**/
 					//sacamos las filas existentes en el grid
-						var fil_ex=($(\'#\'+posic+\' tr\').length-5);
+						var fil_ex=($(\'#\'+ grid_nombre +\' tr\').length-5);
 						//alert(t.value+\', \'+ta+\', \'+nt+\', \'+id_gr+posic);
 					//sacamos valor del buscador
 						var txt_busc=t.value;
@@ -1897,7 +1975,10 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							type:\'post\',
 							url:\'../ajax/buscadorGlobal.php\',
 							cache:false,
-							data:{clave:txt_busc,tabla:ta,no_t:nt,id:id_gr,fil_exist:fil_ex,n_d:nu,grid_nom:posic,id_cond:id_condicion},
+							data:{clave:txt_busc,tabla:ta,no_t:nt, id : grid_id, fil_exist:fil_ex,n_d:nu,
+								grid_nom : grid_nombre, id_cond:id_condicion,
+								llave_principal : llave_primaria/*Implementacion Oscar 2020 para enviar valor de llave primaria de la pantalla*/
+							},
 							success:function(datos){
 								var respuesta=datos.split(\'|\');
 								if(respuesta[0]!=\'ok\'){
@@ -1911,7 +1992,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							}
 						});
 					}
-			//funcion que valida acción sobre opciones
+    // 12.3. Funcion que valida accion de teclas sobre opciones
 					function eje(e,num_res,id_opc){
 						//alert(e.keyCode+num_res+id_opc);
 							//alert(e.keyCode);
@@ -1930,7 +2011,8 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							}
 							return true;
 					}
-			//función que hace hover con flechas
+
+	//12.4 Funcion que resalta hover
 					function resalta_busc(actual,flag){
 						var nvo=actual+(flag);
 					//alert(nvo);
@@ -1946,13 +2028,13 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						return false;
 					}
 
-			//funcion que pone producto en buscador y enfoca a cantidad
-					function insertaBuscador(n_b,valores){
+	//12.5. Funcion que pone producto en buscador y enfoca a cantidad
+					function insertaBuscador(n_b, valores, grid_id, grid_nombre){
 						//alert(n_b+"\\n"+valores);
 						if(valores=="" || valores==null){
 							alert(\'No hay valores válidos\');
 							return false;
-						}			
+						}
 						$("#res_bus_glob_"+n_b).html(\'\');//limpiamos resultados
 						$("#res_bus_glob_"+n_b).css("display","none");//ocultamos div de resultados
 						$("#cantidad_"+n_b).val("1");//asignamos uno por default a cantidad
@@ -1960,13 +2042,17 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 					//preparamos el boton para agregar producto seleccionado
 						'; ?>
 
-						var id_gr='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0]; ?>
+						/*'<?php $this->assign('count_tmp', "'+n_b+'"); ?>';
+						alert('<?php echo $this->_tpl_vars['count_tmp']; ?>
+');
+						var id_gr='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['count_tmp']['index']][0]; ?>
 ';//capturamos el id del grid
-						var posic='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
+						var posic='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['count_tmp']['index']][1]; ?>
 ';//capturamos el nombre del grid
+						alert(posic);*/
 					<?php echo '
 				//validamos que el registro no este en el grid
-						var valida_gr=validaRegGrid(id_gr,n_b,posic);
+						var valida_gr=validaRegGrid(grid_id,n_b,grid_nombre);
 						if(valida_gr==\'1\'){
 //							alert(\'El registro ya se encuentra en el grid...\');
 							return false;
@@ -1977,8 +2063,8 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						//descomponemos descripcion de buscador
 							var arr=document.getElementById(\'b_g_\'+n_b).value.split("°");
 						/***********************************implementación de confirmación de movimiento de almacen prod c/maquila Oscar 11.04.2018*/
-							if(id_gr==9){//si es el grid de movimientos de almacén entra al proceso de validación...
-								var es_pd_mq=ajaxR("../ajax/validaMovProdMaq.php?id_pr="+arr[0]);	
+							if(grid_id == 9){//si es el grid de movimientos de almacén entra al proceso de validación...
+								var es_pd_mq=ajaxR("../ajax/validaMovProdMaq.php?id_pr="+arr[0]);
 								var arr_mq=es_pd_mq.split("|");
 								if(arr_mq[0]==\'ok\'){
 									if(arr_mq[1]==\'maquilado\'){
@@ -1997,18 +2083,18 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							}
 						//fin de implementación 11.04.2018
 					//sacamos las filas existentes en el grid
-						var fil_ex=($(\'#\'+posic+\' tr\').length-5);
+						var fil_ex=($(\'#\'+grid_nombre+\' tr\').length-5);
 						$.ajax({
 							type:\'post\',
 							url:\'../ajax/buscadorGlobal.php\',
 							cache:false,
-							data:{flag:1,id:id_gr,fil_exist:fil_ex,clave:arr[1],n_d:n_b},
+							data:{flag:1,id : grid_id, fil_exist:fil_ex,clave:arr[1],n_d:n_b},
 							success:function(dat){
 								var resul=dat.split("|");
 								if(resul[0]!=\'ok\'){
 									alert("Error!!!\\n\\n"+dat)
 								}else{
-									$("#img_add_"+n_b).attr("onclick",resul[2]);		
+									$("#img_add_"+n_b).attr("onclick",resul[2]);
 								}
 							}
 							});
@@ -2017,14 +2103,14 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						//document.getElementById(\'img_add_\'+n_b).style.display="none";
 					}
 
-			//funcion que valida datos
+	//12.6. Funcion que valida evento click o intro
 					function validarEv(e,nu_bus){
 						if(e.keyCode==13||e==\'click\'){
 							$("#img_add_"+nu_bus).click();
 						}
 
 					}
-			//
+	//12.7. Funcion que valida si el registro ya existe en en grid
 					function validaRegGrid(id_g,n_b,posic){
 						//alert(id_g+":"+n_b+":"+posic);
 						$.ajax({
@@ -2041,7 +2127,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							//sacamos el numero de registros
 								var fil_ex=($(\'#\'+posic+\' tr\').length-4);
 								var arr=document.getElementById(\'b_g_\'+n_b).value.split("°");
-								for(var i=0;i<=fil_ex;i++){//se cambia menor o igual condición del ciclo for Oscar 26.03.2018
+								for(var i=0;i<=fil_ex;i++){//se cambia menor o igual condicion del ciclo for Oscar 26.03.2018
 									//alert(posic+\'_\'+arr_re[1]+"_"+i);
 									if(document.getElementById(posic+"_"+arr_re[1]+"_"+i)){//campo a comparar
 									var tmp=document.getElementById(posic+"_"+arr_re[1]+"_"+i).innerHTML;
@@ -2054,15 +2140,17 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 										}
 									}
 								}//fin de for i
+							//Excepcion 
 								if(id_g==43 || id_g==24){
 									alert("El producto no fue encontrado!!!");
 									$("#cantidad_0").val(\'\');
 									$("#b_g_0").select();
 								}
-							}	
+							}
 						});
 					}
 				</script>
+	<!-- 12.8. Estilos CSS del buscador de grids -->
 				<style type="text/css">
 					.opcion{
 						height: 30px;
@@ -2076,28 +2164,29 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 		<?php endif; ?>
 	<!--Fin de Cambio 12-02-2017-->
 
+	<!-- 12.9. Div que contiene a cada Grid -->
 			<div style="border:0px solid;display:none;height:100px;position:relative;z-index:100;" id="div_grid_<?php echo $this->_sections['x']['index']; ?>
-"><!--implementación de Oscar 31.07.2018 para no mostrar todos los grids   (se quita la clase class="tablas-res_")-->
-			
-				<?php if ($this->_tpl_vars['tabla'] == 'ec_transferencias' && $this->_tpl_vars['no_tabla'] == '3'): ?>	
-				
+"><!--12.9.1. Implementacion de Oscar 31.07.2018 para no mostrar la informacion de todos los grids   (se quita la clase class="tablas-res_")-->
+		<!--Excepcion : para mostrar el buscador por codigo de barras en transferencias -->
+				<?php if ($this->_tpl_vars['tabla'] == 'ec_transferencias' && $this->_tpl_vars['no_tabla'] == '3'): ?>
+
 					<?php echo '
 					<style>
-				
+
 						.buscaProductoBar{
 							position:relative;
 							top:-20px;
 						}
-						
+
 						.inProductoBar{
 							width:200px !important;
 						}
-				
+
 					</style>
-					
+
 					<script>
-					
-					
+
+
 						function validaBar(obj)
 						{
 							'; ?>
@@ -2105,26 +2194,26 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 								var llave='<?php echo $this->_tpl_vars['llave']; ?>
 ';
 							<?php echo '
-							
-							
+
+
 							var url="../ajax/validaProductoVer.php?id_transferencia="+llave+"&code="+obj.value;
-							
+
 							var res=ajaxR(url);
-							
+
 							var aux=res.split(\'|\');
-							
+
 							if(aux[0] != \'exito\')
 							{
 								alert(res);
 								return false;
 							}
-							
-							
+
+
 							var id_prod=aux[1];
-							
-							
+
+
 							var num=NumFilas(\'transferenciasProductos\');
-							
+
 							for(var i=0;i<num;i++)
 							{
 								if(celdaValorXY(\'transferenciasProductos\', 2, i) == id_prod)
@@ -2136,64 +2225,65 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 									htmlXY(\'transferenciasProductos\', 7, i, aux);
 								}
 							}
-							
-							
+
+
 							obj.value="";
 							obj.focus();
-							
-							
+
+
 						}
-						
+
 						function validaEntBar(eve, obj)
 						{
-							var key=0;	
-							key=(eve.which) ? eve.which : eve.keyCode;	
-							
-							
+							var key=0;
+							key=(eve.which) ? eve.which : eve.keyCode;
+
+
 							if(key == 13)
 							{
-								validaBar(obj);	
+								validaBar(obj);
 							}
-							
+
 						}
-					
-					
-					
+
+
+
 					</script>
-					
-					
-					
+
+
+
 					'; ?>
 
-				
+
 					<div class="buscaProductoBar">
 						Código de barras:
 						<input type="text" name="codigo" class="inProductoBar" onkeyup="validaEntBar(event, this)">
 						<input type="button" class="boton" onclick="validaBar(codigo)" value="Validar">
 					</div>
-						
+
 				<?php endif; ?>
-				
+
+		<!--Excepcion : para mostrar el buscador por codigo de barras en transferencias -->
 				<?php if ($this->_tpl_vars['tabla'] == 'ec_transferencias' && $this->_tpl_vars['no_tabla'] == '0'): ?>
-				
-				
+
+
 					<?php echo '
 					<style>
-				
+
 						.buscaProductoBar{
 							position:relative;
 							top:-20px;
 						}
-						
+
 						.inProductoBar{
 							width:200px !important;
 						}
-				
+
 					</style>
-					
+
 					<script>
-					
-					
+
+
 						function validaBar(obj)
 						{
 							'; ?>
@@ -2201,28 +2291,28 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 								var llave='<?php echo $this->_tpl_vars['llave']; ?>
 ';
 							<?php echo '
-							
-							
+
+
 							var url="../ajax/validaProductoTrans.php?code="+obj.value;
-							
+
 							var res=ajaxR(url);
-							
+
 							var aux=res.split(\'|\');
-							
+
 							if(aux[0] != \'exito\')
 							{
 								alert(res);
 								return false;
 							}
-							
-							
+
+
 							//alert(aux[2]);
-							
+
 							var id_prod=aux[1];
 							var nver=0;
-							
+
 							var num=NumFilas(\'transferenciasProductos\');
-							
+
 							for(var i=0;i<num;i++)
 							{
 								if(celdaValorXY(\'transferenciasProductos\', 2, i) == id_prod)
@@ -2235,64 +2325,63 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 									nver++;
 								}
 							}
-							
-							
+
+
 							if(nver == 0)
 							{
 								InsertaFilaNoVal(\'transferenciasProductos\');
-								
-								
+
+
 								valorXYNoOnChange(\'transferenciasProductos\', 2, num, aux[1]);
 								valorXYNoOnChange(\'transferenciasProductos\', 3, num, aux[2]);
 								valorXY(\'transferenciasProductos\', 6, num, -1);
 								valorXY(\'transferenciasProductos\', 10, num, 1);
 								valorXY(\'transferenciasProductos\', 7, num, 1);
 								valorXY(\'transferenciasProductos\', 8, num, 1);
-								
+
 								//htmlXY(\'transferenciasProductos\', 3, num, aux[2]);
-								
+
 							}
-							
+
 							obj.value="";
 							obj.focus();
-							
-							
+
+
 						}
-						
+
 						function validaEntBar(eve, obj)
 						{
-							var key=0;	
-							key=(eve.which) ? eve.which : eve.keyCode;	
-							
-							
+							var key=0;
+							key=(eve.which) ? eve.which : eve.keyCode;
+
+
 							if(key == 13)
 							{
-								validaBar(obj);	
+								validaBar(obj);
 							}
-							
+
 						}
-					
-					
-					
+
+
+
 					</script>
-					
-					
-					
+
+
+
 					'; ?>
 
-				
-				
+
+
 					<div class="buscaProductoBar">
 						C&oacute;digo de barras:
 						<input type="text" name="codigo" class="inProductoBar" onkeyup="validaEntBar(event, this)">
 						<input type="button" class="boton" onclick="validaBar(codigo)" value="Validar">
 					</div>
-				
+
 				<?php endif; ?>
-			
-			
+
 				<?php if (( $this->_tpl_vars['tabla64'] == 'ZWNfdHJhbnNmZXJlbmNpYXM=' && $this->_tpl_vars['tipo'] == '0' ) || ( ( $this->_tpl_vars['tipo'] == 0 || $this->_tpl_vars['tipo'] == 1 ) && $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][6] != 'false' )): ?>
-			
+
             	<div class="submenu">
 
 					<?php if ($this->_tpl_vars['tabla64'] == 'ZWNfdHJhbnNmZXJlbmNpYXM=NO' && $this->_tpl_vars['tipo'] == '0'): ?>
@@ -2302,7 +2391,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
             				<p>Productos</p>
             			</div>
             		<?php endif; ?>
-   
+	<!-- 12.10. Menu lateral boton para agregar fila en el grid-->
 					<?php if (( $this->_tpl_vars['tipo'] == 0 || $this->_tpl_vars['tipo'] == 1 ) && $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][6] != 'false'): ?>
 						<div class="Fila" title="clic para agregar un nuevo registro" onclick="InsertaFila('<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
 ')">
@@ -2310,20 +2399,89 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						</div>
 					<?php endif; ?>
 				</div>
-				
+
 				<?php endif; ?>
 
  				<!--Termina el menu lateral de los conetenidos-->
-			 	
+
  			<div id="cosa" align="center"><!--style="display:none;"-->
 
-	<!--Implementacion Oscar 22.11.2019 para mostrar el mensaje en el grid de pagos-->
+	<!--Excepcion : Implementacion Oscar 22.11.2019 para mostrar el mensaje en el grid de pagos-->
 				<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0] == '7'): ?>
 					<p align="center" style="color:red;font-size:25px;">Si modifica uno de estos pagos no se verá reflejado; hay que modificarlo manualmente en los pagos a proveedor por partida</p>
 				<?php endif; ?>
+	<!--Excepcion : Implementacion Oscar 22.11.2019 para mostrar el mensaje en el grid de pagos-->
+	
+				<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0] == '65'): ?>
+					<p align="left" style="font-size:25px;">Imagen Principal</p>
+					<div align="center" style="font-size:20px; position: relative; left:0; width:80%; border: 1px solid; padding: 10px;
+					background:gray; color: white;">
+						
+						<label>Nombre : </label>
+						<input type="text" id="nombre_img_principal_editable" style="width : 250px;"
+						onchange="cambia_valor_nombre_img_principal();">
+						
+						<label>Extension : </label>
+						<select id="formato_imagen_principal" style="padding:10px;"
+						onchange="cambia_valor_nombre_img_principal();">
+							<?php unset($this->_sections['x_formatos']);
+$this->_sections['x_formatos']['loop'] = is_array($_loop=$this->_tpl_vars['formatos_imagenes']) ? count($_loop) : max(0, (int)$_loop); unset($_loop);
+$this->_sections['x_formatos']['name'] = 'x_formatos';
+$this->_sections['x_formatos']['show'] = true;
+$this->_sections['x_formatos']['max'] = $this->_sections['x_formatos']['loop'];
+$this->_sections['x_formatos']['step'] = 1;
+$this->_sections['x_formatos']['start'] = $this->_sections['x_formatos']['step'] > 0 ? 0 : $this->_sections['x_formatos']['loop']-1;
+if ($this->_sections['x_formatos']['show']) {
+    $this->_sections['x_formatos']['total'] = $this->_sections['x_formatos']['loop'];
+    if ($this->_sections['x_formatos']['total'] == 0)
+        $this->_sections['x_formatos']['show'] = false;
+} else
+    $this->_sections['x_formatos']['total'] = 0;
+if ($this->_sections['x_formatos']['show']):
+
+            for ($this->_sections['x_formatos']['index'] = $this->_sections['x_formatos']['start'], $this->_sections['x_formatos']['iteration'] = 1;
+                 $this->_sections['x_formatos']['iteration'] <= $this->_sections['x_formatos']['total'];
+                 $this->_sections['x_formatos']['index'] += $this->_sections['x_formatos']['step'], $this->_sections['x_formatos']['iteration']++):
+$this->_sections['x_formatos']['rownum'] = $this->_sections['x_formatos']['iteration'];
+$this->_sections['x_formatos']['index_prev'] = $this->_sections['x_formatos']['index'] - $this->_sections['x_formatos']['step'];
+$this->_sections['x_formatos']['index_next'] = $this->_sections['x_formatos']['index'] + $this->_sections['x_formatos']['step'];
+$this->_sections['x_formatos']['first']      = ($this->_sections['x_formatos']['iteration'] == 1);
+$this->_sections['x_formatos']['last']       = ($this->_sections['x_formatos']['iteration'] == $this->_sections['x_formatos']['total']);
+?>
+								<?php echo smarty_function_html_options(array('values' => $this->_tpl_vars['formatos_imagenes'][$this->_sections['x_formatos']['index']][0],'output' => $this->_tpl_vars['formatos_imagenes'][$this->_sections['x_formatos']['index']][1]), $this);?>
+
+							<?php endfor; endif; ?>
+						</select>
+						<label>  </label>
+						<input type="text" name="nombre_img_principal" id="nombre_img_principal" value="<?php echo $this->_tpl_vars['precios_especiales'][7]; ?>
+"
+						style="width : 250px;" readonly placeholder="Nombre Completo">
+						<label> <button type="button" onclick="limpia_valor_img_principal();">X</button> </label><br>
+					</div>
+					<p align="left" style="font-size:25px;">Imagenes Adicionales</p>
+					<?php echo '
+						<script type="text/javascript">
+							function cambia_valor_nombre_img_principal(){
+								var nom_img_princ = $("#nombre_img_principal_editable").val().trim();
+								var nom_form_img_princ =  $("#formato_imagen_principal option:selected").text().trim();
+								$("#nombre_img_principal").val( nom_img_princ + \'.\' + nom_form_img_princ);
+							}
+							function limpia_valor_img_principal(){
+								if(!confirm("Realmente desea eliminar el valor de la imagen principal") ){
+									return false;
+								}
+								$("#nombre_img_principal_editable").val(\'\');
+								$("#nombre_img_principal").val(\'\');
+							}
+						</script>
+					'; ?>
+
+
+				<?php endif; ?>
+
 	<!--Fin de cambio Oscar 22.11.2019-->
- 		<!--Comienza el menu lateral de los contenidos-->
- 			<!--Se implementa <?php echo $this->_tpl_vars['filtro_fechas_1']; ?>
+ 		<!-- 12.11. Tabla del grid (contiene datos de cabecera y configuracion del grid)-->
+ 			<!--12.11.1. Se implementa <?php echo $this->_tpl_vars['filtro_fechas_1']; ?>
  en el atributo datos para filtrar grid por rango Oscar 14.08.2018-->
  				<table id="<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
 " cellpadding="0" cellspacing="0" border="1" Alto="<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][9]; ?>
@@ -2346,8 +2504,8 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 "
                    listado="<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][13]; ?>
 " class="tabla_Grid_RC" scrollH="N" despuesEliminar="" >
-                	<tr class="HeaderCell">                    
-                <!--Modificacion de Oscar 07.06.2019 para mandar la llave al archivo que carga los combos del grid en atributo "datosDB"-->  
+                	<tr class="HeaderCell">
+                <!-- 12.11.2. Modificacion de Oscar 07.06.2019 para mandar la llave al archivo que carga los combos del grid en atributo datosDB-->
                     	<?php unset($this->_sections['y']);
 $this->_sections['y']['loop'] = is_array($_loop=$this->_tpl_vars['gridArray'][$this->_sections['x']['index']][20]) ? count($_loop) : max(0, (int)$_loop); unset($_loop);
 $this->_sections['y']['name'] = 'y';
@@ -2419,7 +2577,7 @@ $this->_sections['y']['last']       = ($this->_sections['y']['iteration'] == $th
                     	<?php endfor; endif; ?>
                    <!--Fin de cambio Oscar 07.06.2019-->
 
-                   <!--Implementacion Oscar 10.06.2019 para agregar el botón de dirección al listado de detalle de ediciones de movimientos caja-->
+                   <!--Excepcion : Implementacion Oscar 10.06.2019 para agregar el boton de direccion al listado de detalle de ediciones de movimientos caja-->
                  	<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0] == '54'): ?>
                    		<td width="56" offsetWidth="56" tipo="libre" valor="Ver detalle" align="center" campoBD='<?php echo $this->_tpl_vars['valuesEncGrid'][$this->_sections['x']['index']]; ?>
 '>
@@ -2428,53 +2586,54 @@ img/autorizarmini.png" width="22" height="22" border="0" onclick="ver_detalle_mo
 						</td>
                    	<?php endif; ?>
                    <!--Fin de cambio Oscar Oscar 10.06.2019-->
-    	            </tr>       
+    	            </tr>
         	 	</table>
              </div>
-             <script>	  	
-             //alert('<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
-'+"\n"+'<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0]; ?>
-'+"\n"+'<?php echo $this->_tpl_vars['filtro_fechas_1']; ?>
-');
+             <script>
+             // 12.12. Se mandan cargar los datos mediante la funcion CargaGrid(%$nombre,$id_grid%%);
                 CargaGrid('<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
 ','<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][0]; ?>
 ');
+			//Excepcion para insertar fila
 				<?php if ($this->_tpl_vars['grids'][$this->_sections['ng']['index']][27] != '0'): ?>
 					for(ci=NumFilas('<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
 ');ci<<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][18]; ?>
 ;ci++)
 						InsertaFila('<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
 ');
-				<?php endif; ?>				
-              </script> 
-		</div>  
-        </div>	
-	<?php endfor; endif; ?>			
-		
-		
-		
-	
-		
-		
-		
+				<?php endif; ?>
+              </script>
+		</div>
+        </div>
+	<?php endfor; endif; ?>
+<!-- 12.13. Fin de iteracion de grids-->
+
+
+
+
+
+
+
 	<br />
+<!-- 13. Seccion de botones laterales de la pantalla -->
 	<div id="accione"s  class="btn-inferio"r align="right">
-	
+
 		<table  border="0" style="position:fixed;z-index:100;top:35%;right:8px;">
-	<!--implementación de Oscar 21.08.2018-->
-		<?php if ($this->_tpl_vars['tabla'] == 'ec_productos'): ?>	
+	<!--Ecepcion : implementacion de Oscar 21.08.2018 boton para avanzar al producto siguiente-->
+		<?php if ($this->_tpl_vars['tabla'] == 'ec_productos'): ?>
 		  <tr><td align="center"><a href="#" class="fr" title="siguiente" onclick="getSig()" style="background:green;padding:5px;border-radius:5px;color:white;">Siguiente </a><br><br><br></td></tr>
 		<?php endif; ?>
 	<!---->
-	<!--boton de guardar-->
+	<!-- 13.1. Boton de guardar-->
        	<?php if ($this->_tpl_vars['tipo'] == 0 || $this->_tpl_vars['tipo'] == 1): ?>
 				<tr><td id="guardarlistado" valign="bottom" title="Guardar listado"><table width="60"><tr><td ><img class="botonesacciones guardarbtn" src="<?php echo $this->_tpl_vars['rooturl']; ?>
 img/guardar.png" alt="guardar" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';" title="clic para guardar los cambios" onclick="lanza_mensaje();"/><br>
                     <span style="border:0px solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Guardar</b></span></td></tr></table></td><!--valida() deshabilitado por Oscar 08.06.2018 para lanzar emergente--></tr>
 			<?php endif; ?>
-	<!--boton de listado-->
+
+	<!-- 13.2. Boton de listado-->
 			<tr>
-		<!--implementación Oscar 08.05.2019 para redireccionar a Listado de Transferencias desde la Recepción-->
+		<!--Excepcion : implementacion Oscar 08.05.2019 para redireccionar a Listado de Transferencias desde la Recepcion-->
 		<?php if ($this->_tpl_vars['tabla64'] == 'ZWNfdHJhbnNmZXJlbmNpYXM=' && $this->_tpl_vars['no_tabla64'] == 'Mg=='): ?>
 			<td id="botonlistado" valign="bottom" title="Botón listado">
               <table>
@@ -2490,7 +2649,7 @@ code/general/listados.php?tabla=<?php echo $this->_tpl_vars['tabla64']; ?>
                     <span style="border:0px solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Listado</b></span>
                 </td></tr>
               </table>
-            </td>             
+            </td>
 		<!--Fin de cambio Oscar 08.05.2019-->
 		<?php else: ?>
 			<td id="botonlistado" valign="bottom" title="Botón listado">
@@ -2512,7 +2671,7 @@ code/general/listados.php?tabla=<?php echo $this->_tpl_vars['tabla64']; ?>
             </td>
         <?php endif; ?>
         </tr>
-	<!--boton de agregar registro-->
+	<!-- 13.3. Boton de agregar registro-->
 			<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) && $this->_tpl_vars['mostrar_nuevo'] == '1'): ?>
 				<tr <?php if ($this->_tpl_vars['tipo_sistema'] != 'linea' && ( $this->_tpl_vars['tabla'] == 'ec_productos' || $this->_tpl_vars['tabla'] == 'sys_users' || tabla == 'ec_traspasos_bancos' || tabla == 'ec_afiliaciones_cajero' ) || tabla == 'ec_caja_o_cuenta'): ?>style="display:none;"<?php endif; ?>>
 				<td id="botonnuevo" valign="top">
@@ -2525,8 +2684,8 @@ img/nuevo.png" alt="nuevo" onmouseover="this.style.cursor='hand';this.style.curs
 				</table>
 				</td></tr>
 			<?php endif; ?>
-	<!--boton de editar-->	
-			<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) && $this->_tpl_vars['mostrar_mod'] == '1'): ?>	
+	<!--13.4. Boton de editar-->
+			<?php if (( $this->_tpl_vars['tipo'] == 2 || $this->_tpl_vars['tipo'] == 3 ) && $this->_tpl_vars['mostrar_mod'] == '1'): ?>
 				<tr <?php if ($this->_tpl_vars['tipo_sistema'] != 'linea' && ( $this->_tpl_vars['tabla'] == 'ec_productos' || $this->_tpl_vars['tabla'] == 'sys_users' || tabla == 'ec_traspasos_bancos' || tabla == 'ec_afiliaciones_cajero' ) || tabla == 'ec_caja_o_cuenta'): ?>style="display:none;"<?php endif; ?>>
 				<td valign="top" title="Editar">
 				<table width="60"><tr><td><img class="botonesacciones editarbtn" src="<?php echo $this->_tpl_vars['rooturl']; ?>
@@ -2537,7 +2696,7 @@ img/editar.png" alt="editar" onmouseover="this.style.cursor='hand';this.style.cu
                     <span style="border:opx solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Editar</b></span>
                 </td></tr></table></td></tr>
 			<?php endif; ?>
-	<!--boton de eliminar-->
+	<!--13.5. Boton de eliminar-->
 			<?php if ($this->_tpl_vars['tipo'] == 3 && $this->_tpl_vars['mostrar_eli'] == '1'): ?>
 				<tr <?php if ($this->_tpl_vars['tipo_sistema'] != 'linea' && ( $this->_tpl_vars['tabla'] == 'ec_productos' || $this->_tpl_vars['tabla'] == 'sys_users' || tabla == 'ec_traspasos_bancos' || tabla == 'ec_afiliaciones_cajero' ) || tabla == 'ec_caja_o_cuenta'): ?>style="display:none;"<?php endif; ?>>
 				<td valign="bottom" title="Eliminar">
@@ -2546,43 +2705,43 @@ img/eliminar.png" alt="eliminar" onmouseover="this.style.cursor='hand';this.styl
                     <span style="border:opx solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Eliminar</b></span>
                 </td></tr></table></td></tr>
 			<?php endif; ?><!--valida() deshabilitado por Oscar 08.06.2018 para lanzar emergente-->
-	<!--boton de imprimir-->			
+	<!--13.6. Boton de imprimir-->
 			<?php if (( $this->_tpl_vars['tipo'] == 1 || $this->_tpl_vars['tipo'] == 2 ) && $this->_tpl_vars['mostrar_imp'] == '1' && ( $this->_tpl_vars['tabla'] == 'ec_ordenes_compraNO' || $this->_tpl_vars['tabla'] == 'ec_pedidos' )): ?>
 				<tr><td valign="bottom" title="Imprimir"><table width="60"><tr><td><img src="<?php echo $this->_tpl_vars['rooturl']; ?>
 img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" title="clic para imprimir el registro" onclick="imprime()" onmouseover="this.style.cursor='hand';this.style.cursor='pointer';"/><br>
                     <span style="border:opx solid;position:relative;bottom:16px;left:0px;width:100%;"><b>Imprimir</b></span>
                 </td></tr></table></td></tr>
-                
+
 			<?php endif; ?>
-	<!--implementación Oscar 21.08.2018-->	
+	<!--Excepcion : Implementacion Oscar 21.08.2018 boton para retroceder al producto anterior-->
 		  		<?php if ($this->_tpl_vars['tabla'] == 'ec_productos'): ?>
 		  		<tr><td><a href="#" class="fl" style="background:green;padding:5px;border-radius:5px;color:white;" title="anterior" onclick="getAnt()">Anterior</a></td></tr>
                      	<script>
                      		<?php echo '
-                     		
+                     	//Funcion para retroceder producto a travez del archivo code/ajax/prodAnt.php
                      		function getAnt()
                      		{
-                     			
+
                      			id_producto=document.getElementById(\'id_productos\').value;
                      			//alert(id_producto);
-                     			
+
                      			res=ajaxR(\'../ajax/prodAnt.php?tipo=1&id_producto=\'+id_producto);
-                     			
+
                      			aux=res.split(\'|\');
-                     			
+
                      			if(aux[0] == \'exito\')
                      			{
-                     		
+
                      				//&a01773a8a11c5f7314901bdae5825a190=NTE2MA==&bnVtZXJvX3RhYmxh=MA==
-                     		
-                     		
+
+
 	                     			var url="contenido.php?aab9e1de16f38176f86d7a92ba337a8d=ZWNfcHJvZHVjdG9z&a1de185b82326ad96dec8ced6dad5fbbd=";
 	                     			'; ?>
 
 	                     			url+="<?php echo $this->_tpl_vars['tipo64']; ?>
 &a01773a8a11c5f7314901bdae5825a190="+aux[1]+"&bnVtZXJvX3RhYmxh=MA==";
 	                     			<?php echo '
-	                     			
+
 	                     			//alert(url);
 	                     			location.href=url;
 	                     		}
@@ -2590,35 +2749,36 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
 	                     		{
 	                     			alert(\'No hay un producto anterior\');
 	                     			return false;
-	                     		}	
+	                     		}
 	                     		else
 	                     			alert(res);
-                     		
+
                      		}
-                     		
+
+                     	//Funcion para avanzar producto a travez del archivo code/ajax/prodAnt.php
                      		function getSig()
                      		{
-                     			
+
                      			id_producto=document.getElementById(\'id_productos\').value;
                      			//alert(id_producto);
-                     			
+
                      			res=ajaxR(\'../ajax/prodAnt.php?tipo=2&id_producto=\'+id_producto);
-                     			
+
                      			aux=res.split(\'|\')
-                     			
+
                      			if(aux[0] == \'exito\')
                      			{
-                     		
+
                      				//&a01773a8a11c5f7314901bdae5825a190=NTE2MA==&bnVtZXJvX3RhYmxh=MA==
-                     		
-                     		
+
+
 	                     			var url="contenido.php?aab9e1de16f38176f86d7a92ba337a8d=ZWNfcHJvZHVjdG9z&a1de185b82326ad96dec8ced6dad5fbbd=";
 	                     			'; ?>
 
 	                     			url+="<?php echo $this->_tpl_vars['tipo64']; ?>
 &a01773a8a11c5f7314901bdae5825a190="+aux[1]+"&bnVtZXJvX3RhYmxh=MA==";
 	                     			<?php echo '
-	                     			
+
 	                     			//alert(url);
 	                     			location.href=url;
 	                     		}
@@ -2626,30 +2786,30 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
 	                     		{
 	                     			alert(\'No hay un producto siguiente\');
 	                     			return false;
-	                     		}	
+	                     		}
 	                     		else
 	                     			alert(res);
-                     		
+
                      		}
-                     		
+
                      		'; ?>
 
                      	</script>
-                     	
-                    <?php endif; ?> 
+
+                    <?php endif; ?>
 		  	</td>
 		  </tr>
 		  <!--fin de cambio-->
-          
-        
+
+
 		</table>
 	</div>
-	</form>	
-	
+	</form>
+
 	<script>
-	
+
 		<?php echo '
-		
+		// 14. Funcion para enviar email atravez del archivo /code/pdf/enviaMail.php 
 		    function enviarMail()
 		    {
 		        '; ?>
@@ -2657,16 +2817,17 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
                 var res=ajaxR('../pdf/enviaMail.php?id=<?php echo $this->_tpl_vars['llave']; ?>
 ');
                 <?php echo '
-                
+
                 if(res == \'exito\')
                     alert(\'Se ha enviado el correo con exito\');
                 else
                 {
                     //alert(\'No fue posible enviar el correo, verifique su configuracion\');
                     alert(res);
-                }    
+                }
 		    }
-		
+
+		// 15. Funcion para imprimir cotizacion atravez del archivo /code/pdf/imprimeDoc.php
 		    function imprimirCot()
 		    {
 		        '; ?>
@@ -2675,58 +2836,58 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
 ');
 		        <?php echo '
 		    }
-		
-		
+
+
 			function calculaTotales()
 			{
 				var num=NumFilas(\'productos\');
 				var tot=0;
-				
+
 				for(var i=0;i<num;i++)
 				{
 					var can=celdaValorXY(\'productos\', 4, i);
 					var pre=celdaValorXY(\'productos\', 5, i);
-					
+
 					can=isNaN(parseFloat(can))?0:parseFloat(can);
 					pre=isNaN(parseFloat(pre))?0:parseFloat(pre);
-					
+
 					tot+=can*pre;
 				}
-				
+
 				var num=NumFilas(\'otros\');
 				for(var i=0;i<num;i++)
 				{
 					var can=celdaValorXY(\'otros\', 6, i);
 					var pre=celdaValorXY(\'otros\', 7, i);
-					
+
 					can=isNaN(parseFloat(can))?0:parseFloat(can);
 					pre=isNaN(parseFloat(pre))?0:parseFloat(pre);
-					
+
 					tot+=can*pre;
 				}
-				
+
 				obj=document.getElementById(\'subtotal\');
 				obj.value=tot;
-				
+
 				obj=document.getElementById(\'iva\');
 				obj.value=tot*0.16;
-				
+
 				obj=document.getElementById(\'total\');
 				obj.value=tot*1.16;
-			
+
 			}
-		
-		
+
+
 			function test()
 			{
 				return true;
 			}
-			
+
 			function cambiaProds(val)
 			{
 				id=celdaValorXY(\'productos\', 2, val);
 				res=ajaxR(\'../ajax/valProds.php?id=\'+id);
-				
+
 				var aux=res.split(\'|\');
 				if(aux[0] == \'exito\')
 				{
@@ -2736,15 +2897,15 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
 				else
 				{
 					valorXY(\'productos\', 2, val, \'\');
-				}	
-				
+				}
+
 			}
 
 	/*implementación de Oscar 08.06.2018 para lanzar emergente al editar*/
 		function lanza_mensaje(){
 			var cargando=\'<p align="center" style="color:white;font-size:35px;">Guardando</p>\';
 			cargando+=\'<br><img src="../../img/img_casadelasluces/load.gif" width="100px;"><br>\';
-			$("#mensajEmerge").html(cargando);//cargamos el contenido al div	
+			$("#mensajEmerge").html(cargando);//cargamos el contenido al div
 				$("#emerge").css("display","block");
 				setTimeout(valida,100);//retrasamos la entrada de la validación
 			//alert(2);
@@ -2767,7 +2928,19 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
 					$("#login").select();
 					return false;
 				}
-			/*fin de cambio Oscar 24.10.2019*/
+
+			/* implementacion Oscar 23-09-2020 para validar tipo de producto y fechas de seccion venta en linea*/
+				if(f.tabla.value==\'ec_productos\'){
+					if( !validacion_tipo_producto() ){
+						$("#emerge").css("display","none");
+						return false;
+					}
+					if( !valida_fecha_tienda_linea() ){
+						$("#emerge").css("display","none");
+						return false;
+					}
+				}
+
 				'; ?>
 
 					//alert(<?php echo $this->_tpl_vars['tipo']; ?>
@@ -2776,10 +2949,10 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
 					<?php if ($this->_tpl_vars['tipo'] != 3): ?>
 						<?php echo $this->_tpl_vars['validacion_form']; ?>
 
-					<?php endif; ?>	
-				
+					<?php endif; ?>
+
 				<?php echo '
-				
+
 				if(f.tipo.value == \'0\')
 				{
 					f.accion.value="insertar";
@@ -2787,36 +2960,36 @@ img/imprimir.png" alt="imprimir" width="31" class="botonesacciones imprimirbtn" 
 				if(f.tipo.value == \'1\')
 				{
 					f.accion.value="actualizar";
-					
+
 				}
 				if(f.tipo.value == \'3\')
 				{
 					f.accion.value="eliminar";
 				}
-				
+
 				/*if(f.tabla.value == \'sys_users\')
 				{
 					var aux=GuardaGrid(\'permisos\', 5);
-					
+
 					var ax=aux.split(\'|\');
 					if(ax[0] == \'exito\')
-					{	
+					{
 						f.filePermisos.value=ax[1];
 					}
 					else
 					{
 						alert(aux);
 						return false;
-					}	
-					
-					
+					}
+
+
 				}*/
-				
-				
+
+
 				//Guardamos los grids
 				'; ?>
 
-				
+
 					<?php unset($this->_sections['x']);
 $this->_sections['x']['loop'] = is_array($_loop=$this->_tpl_vars['gridArray']) ? count($_loop) : max(0, (int)$_loop); unset($_loop);
 $this->_sections['x']['name'] = 'x';
@@ -2841,19 +3014,19 @@ $this->_sections['x']['index_next'] = $this->_sections['x']['index'] + $this->_s
 $this->_sections['x']['first']      = ($this->_sections['x']['iteration'] == 1);
 $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $this->_sections['x']['total']);
 ?>
-						
+
 						<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][11] != 'false'): ?>
-							
+
 							<?php if ($this->_tpl_vars['gridArray'][$this->_sections['x']['index']][4] != ''): ?>
 								var aux=<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][4]; ?>
 ;
 								if(!aux)
 								return false;
 							<?php endif; ?>
-						
-						
-						
-						
+
+
+
+
 							var num=NumFilas('<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
 ');
 							var nomGrid='<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
@@ -2862,8 +3035,8 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 ';
 
 							<?php echo '
-					
-						 
+
+
 
 							if (nomGrid == \'sucursalProducto\')
 							{
@@ -2880,32 +3053,77 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						 	//	}
 
 						 		//getJsonSucPro();
-						 	}					 
+						 	}
+
+				/*Implementacion Oscar 2020 para validar que no se repitan atributos por producto*/
+							if (nomGrid == \'atributosProducto\'){
+								var atributos_existentes = new Array();
+								var tmp, tmp_cat;
+								var categoria_producto = $("#id_categoria").val();
+								var atributos_incorrectos = "";
+							//recorre grid
+							//alert(NumFilas(nomGrid));
+								var tabla=document.getElementById(\'Body_\' + nomGrid);
+								trs=tabla.getElementsByTagName(\'tr\');
+								for(i_a=0 ; i_a < trs.length; i_a++){
+								//
+									i_a_a = ($(trs[i_a]).attr("id")).replace(\'atributosProducto_Fila\' , \'\');
+									tds=trs[i_a].getElementsByTagName(\'td\');
+           							tmp_cat = tds[5].getAttribute(\'valor\');
+           							
+           							tmp = tds[3].getAttribute(\'valor\');
+											
+           							if(tmp_cat != categoria_producto && (tmp_cat != null && tmp_cat != \'\') ){
+										 atributos_incorrectos += $("#" + nomGrid + "_2_" + i_a_a ).html() + "\\n";
+										 //alert(\'$("#"\'+ nomGrid + "_2_" + i_a_a + \')\' );
+									}
+									for(var a_e = 0; a_e < atributos_existentes.length; a_e++){
+										if(tmp == atributos_existentes[a_e] && atributos_existentes[a_e] != null){
+											$("#emerge").css("display","none");
+											alert("Hay un atributo repetido para el producto y no es posible guardar" +
+												"\\nVerifique y vuelva a intentar");
+											setTimeout(function(){$("#" + nomGrid + "_2_" + (i_a_a) ).click();} , \'300\'); 
+											return false;
+										}
+									}
+									//alert("tmp : " + tmp);
+									atributos_existentes.push(tmp);
+           						}
+
+								if(atributos_incorrectos != ""){
+									$("#emerge").css("display","none");
+									alert("Los siguientes atributos no corresponde a la categoria del" +
+										" producto, verifique sus datos y vuelva a intentar: \\n" 
+										+ atributos_incorrectos);
+									return false;
+						 		}
+						 	}
+				/**/
 							for(ig=0;ig<num;ig++)
 							{
 								var nc=NumColumnas(nomGrid);
-					
+
 								for(jg=0;jg<nc;jg++)
 								{
 									req=getValueHeader(nomGrid, jg, \'requerido\');
-						
+
 							//alert(jg+" req:"+req);
-						
+
 									if(req == \'S\' || req == \'s\')
 									{
 										if(celdaValorXY(nomGrid, jg, ig) == \'\')
-										{		
+										{
 											//alert(nomGrid+"_"+jg+"_"+ig);
 											alert("Debe llenar los datos del grid "+disGrid);
 											$("#emerge").css("display","none");
 											return false;
 										}
 									}
-								}	
-							}	
-						
+								}
+							}
+
 						/*Cambio para no permitir recibir transferencia si no hay internet Oscar(09-11-2017)*/
-						
+
 					/*si el grid es de recepcion de transferencia verificamos conexion con el servidor
 						'; ?>
 
@@ -2919,20 +3137,20 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 								"Verifique su conexion a internet y vuelva a intentar!!!");
 								return false;
 							}
-						}	
+						}
 					//finaliza cambio                   deshabilitado por Oscar 08.06.2018*/
 
 						'; ?>
 
 						var aux=GuardaGrid('<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
-', 5);					
+', 5);
 						var ax=aux.split('|');
 						<?php echo '
-						
+
 						//alert(aux);
-						
+
 						if(ax[0] == \'exito\')
-						{	
+						{
 							'; ?>
 
 							f.file<?php echo $this->_tpl_vars['gridArray'][$this->_sections['x']['index']][1]; ?>
@@ -2946,35 +3164,34 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 
 							return false;
 						}
-						
+
 						'; ?>
 
-						
+
 						<?php endif; ?>
 
 					<?php endfor; endif; ?>
-				
+
 				<?php echo '
-				
+
 				/*alert(\'Suspendido por pruebas...Atte Equipo de desarrollo\');
 				return false;*/
-				
-				
+
 				f.submit();
-				
+
 			}//fin de función valida
-			
-			
+
+
 			function actualizaDependiente(id_catalogos, id_objetos, valor, val_pre)
 			{
-			
+
 				var ids=id_catalogos.split(\',\');
 				var obs=id_objetos.split(\',\');
 				var vpres=val_pre.split(\',\');
-				
-			
+
+
 				//alert(ids.length);
-			
+
 				for(var j=0;j<ids.length;j++)
 				{
 					//alert(i)
@@ -2984,11 +3201,11 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 					{
 						if(document.getElementById(vpres[j]))
 							var vpred=document.getElementById(vpres[j]).value;
-						else	
+						else
 							var vpred=vpres[j];
-							
-						//alert(vpred);	
-					
+
+						//alert(vpred);
+
 						var obj=document.getElementById(obs[j]);
 						obj.options.length=0;
 						for(i=1;i<aux.length;i++)
@@ -3000,17 +3217,17 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						{
 							obj.value=vpred;
 						}
-						
+
 						var och=obj.getAttribute("onchange");
 						//var och=och.replace("\\n", \'\');
 						//alert(och);
-						eval(och);	
+						eval(och);
 					}
 					else
 						alert(res);
-				}		
+				}
 			}
-			
+
 			function botonBuscador(nomcampo)
 			{
 				var obj=document.getElementById(nomcampo+"_txt");
@@ -3023,40 +3240,40 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 				else
 					alert("Error, objeto no encontrado.\\n\\n"+nomcampo+"_txt");
 			}
-			
+
 			function activaBuscador(nomcampo, evento)
 			{
-				
+
 				objInput=document.getElementById(nomcampo+"_txt");
-				
+
 				var objdiv=document.getElementById(nomcampo+"_div");
 				if(!objdiv)
 				{
 					alert("Error, objeto no encontrado.\\n\\n"+nomcampo+"_div");
 					return false;
-				}	
-				
+				}
+
 				//alert(evento.keyCode);
-				
+
 				if(evento.keyCode==9)
 				{
-					ocultaCombobusc(nomcampo);		
+					ocultaCombobusc(nomcampo);
 					return false;
 				}
-				
+
 				var objh=document.getElementById(nomcampo);
 				if(!objh)
 				{
 					alert("Error, objeto no encontrado.\\n\\n"+nomcampo);
 					return false;
 				}
-				
+
 				if(objh&&evento.keyCode!=40)
 				{
 					objh.value="";
-					objh.value=objInput.value;		
-				}	
-							
+					objh.value=objInput.value;
+				}
+
 				if(evento.keyCode==40 && objdiv.style.display=="block")
 				{
 					//alert("??");
@@ -3066,7 +3283,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 				if(evento.keyCode==40)
 				{
 					//alert(\'?\');
-					
+
 					var depende=(objInput.getAttribute("depende"))?objInput.getAttribute("depende"):"";
 					var cadbusq="";
 					if(depende!=""&&depende!=0)
@@ -3087,7 +3304,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							}
 							var arrnomde=objInput.name.split("_");
 							nomde=arrnomde[1]+"_"+dependencia;
-							var objvaldep=document.getElementsByName(nomde)[0];				
+							var objvaldep=document.getElementsByName(nomde)[0];
 							if(objvaldep)
 							{
 								if(objvaldep.value!="")
@@ -3098,20 +3315,20 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							}
 							if(objvaldep.value!="")
 								break;
-						}			
+						}
 					}
 					if(cadbusq!="")
 					{
 						muestraBuscador(nomcampo);
 						ComboBuscador(nomcampo);
 					}
-					
+
 					//alert("Fin ?");
 				}
-				
+
 				var numAct=0;
-				
-				
+
+
 				if((evento.keyCode==40& objInput.value.length>=numAct)||objInput.value.length>=numAct)
 				{
 					//alert("Y");
@@ -3121,13 +3338,13 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 				else if(objdiv.style.display=="block"&&objInput.value.length>=numAct)
 				{
 					ComboBuscador(nomcampo);
-				}	
+				}
 				return true;
 			}
-			
+
 			function muestraBuscador(nomcampo)
 			{
-				
+
 				var objdiv=document.getElementById(nomcampo+"_div");
 				objInput=document.getElementById(nomcampo+"_txt");
 				if(objdiv)
@@ -3135,10 +3352,10 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 					if(objdiv.style.display=="none")
 					{
 						objdiv.style.display="block";
-						objdiv.style.visibility="visible";		
+						objdiv.style.visibility="visible";
 						var top=objdiv.offsetTop;
 						var altura=objInput.offsetHeight;
-						var y=posicionObjeto(objInput)[1];			
+						var y=posicionObjeto(objInput)[1];
 						//if(navigator.appName=="Microsoft Internet Explorer")
 						top+=2;
 						//if(top<(y+altura))
@@ -3147,23 +3364,23 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							top+="px";
 							//objdiv.style.top=top;
 						//}
-					}		
+					}
 				}
 				return true;
 			}
-			
-			
+
+
 			function ComboBuscador(nomcampo)
 			{
-				/*var nomcampo=objInput.name;	
+				/*var nomcampo=objInput.name;
 				var arr=nomcampo.split("_");
 				nomcampo=arr[1]+"_"+arr[2];*/
-				
+
 				objInput=document.getElementById(nomcampo+"_txt");
-				
-				
+
+
 				//alert(objInput);
-				
+
 				var objselec=document.getElementById(nomcampo+"_sel");
 				if(objselec)
 				{
@@ -3172,15 +3389,15 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 					var lon=objselec.length;
 					for(var i=0;i<lon;i++)
 						objselec.options[0]=null;
-						
-						
-					//alert(objselec)	
-						
+
+
+					//alert(objselec)
+
 					var url=objselec.getAttribute("datosdb");
-					
-					
+
+
 					//alert(url);
-					
+
 					if(url.length>0)
 					{
 						url+="&val="+objInput.value;
@@ -3204,7 +3421,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 								}
 								var arrnomde=objInput.name.split("_");
 								nomde=arrnomde[1]+"_"+dependencia;
-								var objvaldep=document.getElementsByName(nomde)[0];				
+								var objvaldep=document.getElementsByName(nomde)[0];
 								if(objvaldep)
 								{
 									if(objvaldep.value!="")
@@ -3215,7 +3432,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 								}
 								if(objvaldep.value!="")
 									break;
-							}							
+							}
 							if(objvaldep)
 							{
 								url+="&depende="+(parseInt(numdep)+1)+"&valordep="+cadbusq;
@@ -3223,15 +3440,15 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 									url+="&nom_dependencia="+campodepen;
 							}
 						}
-						
+
 						//alert(url);
-						
+
 						var resp=ajaxR(url);
-						
+
 						//alert(resp);
 						var arr=resp.split("|");
-						
-						
+
+
 						if(arr[0]!="exito")
 						{
 							alert(resp);
@@ -3239,20 +3456,20 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						}
 						var num=parseInt(arr[1]);
 						//alert(num);
-						
+
 						if(num<=0)
 						{
 							/*var nombre=objInput.name.split("_");
 							nombre=nombre[1]+"_"+nombre[2];*/
-							
+
 							//alert(\'malo\');
-							
+
 							ocultaCombobusc(nomcampo);
 							return false;
 						}
-						var objselec=document.getElementById(nomcampo+"_sel");	
+						var objselec=document.getElementById(nomcampo+"_sel");
 						objselec.options.length=0;
-						//alert(objselec);		
+						//alert(objselec);
 						for(var i=2;i<(num+2);i++)
 						{
 							var arrOpciones=arr[i].split("~");
@@ -3260,7 +3477,7 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						}
 						if(objselec.options.length == 1 && !isNaN(objInput.value) && 0)
 						{
-							
+
 							//alert(\'?\');
 							objselec.options[0].selected=true;
 							asignavalorbusc(nomcampo);
@@ -3269,9 +3486,9 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 				}
 				return true;
 			}
-			
+
 			function asignavalorbusc(nomcampo)
-			{	
+			{
 				//alert(\'1\');
 				var objsel=document.getElementById(nomcampo+"_sel");
 				if(objsel)
@@ -3291,12 +3508,12 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						{
 							//alert(\'4\');
 							objh.value=oculto;
-							objcampo.value=visible;				
+							objcampo.value=visible;
 							var funciononchange=(objcampo.getAttribute("on_change"))?objcampo.getAttribute("on_change"):"";
 							//alert(funciononchange);
 							if(funciononchange.indexOf("#")!=-1)
 								funciononchange=funciononchange.replace(\'#\',objh.id);
-							//alert(\'p1\');	
+							//alert(\'p1\');
 							ocultaCombobusc(nomcampo);
 							//alert(\'p2\');
 							eval(funciononchange);
@@ -3305,8 +3522,8 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 				}
 				return true;
 			}
-			
-			
+
+
 			function ocultaCombobusc(campo)
 			{
 				var objdiv=document.getElementById(campo+"_div");
@@ -3332,12 +3549,12 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 							//objdiv.style.top=top;
 						}
 						objdiv.style.display="none";
-						objdiv.style.visibility="hidden";			
+						objdiv.style.visibility="hidden";
 					}
 				}
 				return true;
 			}
-			
+
 			function posicionObjeto(obj)
 			{
 			    var left = 0;
@@ -3364,9 +3581,9 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 			//asignamos valores habilitado/deshabilitado a grid a productos por sucursal
 				for(var i=0;i<=tope_gr;i++){
 					document.getElementById("csucursalProd_4_"+i).checked=check_val;//habilitamos/deshabilitamos checkbox
-					$("#sucursalProd_4_"+i).attr("valor",valor);//cambiamos valor del checkbox 
+					$("#sucursalProd_4_"+i).attr("valor",valor);//cambiamos valor del checkbox
 					$("#sucursalProd_4_"+i).attr("valor",valor);//cambiamos valor de la celda (este es el que modifica el valor en la BD)
-					
+
 					if(valor==1  && i==0){
 						return true;
 					}
@@ -3403,9 +3620,9 @@ $this->_sections['x']['last']       = ($this->_sections['x']['iteration'] == $th
 						}
 					});
 				}
-			}			
-	
-var existe_o_l=0;			
+			}
+
+var existe_o_l=0;
 		//implementación de Oscar 21-02-2018
 			function validaNoLista(obj,e){
 				var tca=e.keyCode;
@@ -3570,12 +3787,12 @@ Fin de deshabilitar Oscar 08.11.2018*/
 			//$(obj_1)
 		}
 			eval(ejecutar);
-		
+
 		'; ?>
 
-	
+
 	</script>
-     
+
 <?php $_smarty_tpl_vars = $this->_tpl_vars;
 $this->_smarty_include(array('smarty_include_tpl_file' => "general/funciones.tpl", 'smarty_include_vars' => array('tabla' => $this->_tpl_vars['tabla'])));
 $this->_tpl_vars = $_smarty_tpl_vars;
