@@ -5,81 +5,81 @@
 	if(!isset($fcha_filtros)){
 		$fcha_filtros="|";
 	}
-	
+
 	require("../../conect.php");
 	if($tabla == '')
 		$tabla=base64_decode($aab9e1de16f38176f86d7a92ba337a8d);
-	
+
 	if($no_tabla == '')
 		$no_tabla=base64_decode($bnVtZXJvX3RhYmxh);
-	
+
 //	echo 'NO TABLA:'.$no_tabla." tabla=".$tabla;
-	
-	
+
+
 	$tipo=base64_decode($a1de185b82326ad96dec8ced6dad5fbbd);
 
 	if($llave == '')
 		$llave=base64_decode($a01773a8a11c5f7314901bdae5825a190);
-		
+
 //die($llave."\n\n".$tabla."\n\n".$no_tabla."\n\ntipo:".$tipo);
-		
-	mysql_query("BEGIN");	
-	
+
+	mysql_query("BEGIN");
+
 	/*
-	 * 
+	 *
 	 *  SECCIÓN DE PRUEBA
-	 * 
+	 *
 	 * */
-	
+
 	#echo "<!-- cod_tabla = $no_tabla -->";
-	
-		
+
+
 	//buscamos los permisos
 	$sql="SELECT id_menu FROM sys_menus WHERE tabla_relacionada = '$tabla' AND no_tabla='$no_tabla'";
 //die($sql);
 	$res=mysql_query($sql);
-	if(!$res)	  
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
-	}	
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
+	}
 	$num=mysql_num_rows($res);
-	
-	if($num <= 0)	
+
+	if($num <= 0)
 	{
 		mysql_query("ROLLBACK");
 		Muestraerror($smarty, "", "1", "", "No aplica_1", "contenido.php");
-	}	 
-	
-	$row=mysql_fetch_row($res);	
-	
+	}
+
+	$row=mysql_fetch_row($res);
+
 	$sql="SELECT nuevo, modificar, eliminar, imprimir, generar FROM sys_permisos WHERE id_menu=".$row[0]." AND id_perfil=".$perfil_usuario;//cambio 22-03-2018 (antes id_usuario ahora perfil_usuario)
-	
+
 	$res=mysql_query($sql);
-	if(!$res)	  
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
-	}	
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
+	}
 	$num=mysql_num_rows($res);
-	
-	if($num <= 0)	
+
+	if($num <= 0)
 	{
 		mysql_query("ROLLBACK");
 		Muestraerror($smarty, "", "1", "", "No aplica_2", "contenido.php");
-	}	 
-	
+	}
+
 	$row=mysql_fetch_row($res);
-	
+
 	$mostrar_nuevo=$row[0];
 	$mostrar_mod=$row[1];
 	$mostrar_eli=$row[2];
 	$mostrar_imp=$row[3];
 	$mostrar_gen=$row[4];
-	
-	
+
+
 	//Permisos listado
-	
+
 	$sql="SELECT
 		  modificar,
 		  eliminar,
@@ -87,86 +87,86 @@
 		  FROM sys_listados
 		  WHERE tabla = '$tabla'
 		  AND no_tabla = '$no_tabla'";
-		
-	//echo $sql;	
-		
+
+	//echo $sql;
+
 	$res=mysql_query($sql);
-	if(!$res)	  
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
-	}	
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
+	}
 	$num=mysql_num_rows($res);
 
 	if($num <= 0 && $tabla!='ec_oc_recepcion')//modif Oscar 20.07.2018 para poder aacceder a otro catálogo desde el listado de recepción oc	 && $tabla!='ec_oc_recepcion'
 	{
 		mysql_query("ROLLBACK");
 		Muestraerror($smarty, "", "1", "", "No aplica_3", "contenido.php");
-	}	 
-	
+	}
+
 	$row=mysql_fetch_row($res);
-	
+
 	//print_r($row);
-	
+
 	if($row[0] != '1')
 		$mostrar_mod=0;
 	if($row[1] != '1')
 		$mostrar_eli=0;
 	if($row[2] != '1')
-		$mostrar_nuevo=0;		
-		
-	//echo "Dato: ".$mostrar_nuevo;	
-		
-		
+		$mostrar_nuevo=0;
+
+	//echo "Dato: ".$mostrar_nuevo;
+
+
 	$smarty->assign("mostrar_nuevo", $mostrar_nuevo);
 	$smarty->assign("mostrar_mod", $mostrar_mod);
 	$smarty->assign("mostrar_eli", $mostrar_eli);
 	$smarty->assign("mostrar_imp", $mostrar_imp);
 	$smarty->assign("mostrar_gen", $mostrar_gen);
-	
-	
+
+
 	//buscamos el periodo activo
-	/*$sql="SELECT id_periodo FROM eye_periodo WHERE activo=1";	
-	$res=mysql_query($sql);	
-	if(!$res)	  
+	/*$sql="SELECT id_periodo FROM eye_periodo WHERE activo=1";
+	$res=mysql_query($sql);
+	if(!$res)
 	{
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
-	}	
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
+	}
 	if(mysql_num_rows($res) > 0)
 	{
 		$row=mysql_fetch_row($res);
 		$smarty->assign("periodo", $row[0]);
 		$periodo=$row[0];
-	}*/		
-	
-//conseguimos el titulo del catalogo	
-	$sql="SELECT titulo FROM sys_listados WHERE tabla='$tabla' AND no_tabla='$no_tabla'";	
-	$res=mysql_query($sql);	
-	if(!$res)	  
+	}*/
+
+//conseguimos el titulo del catalogo
+	$sql="SELECT titulo FROM sys_listados WHERE tabla='$tabla' AND no_tabla='$no_tabla'";
+	$res=mysql_query($sql);
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
 	}
 	$row=mysql_fetch_row($res);
 	$smarty->assign("titulo", $row[0]);
 	mysql_free_result($res);
-	
-	
-	//Buscamos el número de tabs
-	$sql="SELECT DISTINCT tab FROM sys_catalogos WHERE tabla='$tabla' AND no_tabla='$no_tabla'";	
 
-	$res=mysql_query($sql);	
-	if(!$res)	  
+
+	//Buscamos el número de tabs
+	$sql="SELECT DISTINCT tab FROM sys_catalogos WHERE tabla='$tabla' AND no_tabla='$no_tabla'";
+
+	$res=mysql_query($sql);
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
 	}
 	$num=mysql_num_rows($res);
 	$smarty->assign("no_tabs", $num);
 	mysql_free_result($res);
-	
-		
-	
+
+
+
 	//Buscamos los campos de la tabla
 	$sql="SELECT
 	      /*0*/id_catalogo,
@@ -201,7 +201,7 @@
 		  /*29*/depende
 		  FROM sys_catalogos
 		  WHERE tabla='$tabla'
-		  AND no_tabla='$no_tabla'";	
+		  AND no_tabla='$no_tabla'";
 
 /*Cambio de Oscar para no mostrar el precio de compra si no se tiene el permiso en el perfil*/
 	//$perfil_usuario!=1&&
@@ -214,7 +214,7 @@
 		}
 	//	die($sql);
 	}
-/*fin de cambio*/	  
+/*fin de cambio*/
 
 /*Cambio de Oscar 06.09.2019 para no mostrar el combo de estatus de recepcion si no se tiene el permiso en el perfil*/
 	if($tabla=='ec_oc_recepcion' && $no_tabla=="0"){
@@ -227,16 +227,16 @@
 		//die($sql);
 	}
 /*Fin de cambio Oscar 06.09.2019*/
-	$res=mysql_query($sql);	  
-	if(!$res)	  
+	$res=mysql_query($sql);
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
 	}
 	$num=mysql_num_rows($res);
-	
+
 	$sqlCommand="";
-	
+
 /*Buscamos los datos del grid*/
 	$sqlGrid="SELECT
 	          /*0*/id_grid,
@@ -286,23 +286,23 @@
 		}
 	}
 /*fin de Cambio Oscar 09.08.2019*/
-			 
+
 		$sqlGrid.=" ORDER BY orden";//ordenamiento
-		
+
 	$resGrid=mysql_query($sqlGrid);
-	if(!$resGrid)	  
+	if(!$resGrid)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sqlGrid, "contenido.php"); 
+		Muestraerror($smarty, "", "2", mysql_error(), $sqlGrid, "contenido.php");
 	}
-	
+
 	$numGrid=mysql_num_rows($resGrid);
 	$gridArray=array();
-	
+
 	for($i=0;$i<$numGrid;$i++)
 	{
 		$rowGrid=mysql_fetch_row($resGrid);
-		
+
 		//Buscamos las columnas
 		$sq1="SELECT
 		      /*0*/id_grid_detalle,
@@ -329,19 +329,19 @@
 		      FROM sys_grid_detalle
 		      WHERE id_grid=".$rowGrid[0]."
 		      ORDER BY orden";
-		      
+
 		$re1=mysql_query($sq1);
 		if(!$re1)
 		{
 			mysql_query("ROLLBACK");
 			Muestraerror($smarty, "", "2", mysql_error(), $sq1, "contenido.php");
-		}		      	
+		}
 		$arrGridDat=array();
 		for($j=0;$j<mysql_num_rows($re1);$j++)
 		{
 			$ro1=mysql_fetch_row($re1);
-			
-			
+
+
 			//Remplazamos valores por default
 			$ro1[15]=str_replace('$SUCURSAL', $user_sucursal, $ro1[15]);
 			$ro1[15]=str_replace('$USUARIO', $user_id, $ro1[15]);
@@ -350,30 +350,30 @@
 		/*Implementación Oscar 10.06.2019 para reemplazar valores de fecha y hora*/
 			$ro1[15]=str_replace('$FECHA_HORA', date('Y-m-d').' '. date('h:i:s'), $ro1[15]);
 		/*Fin de cambio Oscar 10.06.2019*/
-			
-			
+
+
 			//echo $ro1[15]."<br>";
-			
+
 			array_push($arrGridDat, $ro1);
-		}     
-		
-		$rowGrid[20]=$arrGridDat; 
-		
-		array_push($gridArray, $rowGrid);		
+		}
+
+		$rowGrid[20]=$arrGridDat;
+
+		array_push($gridArray, $rowGrid);
 	}
 //die('here');
 	require("preexcepcion.php");
-	
+
 	//Se procesa la accion "insertar"
 	if($accion == 'insertar')
-	{	
-		$sqlHead="INSERT INTO $tabla(";		
+	{
+		$sqlHead="INSERT INTO $tabla(";
 		$sqlVals=" VALUE(";
-		
+
 		mysql_data_seek($res, 0);
 		$row=mysql_fetch_row($res);
 
-		
+
 		if($row[8] == '1')
 		{
 			$iniForNew=0;
@@ -381,52 +381,52 @@
 		else{
 			$iniForNew=1;
 		}
-		
+
 		for($i=$iniForNew;$i<$num;$i++)
 		{
 			mysql_data_seek($res, $i);
 			$row=mysql_fetch_row($res);
-			$ax=$row[2];	
+			$ax=$row[2];
 			if($tabla == 'sys_users' && $row[2] == 'contrasena'){
-				//$row[2].=",codigo_barras_usuario";		
+				//$row[2].=",codigo_barras_usuario";
 				//$row[2]=
 			}
-			
+
 			if($i > $iniForNew)
 			{
 				$sqlHead.=",";
 				$sqlVals.=",";
-			}	
-			
+			}
+
 			$sqlHead.=$row[2];
-			
+
 			if($row[5] == 'BINARY' && $$ax == '')
 				$$ax="0";
-				
+
 			if($row[5] == 'FILE')
 			{
 				//echo "?";
 				//print_r($_FILES);
-			
+
 				if($_FILES[$ax]['tmp_name'])
 				{
-				            
-				    $arrAx=explode('.', $_FILES[$ax]['name']); 
-				    
+
+				    $arrAx=explode('.', $_FILES[$ax]['name']);
+
 					$url_final=$rootpath."/files/".$tabla."_".$ax."_".rand(1, 10000)."_".rand(1, 10000).".".$arrAx[sizeof($arrAx)-1];
-					
+
 					//echo "<br>$url_final";
-					
-					if(copy($_FILES[$ax]['tmp_name'], $url_final))		
+
+					if(copy($_FILES[$ax]['tmp_name'], $url_final))
 						$$ax=str_replace($rootpath, $rooturl, $url_final);
 					/*else
-						echo "??";	
-					die();*/	
+						echo "??";
+					die();*/
 				}
 				else
 					$$ax="";
-			}	
-		//aqui se aplica el md5 de la contraseña de usuario	y clave única	
+			}
+		//aqui se aplica el md5 de la contraseña de usuario	y clave única
 			if($tabla == 'sys_users' && $row[2] == 'contrasena'){/*,codigo_barras_usuario*/
 				$sqlVals.="md5('".$$ax."')";
 				//$sqlVals.=",md5('".$$ax."'DATE_FORMAT(NOW(), '%Y%m%d%h%i%s'))";
@@ -434,194 +434,194 @@
 				$sqlVals.="'".$$ax."'";
 			}
 		}
-		
+
 		$sqlCommand=$sqlHead.")".$sqlVals.")";
-		
-		
+
+
 //		die($sqlCommand);
-		
+
 		if(!mysql_query($sqlCommand))
 		{
 			mysql_query("ROLLBACK");
 			Muestraerror($smarty, "", "3", mysql_error(), $sqlCommand, "contenido.php");
 		}
-		
+
 		$llave=mysql_insert_id();
-		
+
 		//ejecutamos las funciones de grid
-		
+
 		for($i=0;$i<$numGrid;$i++)
 		{
 			$aux="file".$gridArray[$i][1];
-			
+
 			if(isset($$aux))
 			{
 				if(file_exists($$aux))
 				{
 					$ar=fopen($$aux, "rt");
-					
+
 					if($ar)
 					{
 						$sqGrid="";
 						while(!feof($ar))
 							$sqGrid.=fgets($ar, 10000);
-						
+
 						$sqGrids=explode('|', $sqGrid);
-						
+
 						array_pop($sqGrids);
-						
+
 						for($j=0;$j<sizeof($sqGrids);$j++)
 						{
 							$sqGrids[$j]=str_replace('$LLAVE', $llave, $sqGrids[$j]);
-							$sqGrids[$j]=str_replace('$periodo', $periodo, $sqGrids[$j]);							
-							
+							$sqGrids[$j]=str_replace('$periodo', $periodo, $sqGrids[$j]);
+
 							if(!mysql_query($sqGrids[$j]))
 							{
 								mysql_query("ROLLBACK");
 								Muestraerror($smarty, "", "3", mysql_error(), $sqGrids[$j], "contenido.php");
-							}					
-						}						
+							}
+						}
 					}
 					fclose($ar);
-					
+
 					unlink($$aux);
 				}
 			}
 		}
-		
+
 		//die("Creado");
-		
+
 	}
-	
+
 	if($accion == 'actualizar')
 	{
 		$sqlCommand="UPDATE $tabla SET ";
 		mysql_data_seek($res, 0);
 		$row=mysql_fetch_row($res);
-		
+
 		$campoLlave=$row[2];
-		
+
 		for($i=1;$i<$num;$i++)
 		{
 			mysql_data_seek($res, $i);
 			$row=mysql_fetch_row($res);
 			$ax=$row[2];
-			
 
-			if($i > 1)			
+
+			if($i > 1)
 				$sqlCommand.=",";
-				
+
 			if($row[5] == 'BINARY' && $$ax == '')
 				$$ax="0";
-				
+
 			if($row[5] == 'FILE')
 			{
 				/*echo "?";
 				print_r($_FILES);*/
-			
+
 				if($_FILES[$ax]['tmp_name'])
 				{
-				    
+
                     $arrAx=explode('.', $_FILES[$ax]['name']);
-                    
+
 					//$url_final=$rootpath."/files/".$tabla."_".$ax."_".rand(1, 10000)."_".$llave.".".$arrAx[sizeof($arrAx)-1];
 					$url_final="../../../img_productos/".$tabla."_".$ax."_".rand(1, 10000)."_".$llave.".".$arrAx[sizeof($arrAx)-1];
-					
+
 					//echo $url_final;
-					
+
 					//Buscamos el archivo anterior para eliminarlo
 					$sqTmp="SELECT $ax FROM $tabla WHERE $campoLlave = '$llave'";
 					$reTmp=mysql_query($sqTmp);
-					
+
 					if(!$reTmp)
 					{
 						mysql_query("ROLLBACK");
 						Muestraerror($smarty, "", "3", mysql_error(), $sqTmp, "contenido.php");
 					}
-					
+
 					$roTmp=mysql_fetch_row($reTmp);
 					$fileTmp=str_replace($rooturl, $rootpath, $roTmp[0]);
 					if(file_exists($fileTmp))
 						unlink($fileTmp);
-					
-					
-					if(copy($_FILES[$ax]['tmp_name'], $url_final))		
+
+
+					if(copy($_FILES[$ax]['tmp_name'], $url_final))
 						$$ax=str_replace($rootpath, $rooturl, $url_final);
 					/*else
-						echo "??";	
-					die();*/	
+						echo "??";
+					die();*/
 				}
 				else
 					$$ax="";
-			}		
-			
+			}
+
 			if($tabla == 'sys_users' && $row[2] == 'contrasena' && $$ax != '')
-				$sqlCommand.=$row[2]."=md5('".$$ax."')";	
+				$sqlCommand.=$row[2]."=md5('".$$ax."')";
 			elseif($tabla == 'sys_users' && $row[2] == 'contrasena')
-				$sqlCommand.=$row[2]."=".$row[2];	
-			else if($row[5] == 'FILE' && $$ax == '')	
+				$sqlCommand.=$row[2]."=".$row[2];
+			else if($row[5] == 'FILE' && $$ax == '')
 				$sqlCommand.=$row[2]."=".$row[2];
 			else
-				$sqlCommand.=$row[2]."='".$$ax."'";			
+				$sqlCommand.=$row[2]."='".$$ax."'";
 		}
-		
+
 		$sqlCommand.=" WHERE $campoLlave = '$llave'";
-		
+
 		if(!mysql_query($sqlCommand))
 		{
 			mysql_query("ROLLBACK");
 			Muestraerror($smarty, "", "3", mysql_error(), $sqlCommand, "contenido.php");
 		}
-		
-		
+
+
 		//ejecutamos las funciones de grid
-		
+
 		for($i=0;$i<$numGrid;$i++)
 		{
 			$aux="file".$gridArray[$i][1];
-			
+
 			if(isset($$aux))
 			{
 				if(file_exists($$aux))
 				{
 					$ar=fopen($$aux, "rt");
-					
+
 					if($ar)
 					{
 						$sqGrid="";
 						while(!feof($ar))
 							$sqGrid.=fgets($ar, 10000);
-						
+
 						$sqGrids=explode('|', $sqGrid);
-						
+
 						array_pop($sqGrids);
-						
+
 						for($j=0;$j<sizeof($sqGrids);$j++)
 						{
 							$sqGrids[$j]=str_replace('$LLAVE', $llave, $sqGrids[$j]);
-							$sqGrids[$j]=str_replace('$periodo', $periodo, $sqGrids[$j]);							
-							
+							$sqGrids[$j]=str_replace('$periodo', $periodo, $sqGrids[$j]);
+
 							if(!mysql_query($sqGrids[$j]))
 							{
 								mysql_query("ROLLBACK");
 								Muestraerror($smarty, "", "3", mysql_error(), $sqGrids[$j], "contenido.php");
-							}					
-						}						
+							}
+						}
 					}
 					fclose($ar);
-					
+
 					unlink($$aux);
 				}
 			}
 		}
-		
+
 	}
-	
+
 	if($accion == 'eliminar')
 	{
 		mysql_data_seek($res, 0);
 		$row=mysql_fetch_row($res);
-		
+
 		//Buscamos los archivos para eliminarlos
 		$sqTmp="SELECT
 		        campo
@@ -629,23 +629,23 @@
 				WHERE tabla='$tabla'
 				AND no_tabla='$no_tabla'
 				AND tipo='FILE'";
-		//echo $sqTmp;		
-		$reTmp=mysql_query($sqTmp);					
+		//echo $sqTmp;
+		$reTmp=mysql_query($sqTmp);
 		if(!$reTmp)
 		{
 			mysql_query("ROLLBACK");
 			Muestraerror($smarty, "", "3", mysql_error(), $sqTmp, "contenido.php");
-		}		
+		}
 		$nuTmp=mysql_num_rows($reTmp);
 		if($nuTmp > 0)
 		{
-			$sqTmp="SELECT ";		
+			$sqTmp="SELECT ";
 			for($i=0;$i<$nuTmp;$i++)
 			{
 				$roTmp=mysql_fetch_row($reTmp);
-				if($i > 0)				
+				if($i > 0)
 					$sqTmp.=",";
-				$sqTmp.=$roTmp[0];	
+				$sqTmp.=$roTmp[0];
 			}
 			$sqTmp.=" FROM $tabla WHERE ".$row[2]." = '$llave'";
 			$reTmp=mysql_query($sqTmp);
@@ -653,17 +653,17 @@
 			{
 				mysql_query("ROLLBACK");
 				Muestraerror($smarty, "", "3", mysql_error(), $sqTmp, "contenido.php");
-			}		
+			}
 			$nuTmp=mysql_num_rows($reTmp);
 			for($i=0;$i<$nuTmp;$i++)
 			{
 				$roTmp=mysql_fetch_row($reTmp);
-				$fileTmp=str_replace($rooturl, $rootpath, $roTmp[0]);		
+				$fileTmp=str_replace($rooturl, $rootpath, $roTmp[0]);
 				if(file_exists($fileTmp))
 					unlink($fileTmp);
 			}
 		}
-		
+
 		$campoLlave=$row[2];
 		$sqlCommand="DELETE FROM $tabla WHERE $campoLlave = '$llave'";
 		if(!mysql_query($sqlCommand))
@@ -671,20 +671,20 @@
 			mysql_query("ROLLBACK");
 			Muestraerror($smarty, "", "3", mysql_error(), $sqlCommand, "contenido.php");
 		}
-		
-		
+
+
 	}
-	
+
 	require("excepcion.php");
-	
+
     if($accion == 'eliminar')
     {
     	mysql_query("COMMIT");
         header("location: ".$rooturl."code/general/listados.php?tabla=".base64_encode($tabla)."&no_tabla=".base64_encode($no_tabla));
         die();
-    }    
-	
-	
+    }
+
+
 	//Buscamos los campos visibles de la tabla
 	$sql="SELECT
 	      /*0*/id_catalogo,
@@ -722,8 +722,8 @@
 		  FROM sys_catalogos
 		  WHERE tabla='$tabla'
 		  AND no_tabla='$no_tabla'
-		  AND visible=1";	
-		  
+		  AND visible=1";
+
 /*Cambio de Oscar para no mostrar el precio de compra si no se tiene el permiso en el perfil*/
 	//$perfil_usuario!=1&&
 	if($tabla=='ec_productos'){
@@ -736,7 +736,7 @@
 	//	die($sql);
 	}
 
-/*fin de cambio*/	  
+/*fin de cambio*/
 
 /*Cambio de Oscar 06.09.2019 para no mostrar el combo de estatus de recepcion si no se tiene el permiso en el perfil*/
 	if($tabla=='ec_oc_recepcion' && $no_tabla=="0"){
@@ -750,37 +750,37 @@
 	}
 /*Fin de cambio Oscar 06.09.2019*/
 	$sql.=" ORDER BY orden";
-	//echo $sql;	  
-		  
-		  	  
-	$res=mysql_query($sql);	  
-	if(!$res)	  
+	//echo $sql;
+
+
+	$res=mysql_query($sql);
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
 	}
 	$num=mysql_num_rows($res);
-	
+
 //Calculamos el numero de filas del formulario
 	if($num == 4 || $num == 3)
 		$no_filas=3;
-	elseif($num < 3)	
+	elseif($num < 3)
 		$no_filas=$num;
-	elseif($num > 4)	
+	elseif($num > 4)
 		$no_filas=ceil($num/2);
-	
+
 	$campos=array();
 	$campos2=array();
-	
+
 	//variable de validaciones
 	$validacion_form="";
-	
-			
-	
+
+
+
 	for($i=0;$i<$num;$i++){
 		mysql_data_seek($res, $i);
 		$row=mysql_fetch_row($res);
-		
+
 		$sqlTime="SELECT DATE_FORMAT(NOW(), '%Y-%m-%d'), TIME_FORMAT(NOW(), '%H:%i:%s')";
 		$rtime=mysql_query($sqlTime);
 		$roTime=mysql_fetch_row($rtime);
@@ -798,15 +798,15 @@
 
 /*implementación Oscar 07.09.2018 para sustituir el id de sucursal*/
 		$row[13]=str_replace('$SUCURSAL', $user_sucursal, $row[13]);
-/*fin de cambio*/		
-		
+/*fin de cambio*/
+
 
 /*implementación de Oscar 26.10.2018 para */
-		$row[13]=str_replace('$TIPO_PERFIL', $perfil_usuario,$row[13]);	
+		$row[13]=str_replace('$TIPO_PERFIL', $perfil_usuario,$row[13]);
 /*fin de cambio Oscar 26.10.2018*/
 
 /*implementación de Oscar 26.10.2018 para */
-		$row[13]=str_replace('$LLAVE', $llave,$row[13]);	
+		$row[13]=str_replace('$LLAVE', $llave,$row[13]);
 /*fin de cambio Oscar 26.10.2018*/
 
 
@@ -827,7 +827,7 @@
 		if($row[9] == '$LLAVE')
 			$row[9]=$llave;
 		/**/
-		
+
 		//Armamos consulta para obtener el valor
 		if($llave != '' && $i == 0)
 		{
@@ -836,40 +836,40 @@
 			{
 				mysql_data_seek($res, $j);
 				$ro=mysql_fetch_row($res);
-				
+
 				if($j > 0)
 					$sqlVar.=",";
-				$sqlVar.=$ro[2];	
+				$sqlVar.=$ro[2];
 			}
 			$campoLlave=$row[2];
-			$sqlVar.=" FROM $tabla WHERE ".$row[2]." = '$llave'";			
-			
+			$sqlVar.=" FROM $tabla WHERE ".$row[2]." = '$llave'";
+
 			$re=mysql_query($sqlVar);
-			if(!$re)	  
+			if(!$re)
 			{
 				mysql_query("ROLLBACK");
-				Muestraerror($smarty, "", "2", mysql_error(), $sqlVar, "contenido.php"); 
+				Muestraerror($smarty, "", "2", mysql_error(), $sqlVar, "contenido.php");
 			}
-			
-			
+
+
 			$ro=mysql_fetch_row($re);
 			$valores=$ro;
-			
+
 			mysql_free_result($re);
-			
+
 		}
 //die($sqlVar);
 		if($llave != '')
 		{
-		
+
 			if($tabla == 'sys_users' && $row[2] == 'contrasena'){
 				$row[10] = '';
 			}
 			else{
-				$row[10]=$valores[$i];				
+				$row[10]=$valores[$i];
 			}
 		}
-		
+
 		//valores de combo
 		if($row[5] == 'COMBO')
 		{
@@ -887,14 +887,14 @@
 				die($sqlCombo);
 			}
 //			echo $sqlCombo.'<br>'.$tipo.'<br>';*/
-			
+
 			$sqlCombo=str_replace('$SUCURSAL', $user_sucursal, $sqlCombo);
             $sqlCombo=str_replace('$USUARIO', $user_id, $sqlCombo);
 			//echo "COMBO_1: $sqlCombo<br>";
-			
+
 			if($row[31] != '')
 			{
-				
+
 				for($cac=0;$cac<=sizeof($campos);$cac++)
 				{
 					if($campos[$cac][0] == $row[31])
@@ -907,7 +907,7 @@
 							$sqlCombo=str_replace('$llaveDep', $campos[$cac][9], $sqlCombo);
 					}
 				}
-				
+
 				for($cac=0;$cac<=sizeof($campos2);$cac++)
 				{
 					if($campos2[$cac][0] == $row[31])
@@ -923,56 +923,56 @@
 						}
 					}
 				}
-				
+
 				$sqlCombo=str_replace('$llaveDep', '', $sqlCombo);
 			}
 
-		/*implementación de Oscar 15.09.2018 para concatenar la opción seleccionar sucursal en gastos*/	
+		/*implementación de Oscar 15.09.2018 para concatenar la opción seleccionar sucursal en gastos*/
 			if($tabla=='ec_gastos' && $no_tabla==0 && $user_sucursal==-1 || $tabla=='ec_almacen' && $no_tabla==0 && $user_sucursal==-1){
 				if($row[0]==443||$row[0]==652){
 					//die('aqui');
-					$sqlCombo.=')';//cerramos el paréntesis 
+					$sqlCombo.=')';//cerramos el paréntesis
 				}
 			}
 		/*fin de cambio Oscar 15.09.2018*/
-		
+
 			//echo "COMBO_2:$sqlCombo<br>";
-			
+
 				//if($row[0]==646){
 	//	echo $sqlCombo;//com este se muestra consulta de combos
 				//}
 			$arr=getCombo($sqlCombo);
-			
+
 			//print_r($arr);
 			//echo "<br><br>";
-			
-			
-			
+
+
+
 			$row[25]=$arr;
-			//print_r($row[25]);	
+			//print_r($row[25]);
 		}
-		
+
 		//BUSCADOR
 		if($row[5] == 'BUSCADOR')
 		{
 			if($row[10] != '')
 			{
 				$sqlValorBusc=$row[23]."'".$row[10]."'";
-				
+
 				//echo $sqlValorBusc;
-				
+
 				$re=mysql_query($sqlValorBusc);
-				if(!$re)	  
+				if(!$re)
 				{
 					mysql_query("ROLLBACK");
-					Muestraerror($smarty, "", "2", mysql_error(), $sqlValorBusc, "contenido.php"); 
+					Muestraerror($smarty, "", "2", mysql_error(), $sqlValorBusc, "contenido.php");
 				}
 				$ro=mysql_fetch_row($re);
 				$row[25]=$ro[1];
-			}	
+			}
 		}
-		
-		
+
+
 		if($num <= 3)
 		{
 			array_push($campos, $row);
@@ -981,7 +981,7 @@
 		{
 			if($i < 3)
 				array_push($campos, $row);
-			else	
+			else
 				array_push($campos2, $row);
 		}
 		else
@@ -989,9 +989,9 @@
 			if($i < $no_filas)
 				array_push($campos, $row);
 			else
-				array_push($campos2, $row);	
+				array_push($campos2, $row);
 		}
-		
+
 /*implementación Oscar 08.11.2018 para hacer requerido el campo de mínimo de horas por día cuando esta puesto*/
 	if($tabla=='sys_users' && $row[2]=='pago_dia'){
 		$validacion_form.="\n\t\t\t\tif(f.pago_dia.value>0 && f.minimo_horas.value<=0){alert('El campo de mínimo de horas es requerido cuando se ingresa pago por día!!!');f.minimo_horas.focus();f.minimo_horas.select();";
@@ -1015,7 +1015,7 @@
 			$validacion_form.="f.observaciones.focus();f.observaciones.select();";
 			$validacion_form.="document.getElementById('emerge').style.display='none';return false;}";
 		}
-		
+
 	}
 
 /*fin de cambio Oscar 14.10.2019*/
@@ -1035,28 +1035,28 @@
 				$validacion_form.="\n\t\t\t\tif(validaFecha(f.".$row[2].".value) == false){alert('El campo \"".$row[3]."\" tiene un formato no valido');f.".$row[2].".focus();return false;}";
 			}
 			if($row[5] == 'TIME'){
-				$validacion_form.="\n\t\t\t\tif(validaHora(f.".$row[2].".value, f.".$row[2].") == false){alert('El campo \"".$row[3]."\" tiene un formato no valido');f.".$row[2].".focus();return false;}";	
+				$validacion_form.="\n\t\t\t\tif(validaHora(f.".$row[2].".value, f.".$row[2].") == false){alert('El campo \"".$row[3]."\" tiene un formato no valido');f.".$row[2].".focus();return false;}";
 			}
-		}	
-		
+		}
+
 	}
-	
-	
+
+
 	mysql_free_result($res);
-	
+
 	//echo "6";
-	
+
 	if($accion == "insertar" || $accion == "actualizar")
 		$tipo=2;
-		
-	//print_r($campos);	
-	
+
+	//print_r($campos);
+
 	/* Excepciones*/
 	require("postexcepcion.php");
-	
 
-		
-			
+
+
+
 	$smarty->assign("campos", $campos);
 	$smarty->assign("gridArray", $gridArray);
 	$smarty->assign("campos2", $campos2);
@@ -1076,34 +1076,34 @@
 /*implementación Oscar 22.09.2018*/
 	$smarty->assign("tipo_sistema",$user_tipo_sistema);
 /*fin de cambio 22.09.2018*/
-	
-	
+
+
 	//buscamos los campos invisibles
-	
+
 	$sql="SELECT
-	      /*0*/id_catalogo,		  
-		  /*1*/campo,		  
-		  /*2*/orden,		  		  
+	      /*0*/id_catalogo,
+		  /*1*/campo,
+		  /*2*/orden,
 		  /*3*/valor_inicial,
-		  /*4*/''  
+		  /*4*/''
 		  FROM sys_catalogos
 		  WHERE tabla='$tabla'
 		  AND no_tabla='$no_tabla'
 		  AND visible=0";
-	//echo $sql;	  		  
-	$res=mysql_query($sql);	  
-	if(!$res)	  
+	//echo $sql;
+	$res=mysql_query($sql);
+	if(!$res)
 	{
 		mysql_query("ROLLBACK");
-		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php"); 
+		Muestraerror($smarty, "", "2", mysql_error(), $sql, "contenido.php");
 	}
 	$num=mysql_num_rows($res);
-	
+
 	$datosInvisibles=array();
-	
+
 	for($i=0;$i<$num;$i++)
 	{
-		
+
 		//Armamos consulta para obtener el valor
 		if($llave != '' && $i == 0)
 		{
@@ -1112,58 +1112,58 @@
 			{
 				mysql_data_seek($res, $j);
 				$ro=mysql_fetch_row($res);
-				
+
 				if($j > 0)
 					$sqlVar.=",";
-				$sqlVar.=$ro[1];	
+				$sqlVar.=$ro[1];
 			}
-						
-			$sqlVar.=" FROM $tabla WHERE ".$campoLlave." = '$llave'";			
+
+			$sqlVar.=" FROM $tabla WHERE ".$campoLlave." = '$llave'";
 
 			$re=mysql_query($sqlVar);
-			if(!$re)	  
+			if(!$re)
 			{
 				mysql_query("ROLLBACK");
-				Muestraerror($smarty, "", "2", mysql_error(), $sqlVar, "contenido.php"); 
+				Muestraerror($smarty, "", "2", mysql_error(), $sqlVar, "contenido.php");
 			}
 			$ro=mysql_fetch_row($re);
 			$valores=$ro;
-			
+
 			mysql_free_result($re);
-			
+
 		}
-		
+
 		mysql_data_seek($res, $i);
 		$row=mysql_fetch_row($res);
-		
-		
+
+
 		//print_r($row);
-		
+
 		if($llave != '')
 		{
-			$row[4]=$valores[$i];				
+			$row[4]=$valores[$i];
 		}
-		
-		
+
+
 		//valores predeterminados
 		if($row[3] == '$escuela')
 			$row[3]=$user_escuela;
 		if($row[3] == '$DATE')
 			$row[3]=date("Y-m-d");
 		if($row[3] == '$TIME')
-			$row[3]=date("h:i:s");	
+			$row[3]=date("h:i:s");
 		if($row[3] == '$USUARIO')
 			$row[3]=$user_id;
 		if($row[3] == '$SUCURSAL')
 			$row[3]=$user_sucursal;
 
-		
-		array_push($datosInvisibles, $row);		
+
+		array_push($datosInvisibles, $row);
 	}
-	
+
 	//print_r($datosInvisibles);
-	
-	
+
+
 	require("post2excepciones.php");
 
 
@@ -1179,8 +1179,59 @@
 /*implementación Oscar 03.05.2018 para asignar el tipo de perfil en contenido visual*/
 	$smarty->assign("tipo_perfil",$perfil_usuario);
 /*fin de cambio oscar 03.05.2018*/
-	
+
 	$smarty->display('general/contenido.tpl');
 
 	mysql_query("COMMIT");
+
+	/*
+		Creado por: AF
+		Fecha: 2020-09-19
+		Funcionalidad: Invocación de servicio para crear/actualizar producto en BD(s) de facturación
+	*/
+	if ($tabla == 'ec_productos' && $no_tabla == 0 && ($accion=='insertar' || $accion == 'actualizar') && !empty($llave)){
+			error_log('CL - LOG Productos: Ejecuta acción para guardar producto en facturación, idProducto: '.$llave);
+			//Recupera token
+			$sql = "select token from api_token where id_user=0 and expired_in > now() limit 1;";
+			$respuesta=mysql_fetch_assoc(mysql_query($sql));
+			$token = $respuesta['token'];
+			//Valida token
+			if ($token) {
+					//Recupera path de servicios
+					$sql = "select a.value from api_config a where a.key='api' and a.name='path' limit 1;";
+					$respuesta=mysql_fetch_assoc(mysql_query($sql));
+					$path = $respuesta['value'];
+					//Valida path
+					if ($path) {
+							//Prepar petición
+							$data = array(
+									'productos' => array(
+										array(
+										'idProducto' => $llave
+										)
+									)
+							);
+							$post_data = json_encode($data);
+							error_log('CL - LOG Petición: '. $post_data);
+							// Inicializa curl request
+							$crl = curl_init($path.'/rest/v1/productos/nuevoFact');
+							curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
+							curl_setopt($crl, CURLINFO_HEADER_OUT, true);
+							curl_setopt($crl, CURLOPT_POST, true);
+							curl_setopt($crl, CURLOPT_POSTFIELDS, $post_data);
+							curl_setopt($crl, CURLOPT_HTTPHEADER, array(
+									'Content-Type: application/json',
+									'token: ' . $token)
+							);
+							// Ejecuta petición
+							$result = curl_exec($crl);
+							error_log('CL - LOG Respuesta: '.$result);
+							// Cierra curl sesión
+							curl_close($crl);
+					}
+			}
+	}
+
+
+
 ?>
