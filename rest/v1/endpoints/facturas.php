@@ -60,7 +60,7 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
 
     //Validar elementos requerido para nodo ventas
     if (!empty($cliente['rfc'])) {
-      if (empty($venta['total']) || empty($venta['fecha']) || empty($venta['hora']) || empty($venta['id_sucursal']) || empty($venta['forma_pago']) || empty($venta['metodo_pago']) || empty($venta['cfdi']) ) {
+      if (empty($venta['total']) || empty($venta['fecha']) || empty($venta['hora']) || empty($venta['id_sucursal']) || empty($venta['forma_pago']) || empty($venta['metodo_pago']) || empty($venta['cfdi']) || empty($venta['costo_envio']) ) {
         return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información de la venta para crear una factura', 400);
       }
     }

@@ -1,8 +1,8 @@
 <?php
 
 // include database and object files
-require "classes/database.php";
-include_once 'classes/codigoSAT.php';
+require "../classes/database.php";
+include_once '../classes/codigoSAT.php';
 // for pagination purposes
 $page = isset($_GET['page']) ? $_GET['page'] : 1; // page is the current page, if there's nothing set, default is page 1
 $id_categoria = isset($_GET['id_categoria']) ? $_GET['id_categoria'] : null;
@@ -26,7 +26,7 @@ echo '
 <nav class="navbar navbar-default navbar-fixed-top" style="background-color: #b10015;">
   <div class="container">
     <div class="navbar-header">
-      <a class="navbar-brand" href="../index.php" style="color: #fff">
+      <a class="navbar-brand" href="../../index.php" style="color: #fff">
         Casa de las Luces
       </a>
     </div>

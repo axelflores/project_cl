@@ -50,7 +50,7 @@ class CodigoSAT
 
         if (!empty($value)) {
           //Ejectua update
-          $sql = "update ec_admin_codigos_sat set codigo_sat='{$this->codigo_sat}', descripcion_sat='{$this->descripcion_sat}', descripcion_cl='{$this->descripcion_cl}' where id='{$this->id}';";
+          $sql = "update ec_admin_codigos_sat set codigo_sat='{$this->codigo_sat}', descripcion_sat='{$this->descripcion_sat}', descripcion_cl='{$this->descripcion_cl}' where id='{$value}';";
         }else {
           //Ejecuta insert
           $sql = "insert into ec_admin_codigos_sat (id_categoria,id_subcategoria,codigo_sat,descripcion_sat,descripcion_cl) values ({$this->id_categoria},{$this->id_subcategoria},'{$this->codigo_sat}','{$this->descripcion_sat}','{$this->descripcion_cl}')";

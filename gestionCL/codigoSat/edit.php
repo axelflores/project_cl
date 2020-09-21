@@ -12,7 +12,7 @@ echo '
 <nav class="navbar navbar-default navbar-fixed-top" style="background-color: #b10015;">
   <div class="container">
     <div class="navbar-header">
-      <a class="navbar-brand" href="../index.php" style="color: #fff">Casa de las Luces</a>
+      <a class="navbar-brand" href="../../index.php" style="color: #fff">Casa de las Luces</a>
     </div>
   </div>
 </nav>';
@@ -28,8 +28,8 @@ echo "</div>";
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR! ID not found!');
 
 // include database and object user file
-include_once 'classes/database.php';
-include_once 'classes/codigoSAT.php';
+include_once '../classes/database.php';
+include_once '../classes/codigoSAT.php';
 //include_once 'initial.php';
 
 // instantiate user object
