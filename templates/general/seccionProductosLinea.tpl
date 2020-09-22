@@ -1,4 +1,3 @@
-
 		{literal}
     		<style type="text/css">
     			input[type=date]{padding:10px; border-radius: 10px;}
@@ -9,8 +8,7 @@
     	{/literal}
 				<table style="position : relative; top:120%;width: 100%; height:60px; font-size:30px; padding: 5px; text-align: center; vertical-align: center; border:0;">
 				<tr><td align="left">
-					<b style="background: yellow;">Configuración de producto Tienda en Línea</b>
-
+					<b style="background: yellow;">Configuración del producto Tienda en Línea</b>
 				</div>
 <!-- Implementacion Oscar 23-09-2020 para agregar seccion habilitado, minimo stock -->
 				<div style=" width : 98%; height:80px; background : gray; padding : 10px;">
@@ -22,10 +20,11 @@
 					<input type="number" name ="producto_tienda_web_stock_minimo" value="{$precios_especiales[6]}"
 					class="montos_linea" onchange="valida_fecha(3, this);">
 
-					<label class="date_label"> Producto solo facturación : </label>
+					<label class="date_label"> Producto solo facturacion : </label>
 					<input type="checkbox" id="producto_solo_facturacion" name="producto_solo_facturacion"
 					{if $precios_especiales[13] eq '1'} checked {/if} >
-					<!-- AF- Cambio I-->
+
+					<!-- AF- Cambio I 2020-09-19-->
 					<label class="date_label"> % Descuento : </label>
 					<input type="number" name ="porcentaje_descuento_agrupado" value="{$precios_especiales[14]}"
 					class="montos_linea" onchange="valida_fecha(3, this);">
@@ -133,10 +132,10 @@
     			}
 
     			function resetea_prod_linea(){
-    				if(!confirm("Eliminar la configuracion del producto en venta linea implica eliminar la imagen principal\n" +
+    				/*if(!confirm("Eliminar la configuracion del producto en venta linea implica eliminar la imagen principal\n" +
     					"Realmente desea eliminarla?")){
     					return false;
-    				}
+    				}*/
     				$("#pe_del").val("");
     				$("#pe_al").val("");
     				$("#pn_del").val("");
@@ -145,7 +144,7 @@
     				$("#elimina_especial_venta_linea").css("display" , "none");
     				$("#producto_tienda_web_habilitado").removeAttr("checked");
     				$("#producto_tienda_web_stock_minimo").val("");
-    				$("#nombre_img_principal").val("");
+    				//$("#nombre_img_principal").val("");
     				$("#producto_tienda_web_descripcion").html("");
     				$("#producto_tienda_web_descripcion_breve").html("");
     				$("#producto_tienda_web_").html("");
