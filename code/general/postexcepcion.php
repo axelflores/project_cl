@@ -95,7 +95,7 @@
 	        				IF('$producto_tienda_web_metatitulo' != '', '$producto_tienda_web_metatitulo', NULL),
 	        				IF('$producto_tienda_web_metadescripcion' != '', '$producto_tienda_web_metadescripcion', NULL),
 							IF('$producto_solo_facturacion' = 'on', '1', '0'),
-							$porcentaje_descuento_agrupado
+							'$porcentaje_descuento_agrupado'
 						)";
         	}else{
         		$sql = "UPDATE ec_producto_tienda_linea
