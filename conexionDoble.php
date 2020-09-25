@@ -4,10 +4,10 @@
 	include($codepath."/general/funciones.php");
 //definimos zona horaria
 	date_default_timezone_set('America/Mexico_City');
-	$hostLocal='www.lacasadelasluces.com';
-	$userLocal='wwlaca_sistema';
-	$passLocal='sistemaGeneral';
-	$nombreLocal='wwlaca_sistema_general';
+	$hostLocal='localhost';
+	$userLocal='root';
+	$passLocal='root';
+	$nombreLocal='cdelasluces';
 	$local=@mysql_connect($hostLocal, $userLocal, $passLocal);
 	//comprobamos conexion local
 	if(!$local){	//si no hay conexion
@@ -21,10 +21,10 @@
 	}else{
 	}
 /***********************************CONEXIONES BD FORANEA*******************************************/
-	$hostLinea='www.lacasadelasluces.com';
-	$userLinea='wwlaca_sistema';
+	$hostLinea='www.lacasadelasluces.co';
+	$userLinea='wwlaca_sistem';
 	$passLinea='sistemaGeneral';
-	$nombreLinea='wwlaca_sistema_general';
+	$nombreLinea='wwlaca_sistema';
 	$linea=@mysql_connect($hostLinea,$userLinea,$passLinea);
 	$indicador="";	if(!$linea){
 die('Sin conexión a Línea');
