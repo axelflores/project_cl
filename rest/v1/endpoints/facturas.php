@@ -60,7 +60,7 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
 
     //Validar elementos requerido para nodo ventas
     if (!empty($cliente['rfc'])) {
-      if (empty($venta['total']) || empty($venta['fecha']) || empty($venta['hora']) || empty($venta['id_sucursal']) || empty($venta['forma_pago']) || empty($venta['metodo_pago']) || empty($venta['cfdi']) || empty($venta['costo_envio']) ) {
+      if (empty($venta['total']) || empty($venta['fecha']) || empty($venta['hora']) || empty($venta['id_sucursal']) || empty($venta['forma_pago']) || empty($venta['metodo_pago']) || empty($venta['cfdi']) || $venta['costo_envio']=="" ) {
         return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información de la venta para crear una factura', 400);
       }
     }
@@ -70,25 +70,25 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
     $dbFact = new dbFact();
     $dbFact = $dbFact->conectDB();
     //Recuperar valores para: metodo_pago, forma_pago, cfdi
-    $queryM = "select id_metodo_pago from ec_metodos_pago where nombre='{$venta['metodo_pago']}';";
-    $queryF = "select id_forma_pago from ec_forma_pago where nombre='{$venta['forma_pago']}';";
+    // $queryM = "select id_metodo_pago from ec_metodos_pago where nombre='{$venta['metodo_pago']}';";
+    // $queryF = "select id_forma_pago from ec_forma_pago where nombre='{$venta['forma_pago']}';";
     $queryC = "select id from ec_cfdi where nombre='{$venta['cfdi']}';";
-    $metodo_pago = getOneQuery($dbFact, $queryM, 'id_metodo_pago');
-    $forma_pago = getOneQuery($dbFact, $queryF, 'id_forma_pago');
+    // $metodo_pago = getOneQuery($dbFact, $queryM, 'id_metodo_pago');
+    // $forma_pago = getOneQuery($dbFact, $queryF, 'id_forma_pago');
     $uso_cfdi = getOneQuery($dbFact, $queryC, 'id');
     //Valida valores existentes
-    if (empty($forma_pago)) {
-        return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Forma de pago no es reconocido por CL', 400);
-    }
-    if (empty($metodo_pago)) {
-        return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Método de pago no es reconocido por CL', 400);
-    }
-    if (empty($uso_cfdi)) {
-        return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Uso CFDI no es reconocido por CL', 400);
-    }
+    // if (empty($forma_pago)) {
+    //     return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Forma de pago no es reconocido por CL', 400);
+    // }
+    // if (empty($metodo_pago)) {
+    //     return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Método de pago no es reconocido por CL', 400);
+    // }
+    // if (empty($uso_cfdi)) {
+    //     return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Uso CFDI no es reconocido por CL', 400);
+    // }
     //Remplaza valores por ids
-    $venta['forma_pago'] = $forma_pago;
-    $venta['metodo_pago'] = $metodo_pago;
+    // $venta['forma_pago'] = $forma_pago;
+    // $venta['metodo_pago'] = $metodo_pago;
     $venta['cfdi'] = $uso_cfdi;
 
     //Validar elementos requerido para nodo productos
@@ -126,13 +126,22 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
       $id_tipo_movimiento=0;
       $prefijo_mi="";
       $valida_inventario = 0;
+      $forma_pago = '';
+      $metodo_pago = '';
       $sqlAPIConfig="SELECT c.name, c.value FROM api_config c WHERE c.key='facturacion' and c.value is not null";
       foreach ($dbFact->query($sqlAPIConfig) as $row) {
         $id_usuario=($row['name'] == 'id_usuario') ? $row['value'] : $id_usuario;
         $id_tipo_movimiento=($row['name'] == 'id_tipo_movimiento') ? $row['value'] : $id_tipo_movimiento;
         $prefijo_mi=($row['name'] == 'prefijo_mi') ? $row['value'] : $prefijo_mi;
         $valida_inventario=($row['name'] == 'valida_inventario') ? intval($row['value']) : $valida_inventario;
+        $forma_pago=($row['name'] == 'forma_pago') ? $row['value'] : $forma_pago;
+        $metodo_pago=($row['name'] == 'metodo_pago') ? $row['value'] : $metodo_pago;
       }
+      //Remplaza valores con ids de configuración
+      $metodo_pago_texto = $venta['metodo_pago'];
+      $forma_pago_texto = $venta['forma_pago'];
+      $venta['forma_pago'] = $forma_pago;
+      $venta['metodo_pago'] = $metodo_pago;
       //Consulta Prefijo y consecutivo
       $queryP = "select prefijo, consecutivo from api_tipo_facturacion where id='2';";
       $prefijo = getOneQuery($dbFact, $queryP, 'prefijo');
@@ -255,6 +264,23 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
           //Recupera id_venta
           $idMovimientoI = $dbFact->lastInsertId();
           $inserts['ec_movimiento_inventario']=$idMovimientoI;
+
+          //4.1- Insert ec_venta_tienda_linea
+          $insertEcVentaLinea = "
+            INSERT INTO ec_venta_tienda_linea (id_venta,metodo_pago,forma_pago)
+            VALUES (:id_venta,:metodo_pago,:forma_pago);
+          ";
+          $insertStmt = $dbFact->prepare($insertEcVentaLinea);
+          //Ejecuta insert
+          $insertStmt->execute(array(
+            //Valores Magento
+            "id_venta"=>$idVenta,
+            "metodo_pago"=>$metodo_pago_texto,
+            "forma_pago"=>$forma_pago_texto
+          ));
+          //Recupera id_venta
+          $idVentaLinea = $dbFact->lastInsertId();
+          $inserts['ec_venta_tienda_linea']=$idVentaLinea;
           //return $rs->successMessage($response, $inserts);
           //Itera productos recibidos
           $inserts['ec_detalle_venta']=[];
