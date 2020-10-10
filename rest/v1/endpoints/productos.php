@@ -72,7 +72,7 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
       $sqlProductos="select
         	producto.id_productos,
         	producto.clave,
-        	concat( COALESCE(codigo_sat.descripcion_sat,''), ' Modelo ' , COALESCE(producto.orden_lista,'')) as nombre,
+        	concat( COALESCE(codigo_sat.descripcion_cl,''), ' Modelo ' , COALESCE(producto.orden_lista,'')) as nombre,
         	0 as precio_venta,
         	0 as precio_compra,
         	producto.marca,
@@ -86,14 +86,14 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
         	producto.porc_ieps,
         	producto.desc_gral,
         	producto.nombre as nombre_etiqueta,
-        	producto.orden_lista,
+        	codigo_sat.codigo_sat orden_lista, -- producto.orden_lista,
         	producto.ubicacion_almacen,
         	producto.codigo_barras_1,
         	producto.codigo_barras_2,
         	producto.codigo_barras_3,
         	producto.codigo_barras_4,
         	producto.maximo_existencia,
-        	producto.habilitado,
+        	1 as habilitado, -- producto.habilitado,
         	producto.omitir_alertas,
         	producto.existencia_media,
         	1 as id_tipo_facturacion,
@@ -166,10 +166,10 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
             //Ejecuta insert
             try {
               $insertStmt->execute();
-              //Recupera id_pedido
+              //Recupera id_producto
               $idProducto = $dbFact->lastInsertId();
               //return $rs->errorMessage($response, 'Error_Insert', $idProducto, 500);
-              //Valida resultado
+              //Valida resultado de producto existente
               if ($idProducto>0) {
                 $insertsProd['resultado']='Insertado';
                 $insertsProd['descripcion']='El producto ha sido insertado correctamente';
@@ -209,9 +209,32 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
                 $updateStmt = $dbFact->prepare($updateProducto);
                 try {
                   $updateStmt->execute();
+                  $idProducto = $productosConsulta[$producto['idProducto']]['id_productos'];
                   $insertsProd['resultado']='Actualizado';
                   $insertsProd['descripcion']='El producto ha sido actualizado correctamente';
-                  //Recupera id_pedido
+                  //Recupera id_producto
+                }catch (PDOException $e) {
+                  $insertsProd['resultado']='Error';
+                  $insertsProd['descripcion']= $e->getMessage();
+                }
+              }
+              //Valida existencia de producto
+              if ($idProducto) {
+                //Prepara inser a ec_sucursal_producto: inventario
+                $insertSucProducto ="insert into {$base}.ec_sucursal_producto (id_sucursal, id_producto, inventario)
+                      select
+                        s.id_sucursal id_sucursal,
+                        '{$idProducto}' id_producto,
+                        0 inventario
+                      from sys_sucursales s
+                        left join ec_sucursal_producto sp on sp.id_sucursal = s.id_sucursal and sp.id_producto='{$idProducto}'
+                      where
+                        sp.id_sucursal_producto is null
+                        and s.activo=1;";
+                $insertStmt = $dbFact->prepare($insertSucProducto);
+                //Ejecuta insert
+                try {
+                  $insertStmt->execute();
                 }catch (PDOException $e) {
                   $insertsProd['resultado']='Error';
                   $insertsProd['descripcion']= $e->getMessage();

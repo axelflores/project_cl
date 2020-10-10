@@ -37,36 +37,88 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
     $subtotal = $request->getParam('subtotal');
     $descuento = $request->getParam('descuento');
     $total = $request->getParam('total');
-    $productos = $request->getParam('productos');
+    $productos_input = $request->getParam('productos');
     $sucursal = $request->getParam('sucursal');
     $costo_envio = $request->getParam('costo_envio');
     $grupo_cliente_magento = $request->getParam('grupo_cliente_magento');
 
     //Validar elementos requerido para crear venta
-    if (empty($folio) || empty($subtotal) || empty($descuento) || empty($total) || empty($productos) || empty($sucursal) || empty($grupo_cliente_magento) || empty($costo_envio) ) {
+    if (empty($folio) || empty($subtotal) || empty($descuento) || empty($total) || empty($productos_input) || empty($sucursal) || empty($grupo_cliente_magento) /*|| empty($costo_envio)*/ ) {
       return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
     }
     //Validar elementos requerido para nodo productos
-    if (count($productos)>0) {
-      //Itera y valida productos
-      $productRow=0;
-      foreach($productos as $producto) {
+    if (count($productos_input)>0) {
+      //Genera estructura de productos agrupable
+      $productos = [];
+      $producto_agrupado = [];
+      //Recupera lista de precios mostrador
+      $queryPM = "select a.value from api_config a where a.key='1' and name='lista_mostrador';";
+      $precioMostrador = getOneQuery($db, $queryPM, 'value');
+      //Itera y valida productos para guardado
+      foreach($productos_input as $producto) {
         if (empty($producto['idProducto']) || empty($producto['cantidad']) || empty($producto['precio']) || empty($producto['monto']) || (empty($grupo_cliente_magento) && empty($producto['grupo_cliente_magento'])) ) {
           return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
         }
-
+        //Recupera lista de precio para productos
         $producto['grupo_cliente_magento'] = empty($producto['grupo_cliente_magento']) ? $grupo_cliente_magento : $producto['grupo_cliente_magento'];
-
         $queryG = "select id_precio from ec_precios where grupo_cliente_magento='{$producto['grupo_cliente_magento']}';";
         $grupo_cliente = getOneQuery($db, $queryG, 'id_precio');
         if (empty($grupo_cliente)) {
             return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Grupo cliente magento no es reconocido por CL', 400);
         }
-        $productos[$productRow]['grupo_cliente_magento'] = $grupo_cliente;
-        $productRow ++;
+        $producto['grupo_cliente_magento'] = $grupo_cliente;
+
+        if ($producto['agrupable']) {
+            //Recupera productos agrupados
+            $sqlProductosA="select
+              	pd.id_producto_ordigen idProducto,
+              	pd.cantidad cantidad,
+                pcd.precio_venta precio,
+              	ifnull(tl.porcentaje_descuento_agrupado,0) descuento
+              from ec_productos_detalle pd
+              	inner join ec_productos p on p.id_productos = pd.id_producto_ordigen
+                left join ec_producto_tienda_linea tl on tl.id_producto = pd.id_producto
+                inner join ec_precios_detalle pcd on pcd.id_producto=p.id_productos
+              where
+              	pd.id_producto = '".$producto['idProducto'] ."'
+                and pcd.id_precio = '".$producto['grupo_cliente_magento'] ."'
+                and pd.cantidad > pcd.de_valor
+                and pd.cantidad < pcd.a_valor
+            ;";
+            foreach ($db->query($sqlProductosA) as $row) {
+              $montoAgrupado = $row['precio'] * $row['cantidad'] * $producto['cantidad'];
+              $precioUnitario = $row['precio'];
+              //$row['descuento']=10;
+              $producto_agrupado = array(
+                'idProducto' => $row['idProducto'],
+                'cantidad' => $row['cantidad'] * $producto['cantidad'],
+                'precio' => ($row['descuento']>0 && $precioMostrador==$producto['grupo_cliente_magento']) ? $precioUnitario * ((100 - $row['descuento'])/100) : $precioUnitario,
+                'monto' => ($row['descuento']>0 && $precioMostrador==$producto['grupo_cliente_magento']) ? $montoAgrupado * ((100 - $row['descuento'])/100) : $montoAgrupado,
+                'grupo_cliente_magento' => $producto['grupo_cliente_magento'],
+                'agrupable' => false
+              );
+              $productos[] = $producto_agrupado;
+            }
+
+        }else {
+            $productos[] = $producto;
+        }
+      }
+      //Agrega costo de envío
+      if ($costo_envio>0) {
+          $queryCostoEnvio = "select a.value from api_config a where a.key='productos' and name='costo_envio';";
+          $idProdCostoEnvio = getOneQuery($db, $queryCostoEnvio, 'value');
+          $productos[] = array(
+            'idProducto' => $idProdCostoEnvio,
+            'cantidad' => 1,
+            'precio' => $costo_envio,
+            'monto' => $costo_envio,
+            'grupo_cliente_magento' => '',
+            'agrupable' => false
+          );
       }
     }
-
+    //return print_r($productos,true);
 
     //Ejecuta inserts a BD cdelasluces
     try {
