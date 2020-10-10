@@ -1,13 +1,13 @@
 <?php
 session_start();
 //Definiciones de base de datos
-	$dbHost='localhost';
-	$dbUser='root';
-	$dbPassword='root';
-	$dbName='cdelasluces';
+	$dbHost='www.lacasadelasluces.com';
+	$dbUser='wwlaca_sistema';
+	$dbPassword='sistemaGeneral';
+	$dbName='wwlaca_sistema_general';
 //Definicion de rutas
 	if(isset($_SERVER['HTTP_HOST'])){
-		$rooturl = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on') ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].'/desarrollos/proyectos/casaLuces/project_cl/';
+		$rooturl = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on') ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].'/General2019/';
 	}
 	$rootpath = dirname(__FILE__);
 	$includepath=$rootpath.'/include/';
