@@ -37,12 +37,14 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
     $cliente = $request->getParam('cliente');
     $direccion = $request->getParam('direccion');
     $venta = $request->getParam('venta');
-    $productos = $request->getParam('productos');
+    $productos_input = $request->getParam('productos');
+    $costo_envio = '';
 
     //Validar información de cliente para continuar
-    if (empty($cliente) && empty($direccion) && empty($venta) && empty($productos)) {
+    if (empty($cliente) && empty($direccion) && empty($venta) && empty($productos_input)) {
       return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una factura', 400);
     }
+    $costo_envio = $venta['costo_envio'];
 
     //Validar que exista cliente.
     if (empty($cliente['rfc'])) {
@@ -69,38 +71,71 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
     //Instancia a BD Fact
     $dbFact = new dbFact();
     $dbFact = $dbFact->conectDB();
-    //Recuperar valores para: metodo_pago, forma_pago, cfdi
-    // $queryM = "select id_metodo_pago from ec_metodos_pago where nombre='{$venta['metodo_pago']}';";
-    // $queryF = "select id_forma_pago from ec_forma_pago where nombre='{$venta['forma_pago']}';";
+    //Recuperar valores para: cfdi
     $queryC = "select id from ec_cfdi where nombre='{$venta['cfdi']}';";
-    // $metodo_pago = getOneQuery($dbFact, $queryM, 'id_metodo_pago');
-    // $forma_pago = getOneQuery($dbFact, $queryF, 'id_forma_pago');
     $uso_cfdi = getOneQuery($dbFact, $queryC, 'id');
-    //Valida valores existentes
-    // if (empty($forma_pago)) {
-    //     return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Forma de pago no es reconocido por CL', 400);
-    // }
-    // if (empty($metodo_pago)) {
-    //     return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Método de pago no es reconocido por CL', 400);
-    // }
-    // if (empty($uso_cfdi)) {
-    //     return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Uso CFDI no es reconocido por CL', 400);
-    // }
-    //Remplaza valores por ids
-    // $venta['forma_pago'] = $forma_pago;
-    // $venta['metodo_pago'] = $metodo_pago;
     $venta['cfdi'] = $uso_cfdi;
 
     //Validar elementos requerido para nodo productos
-    if (count($productos)>0) {
+    if (count($productos_input)>0) {
+      //Genera estructura de productos agrupable
+      $productos = [];
+      $producto_agrupado = [];
+      //Recupera lista de precios mostrador
+      $queryPM = "select a.value from api_config a where a.key='1' and name='lista_mostrador';";
+      $precioMostrador = getOneQuery($db, $queryPM, 'value');
       //Itera y valida productos
-      foreach($productos as $producto) {
+      foreach($productos_input as $producto) {
         if (empty($producto['codigo_sat']) || empty($producto['id_producto']) || empty($producto['cantidad']) || empty($producto['precio']) ) {
           return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información de productos para crear una factura', 400);
+
+        }
+        //Se evita uso de producto agrupable para facturación
+        $producto['agrupable'] = false;
+        if ($producto['agrupable']) {
+            //Recupera productos agrupados
+            $sqlProductosA="select
+                	pd.id_producto_ordigen idProducto,
+                  pd.cantidad cantidad,
+                  p.precio_compra precio,
+                  p.orden_lista codigoSat
+                from ec_productos_detalle pd
+                  inner join ec_productos p on p.id_productos = pd.id_producto_ordigen
+                where pd.id_producto = '".$producto['id_producto'] ."'
+            ;";
+            foreach ($db->query($sqlProductosA) as $row) {
+              $montoAgrupado = $row['precio'] * $row['cantidad'] * $producto['cantidad'];
+              $precioUnitario = $row['precio'];
+              $row['descuento']=10;
+              $producto_agrupado = array(
+                'codigo_sat' => $row['codigoSat'],
+                'id_producto' => $row['idProducto'],
+                'cantidad' => $row['cantidad'] * $producto['cantidad'],
+                'precio' => ($row['descuento']<=0) ? $precioUnitario : $precioUnitario * ((100 - $row['descuento'])/100),
+                'agrupable' => false
+              );
+              $productos[] = $producto_agrupado;
+            }
+
+        }else {
+            $productos[] = $producto;
         }
       }
     }
-
+    //Agrega costo de envío
+    if ($costo_envio>0) {
+        $queryCostoEnvio = "select a.value from api_config a where a.key='productos' and name='costo_envio';";
+        $idProdCostoEnvio = getOneQuery($db, $queryCostoEnvio, 'value');
+        $productos[] = array(
+          'idProducto' => $idProdCostoEnvio,
+          'cantidad' => 1,
+          'precio' => $costo_envio,
+          'monto' => $costo_envio,
+          'grupo_cliente_magento' => '',
+          'agrupable' => false
+        );
+    }
+    //return print_r($productos,true);
     //Ejecuta instrucciones a BD facturacion
     try {
 
