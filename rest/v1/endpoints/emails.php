@@ -19,17 +19,17 @@ $app->get('/emails', function (Request $request, Response $response){
     $token =  (empty($request->getHeader('Token'))) ? '' : implode(" ",$request->getHeader('Token'));
     if (empty($token) || strlen($token)<36 ) {
       //Define estructura de salida: Token requerido
-      return $rs->errorMessage($response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
     }else{
       //Consulta vigencia
       try{
         $resultadoToken = $vt->validaToken($token);
         if ($resultadoToken->rowCount()==0) {
-            return $rs->errorMessage($response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
+            return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
         }
       }catch (PDOException $e) {
         //return '{"error":"'.$e->getMessage().'"}';
-        return $rs->errorMessage($response, 'Error_CL', $e->getMessage(), 500);
+        return $rs->errorMessage($request->getParsedBody(),$response, 'Error_CL', $e->getMessage(), 500);
 
       }
     }
@@ -47,10 +47,10 @@ $app->get('/emails', function (Request $request, Response $response){
           $emails[]= $row['value'];
       }
       $db = null;
-      return $rs->successMessage($response, $emails);
+      return $rs->successMessage($request->getParsedBody(),$response, $emails);
 
     } catch (PDOException $e) {
-      return $rs->errorMessage($response, 'Error_CL', $e->getMessage(), 500);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Error_CL', $e->getMessage(), 500);
 
     }
 

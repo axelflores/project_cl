@@ -21,16 +21,16 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
   $token =  (empty($request->getHeader('Token'))) ? '' : implode(" ",$request->getHeader('Token'));
   if (empty($token) || strlen($token)<36 ) {
     //Define estructura de salida: Token requerido
-    return $rs->errorMessage($response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
+    return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
   }else{
     //Consulta vigencia
     try{
       $resultadoToken = $vt->validaToken($token);
       if ($resultadoToken->rowCount()==0) {
-          return $rs->errorMessage($response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
       }
     }catch (PDOException $e) {
-      return $rs->errorMessage($response, 'CL_Error', $e->getMessage(), 500);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'CL_Error', $e->getMessage(), 500);
     }
   }
 
@@ -39,7 +39,7 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
 
   //Validar elementos requerido para crear venta
   if (empty($productos)) {
-    return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear producto(s)', 400);
+    return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información para crear producto(s)', 400);
   }
   //Validar elementos requerido para nodo productos
   if (count($productos)>0) {
@@ -48,7 +48,7 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
     $idProductos = "'0'";
     foreach($productos as $producto) {
       if (empty($producto['idProducto'])) {
-        return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear producto(s)', 400);
+        return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información para crear producto(s)', 400);
       }
       $idProductos = $idProductos . ",'".$producto['idProducto']."'";
       $productRow ++;
@@ -65,7 +65,7 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
         $bd_facturacion[]=$row['nombre_bd'];
       }
       if (count($bd_facturacion)<=0) {
-          return $rs->errorMessage($response, 'Error_Insert', 'No existen bases de datos definidas para sistema de facturación: ec_bases_facturacion', 500);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', 'No existen bases de datos definidas para sistema de facturación: ec_bases_facturacion', 500);
       }
       //Recupera productos
       $productosConsulta = [];
@@ -99,14 +99,14 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
         	1 as id_tipo_facturacion,
         	if(tienda_linea.producto_solo_facturacion, tienda_linea.producto_solo_facturacion, 0) producto_solo_facturacion
         from ec_productos producto
-        left join ec_admin_codigos_sat codigo_sat on codigo_sat.codigo_sat = producto.orden_lista
+        left join ec_admin_codigos_sat codigo_sat on codigo_sat.id_categoria = producto.id_categoria and codigo_sat.id_subcategoria=producto.id_subcategoria
         left join ec_producto_tienda_linea tienda_linea on tienda_linea.id_producto = producto.id_productos
         where producto.id_productos in ({$idProductos});";
       foreach ($db->query($sqlProductos) as $row) {
         $productosConsulta[$row['id_productos']]=$row;
       }
   } catch(PDOExecption $e) {
-      return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
   }
 
 
@@ -128,7 +128,7 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
           $insertsProd['resultado']='';
           $insertsProd['descripcion']='';
           $insertsProd['producto']=$producto['idProducto'];
-          //return $rs->errorMessage($response, 'Error_Insert', $insertProducto, 500);
+          //return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $insertProducto, 500);
           if (!empty($productosConsulta[$producto['idProducto']]['id_productos'])) {
             //Recupera datos y aplica insert
             $insertProducto="insert ignore into {$base}.ec_productos (id_productos,clave,nombre,precio_venta,precio_compra,marca,min_existencia,imagen,observaciones,inventariado,genera_iva,genera_ieps,porc_iva,porc_ieps,desc_gral,nombre_etiqueta,orden_lista,ubicacion_almacen,codigo_barras_1,codigo_barras_2,codigo_barras_3,codigo_barras_4,maximo_existencia,habilitado,omitir_alertas,existencia_media,id_tipo_facturacion,producto_solo_facturacion)
@@ -168,7 +168,7 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
               $insertStmt->execute();
               //Recupera id_producto
               $idProducto = $dbFact->lastInsertId();
-              //return $rs->errorMessage($response, 'Error_Insert', $idProducto, 500);
+              //return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $idProducto, 500);
               //Valida resultado de producto existente
               if ($idProducto>0) {
                 $insertsProd['resultado']='Insertado';
@@ -179,8 +179,6 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
                       set
                         clave = '{$productosConsulta[$producto['idProducto']]['clave']}',
                         nombre = '{$productosConsulta[$producto['idProducto']]['nombre']}',
-                        precio_venta = '{$productosConsulta[$producto['idProducto']]['precio_venta']}',
-                        precio_compra = '{$productosConsulta[$producto['idProducto']]['precio_compra']}',
                         marca = '{$productosConsulta[$producto['idProducto']]['marca']}',
                         min_existencia = '{$productosConsulta[$producto['idProducto']]['min_existencia']}',
                         imagen = '{$productosConsulta[$producto['idProducto']]['imagen']}',
@@ -199,10 +197,8 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
                         codigo_barras_3 = '{$productosConsulta[$producto['idProducto']]['codigo_barras_3']}',
                         codigo_barras_4 = '{$productosConsulta[$producto['idProducto']]['codigo_barras_4']}',
                         maximo_existencia = '{$productosConsulta[$producto['idProducto']]['maximo_existencia']}',
-                        habilitado = '{$productosConsulta[$producto['idProducto']]['habilitado']}',
                         omitir_alertas = '{$productosConsulta[$producto['idProducto']]['omitir_alertas']}',
                         existencia_media = '{$productosConsulta[$producto['idProducto']]['existencia_media']}',
-                        id_tipo_facturacion = '{$productosConsulta[$producto['idProducto']]['id_tipo_facturacion']}',
                         producto_solo_facturacion = '{$productosConsulta[$producto['idProducto']]['producto_solo_facturacion']}'
                       where id_productos = '{$productosConsulta[$producto['idProducto']]['id_productos']}'
                       ;";
@@ -219,7 +215,7 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
                 }
               }
               //Valida existencia de producto
-              if ($idProducto) {
+              if ($idProducto>0) {
                 //Prepara inser a ec_sucursal_producto: inventario
                 $insertSucProducto ="insert into {$base}.ec_sucursal_producto (id_sucursal, id_producto, inventario)
                       select
@@ -231,10 +227,12 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
                       where
                         sp.id_sucursal_producto is null
                         and s.activo=1;";
-                $insertStmt = $dbFact->prepare($insertSucProducto);
+                $insertSPStmt = $dbFact->prepare($insertSucProducto);
                 //Ejecuta insert
                 try {
-                  $insertStmt->execute();
+                  $insertSPStmt->execute();
+                  $insertsProd['resultado']='Actualizado';
+                  $insertsProd['descripcion']='El producto e inventario ha sido actualizado correctamente';
                 }catch (PDOException $e) {
                   $insertsProd['resultado']='Error';
                   $insertsProd['descripcion']= $e->getMessage();
@@ -257,10 +255,10 @@ $app->post('/productos/nuevoFact', function (Request $request, Response $respons
     //Limpia variables
     $db = null;
     //Regresa resultado
-    return $rs->successMessage($response, $inserts);
+    return $rs->successMessage($request->getParsedBody(),$response, $inserts);
 
   } catch (PDOException $e) {
-    return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+    return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
   }
 });
 

@@ -17,7 +17,7 @@ $app->post('/token', function (Request $request, Response $response){
     //Validar parámetros de entrada
     if (empty($request->getParam('user')) || empty($request->getParam('password'))) {
         //Define estructura de salida: Datos faltantes
-        return $rs->errorMessage($response, 'Datos_Faltantes', 'Usuario y contraseña son requeridos', 400);
+        return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Usuario y contraseña son requeridos', 400);
     }
 
     //Recuperar parámetros de petición entrada
@@ -57,12 +57,12 @@ $app->post('/token', function (Request $request, Response $response){
           $resultado['access_token']=$tk;
           $resultado['expires_in']=$time_value['value'];
           $resultado['token_type']='bearer';
-          return $rs->successMessage($response, $resultado);
+          return $rs->successMessage($request->getParsedBody(),$response, $resultado);
       }
       //Datos no validos
       else{
           //Define estructura de salida: Usuario/Contraseña no valido
-          return $rs->errorMessage($response, 'Datos_Invalidos', 'Usuario y/o contraseña no válidos', 400);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Invalidos', 'Usuario y/o contraseña no válidos', 400);
       }
       $resultado = null;
       $db = null;
