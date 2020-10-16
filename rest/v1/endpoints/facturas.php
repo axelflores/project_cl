@@ -14,22 +14,22 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
     $db = $db->conectDB();
     $rs = new manageResponse();
     $vt = new tokenValidation();
-    //return $rs->successMessage($response, $request->getParams());
+    //return $rs->successMessage($request->getParsedBody(),$response, $request->getParams());
 
     //Valida token
     $token =  (empty($request->getHeader('Token'))) ? '' : implode(" ",$request->getHeader('Token'));
     if (empty($token) || strlen($token)<36 ) {
       //Define estructura de salida: Token requerido
-      return $rs->errorMessage($response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
     }else{
       //Consulta vigencia
       try{
         $resultadoToken = $vt->validaToken($token);
         if ($resultadoToken->rowCount()==0) {
-            return $rs->errorMessage($response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
+            return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
         }
       }catch (PDOException $e) {
-        return $rs->errorMessage($response, 'CL_Error', $e->getMessage(), 500);
+        return $rs->errorMessage($request->getParsedBody(),$response, 'CL_Error', $e->getMessage(), 500);
       }
     }
 
@@ -42,7 +42,7 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
 
     //Validar información de cliente para continuar
     if (empty($cliente) && empty($direccion) && empty($venta) && empty($productos_input)) {
-      return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una factura', 400);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información para crear una factura', 400);
     }
     $costo_envio = $venta['costo_envio'];
 
@@ -51,19 +51,19 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
       //Sale del flujo
       $inserts=[];
       $inserts['ec_clientes']=1;
-      return $rs->successMessage($response, $inserts);
+      return $rs->successMessage($request->getParsedBody(),$response, $inserts);
     }
     //Validar elementos requerido para nodo clientes
     if (!empty($cliente['rfc'])) {
       if (empty($cliente['email']) || empty($cliente['razon_social']) ) {
-        return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información del cliente para crear una factura', 400);
+        return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información del cliente para crear una factura', 400);
       }
     }
 
     //Validar elementos requerido para nodo ventas
     if (!empty($cliente['rfc'])) {
       if (empty($venta['total']) || empty($venta['fecha']) || empty($venta['hora']) || empty($venta['id_sucursal']) || empty($venta['forma_pago']) || empty($venta['metodo_pago']) || empty($venta['cfdi']) || $venta['costo_envio']=="" ) {
-        return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información de la venta para crear una factura', 400);
+        return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información de la venta para crear una factura', 400);
       }
     }
 
@@ -87,7 +87,7 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
       //Itera y valida productos
       foreach($productos_input as $producto) {
         if (empty($producto['codigo_sat']) || empty($producto['id_producto']) || empty($producto['cantidad']) || empty($producto['precio']) ) {
-          return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información de productos para crear una factura', 400);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información de productos para crear una factura', 400);
 
         }
         //Se evita uso de producto agrupable para facturación
@@ -316,7 +316,7 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
           //Recupera id_venta
           $idVentaLinea = $dbFact->lastInsertId();
           $inserts['ec_venta_tienda_linea']=$idVentaLinea;
-          //return $rs->successMessage($response, $inserts);
+          //return $rs->successMessage($request->getParsedBody(),$response, $inserts);
           //Itera productos recibidos
           $inserts['ec_detalle_venta']=[];
           $inserts['ec_detalle_movimiento']=[];
@@ -345,7 +345,7 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
               if (empty($idProducto)) {
                 //Regresa error
                 rollBackF($inserts);
-                return $rs->errorMessage($response, 'Error_Insert', 'No se ha podido guardar el registro de facturación debido a que el producto con código sat: '.$producto['codigo_sat']. ' ,no cumple con los criterios de búsqueda de CL.', 500);
+                return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', 'No se ha podido guardar el registro de facturación debido a que el producto con código sat: '.$producto['codigo_sat']. ' ,no cumple con los criterios de búsqueda de CL.', 500);
               }else {
                   //Consulta Inventario y compara CL vs Facturación
                   if ($valida_inventario) {
@@ -357,7 +357,7 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
                       if ($inventarioCL<$inventarioF) {
                           //Regresa error
                           rollBackF($inserts);
-                          return $rs->errorMessage($response, 'Error_Insert', 'No se ha podido guardar el registro de facturación debido a que el producto con código sat: '.$producto['codigo_sat']. ' ,no cumple con los criterios de inventario de CL.', 500);
+                          return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', 'No se ha podido guardar el registro de facturación debido a que el producto con código sat: '.$producto['codigo_sat']. ' ,no cumple con los criterios de inventario de CL.', 500);
                       }
                   }
               }
@@ -404,26 +404,26 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
 
             } catch(PDOExecption $e) {
                 rollBackF($inserts);
-                return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+                return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
             }
           }
         }else {
           rollBackF($inserts);
-          return $rs->errorMessage($response, 'Error_Insert', 'No se pudo insertar la venta de forma correcta, intente nuevamente.', 500);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', 'No se pudo insertar la venta de forma correcta, intente nuevamente.', 500);
         }
       } catch(PDOExecption $e) {
           rollBackF($inserts);
-          return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
       }
       //Limpia variables
       $db = null;
       $dbFact = null;
       //Regresa resultado
       //return json_encode($inserts);
-      return $rs->successMessage($response, $inserts);
+      return $rs->successMessage($request->getParsedBody(),$response, $inserts);
     } catch (PDOException $e) {
       rollBackF($inserts);
-      return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
     }
 });
 

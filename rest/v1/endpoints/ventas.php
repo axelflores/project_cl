@@ -19,16 +19,16 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
     $token =  (empty($request->getHeader('Token'))) ? '' : implode(" ",$request->getHeader('Token'));
     if (empty($token) || strlen($token)<36 ) {
       //Define estructura de salida: Token requerido
-      return $rs->errorMessage($response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Requerido', 'Se requiere el uso de un token', 400);
     }else{
       //Consulta vigencia
       try{
         $resultadoToken = $vt->validaToken($token);
         if ($resultadoToken->rowCount()==0) {
-            return $rs->errorMessage($response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
+            return $rs->errorMessage($request->getParsedBody(),$response, 'Token_Invalido', 'El token proporcionado no es válido', 400);
         }
       }catch (PDOException $e) {
-        return $rs->errorMessage($response, 'CL_Error', $e->getMessage(), 500);
+        return $rs->errorMessage($request->getParsedBody(),$response, 'CL_Error', $e->getMessage(), 500);
       }
     }
 
@@ -44,7 +44,7 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
 
     //Validar elementos requerido para crear venta
     if (empty($folio) || empty($subtotal) || empty($descuento) || empty($total) || empty($productos_input) || empty($sucursal) || empty($grupo_cliente_magento) /*|| empty($costo_envio)*/ ) {
-      return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
     }
     //Validar elementos requerido para nodo productos
     if (count($productos_input)>0) {
@@ -57,14 +57,16 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
       //Itera y valida productos para guardado
       foreach($productos_input as $producto) {
         if (empty($producto['idProducto']) || empty($producto['cantidad']) || empty($producto['precio']) || empty($producto['monto']) || (empty($grupo_cliente_magento) && empty($producto['grupo_cliente_magento'])) ) {
-          return $rs->errorMessage($response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Faltantes', 'Hace falta información para crear una venta', 400);
         }
         //Recupera lista de precio para productos
+        //NOT LOGGED IN = mostrador
+        $grupo_cliente_magento = ($grupo_cliente_magento=='NOT LOGGED IN')? 'Mostrador':$grupo_cliente_magento;
         $producto['grupo_cliente_magento'] = empty($producto['grupo_cliente_magento']) ? $grupo_cliente_magento : $producto['grupo_cliente_magento'];
         $queryG = "select id_precio from ec_precios where grupo_cliente_magento='{$producto['grupo_cliente_magento']}';";
         $grupo_cliente = getOneQuery($db, $queryG, 'id_precio');
         if (empty($grupo_cliente)) {
-            return $rs->errorMessage($response, 'Datos_Erroneos', 'El valor especificado para Grupo cliente magento no es reconocido por CL', 400);
+            return $rs->errorMessage($request->getParsedBody(),$response, 'Datos_Erroneos', 'El valor especificado para Grupo cliente magento no es reconocido por CL', 400);
         }
         $producto['grupo_cliente_magento'] = $grupo_cliente;
 
@@ -276,25 +278,25 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
 
             } catch(PDOExecption $e) {
                 rollBackV($inserts);
-                return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+                return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
             }
           }
         }else {
           rollBackV($inserts);
-          return $rs->errorMessage($response, 'Error_Insert', 'No se pudo insertar la venta de forma correcta, intente nuevamente.', 500);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', 'No se pudo insertar la venta de forma correcta, intente nuevamente.', 500);
         }
       } catch(PDOExecption $e) {
           rollBackV($inserts);
-          return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+          return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
       }
       //Limpia variables
       $db = null;
       //Regresa resultado
       //return json_encode($inserts);
-      return $rs->successMessage($response, $inserts);
+      return $rs->successMessage($request->getParsedBody(),$response, $inserts);
     } catch (PDOException $e) {
       rollBackV($inserts);
-      return $rs->errorMessage($response, 'Error_Insert', $e->getMessage(), 500);
+      return $rs->errorMessage($request->getParsedBody(),$response, 'Error_Insert', $e->getMessage(), 500);
     }
 });
 
