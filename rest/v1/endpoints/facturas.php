@@ -126,12 +126,14 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
     if ($costo_envio>0) {
         $queryCostoEnvio = "select a.value from api_config a where a.key='productos' and name='costo_envio';";
         $idProdCostoEnvio = getOneQuery($db, $queryCostoEnvio, 'value');
+        $queryCS = "select orden_lista from ec_productos where id_productos='{$idProdCostoEnvio}';";
+        $idCS = getOneQuery($dbFact, $queryCS, 'orden_lista');
         $productos[] = array(
-          'idProducto' => $idProdCostoEnvio,
+          'codigo_sat' => $idCS,
+          'id_producto' => $idProdCostoEnvio,
           'cantidad' => 1,
           'precio' => $costo_envio,
-          'monto' => $costo_envio,
-          'grupo_cliente_magento' => '',
+          'costo_envio' => true,
           'agrupable' => false
         );
     }
@@ -341,6 +343,9 @@ $app->post('/facturas/nueva', function (Request $request, Response $response){
               $resultadoProd = $dbFact->query($consultaProducto);
               $resultadoProdRow = $resultadoProd->fetch();
               $idProducto = $resultadoProdRow['id_productos'];
+              //Excluye validación para producto: Costo de Envío
+              $idProducto = ($producto['costo_envio']) ? $producto['id_producto'] : $idProducto;
+              $valida_inventario = ($producto['costo_envio']) ? false : $valida_inventario;
               //Valida obtención de producto
               if (empty($idProducto)) {
                 //Regresa error

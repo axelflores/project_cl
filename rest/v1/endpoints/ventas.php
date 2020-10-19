@@ -110,12 +110,15 @@ $app->post('/ventas/nueva', function (Request $request, Response $response){
       if ($costo_envio>0) {
           $queryCostoEnvio = "select a.value from api_config a where a.key='productos' and name='costo_envio';";
           $idProdCostoEnvio = getOneQuery($db, $queryCostoEnvio, 'value');
+          $queryGCE = "select id_precio from ec_precios where grupo_cliente_magento='{$grupo_cliente_magento}';";
+          $grupo_clienteCE = getOneQuery($db, $queryGCE, 'id_precio');
+
           $productos[] = array(
             'idProducto' => $idProdCostoEnvio,
             'cantidad' => 1,
             'precio' => $costo_envio,
             'monto' => $costo_envio,
-            'grupo_cliente_magento' => '',
+            'grupo_cliente_magento' => $grupo_clienteCE,
             'agrupable' => false
           );
       }
